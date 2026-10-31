@@ -26,3 +26,9 @@
 ## 当前状态
 
 仓库已初始化，尚未迁入旧示例。此处是创作方法与实现的入口，不是已经完成的通用仿真平台。
+
+## 模板与下一轮检查
+
+进入 [模板提炼入口](templates/README.md)，查看候选类型、现有参考与逐例检查表；复制 [模板工作稿](templates/authoring-brief.md) 填写一个教学单元。当前完成的是组织与工作入口，HTML 通用模板尚待逐例验证后提炼。
+
+配套仓库：[3D Scientific Interactions](https://github.com/Xiatiantian1997/3d-scientific-interactions)。共同 UI 随后统一处理，本轮不迁移旧示例，不增加新演示。
