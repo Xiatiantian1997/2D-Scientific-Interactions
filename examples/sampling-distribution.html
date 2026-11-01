@@ -1,0 +1,152 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>sampling-distribution</title><style>body{margin:auto;max-width:900px;font:18px/1.6 system-ui,sans-serif;padding:16px;background:var(--background);color:var(--foreground)}header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px}h1{font-size:22px;margin:0}select{font:inherit;min-height:44px;color:inherit;background:var(--background);border:1px solid var(--border);border-radius:10px}iframe{display:block;width:100%;height:700px;border:0;margin:0 0 24px}footer{font-size:15px}</style><header><h1>sampling-distribution</h1><label>主题 <select aria-label="主题"><option value="warm">暖纸</option><option value="paper">素纸</option><option value="dark">深色</option></select></label></header><main><iframe title="sampling-distribution" sandbox="allow-scripts" srcdoc="&lt;!doctype html&gt;&lt;html lang=&quot;zh-CN&quot;&gt;&lt;meta charset=&quot;utf-8&quot;&gt;&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1&quot;&gt;&lt;style&gt;/* Scoped inside each isolated example document. Themes supply semantics. */
+:root{font-family:system-ui,&quot;Noto Sans SC&quot;,sans-serif;font-size:18px;color:var(--foreground);background:var(--background);color-scheme:light}
+*{box-sizing:border-box}body{margin:0;padding:18px;line-height:1.55}h3{font-size:1.15rem;font-weight:600;margin:0 0 16px}p{margin:10px 0}svg,canvas{max-width:100%}button,input,select{font:inherit}button{min-height:44px;touch-action:manipulation}button:focus-visible,input:focus-visible{outline:2px solid var(--ring);outline-offset:3px}
+.btn{background:var(--secondary);color:var(--foreground);border:1px solid var(--border);border-radius:12px;padding:8px 14px;cursor:pointer}.btn-primary,button[aria-pressed=true],button[aria-selected=true]{background:var(--primary);color:var(--primary-foreground)}.btn-ghost{border-color:transparent;background:transparent}.form-range{accent-color:var(--primary);min-height:44px;max-width:100%}.form-label{display:block}.viz-row,.viz-controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.viz-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:16px}.card{background:var(--card);border-radius:16px;padding:16px}.text-small{font-size:.9rem}.text-muted{color:var(--muted-foreground)}.tabular-nums{font-variant-numeric:tabular-nums}.form-check{display:flex;align-items:center;gap:8px;min-height:44px}.form-check-input{width:22px;height:22px}.cursor-interaction{cursor:pointer}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}.nav{display:flex;gap:8px;flex-wrap:wrap}.nav-link{border:0;border-radius:12px;padding:10px;background:var(--secondary);color:var(--foreground)}.nav-link.active{background:var(--primary);color:var(--primary-foreground)}[hidden]{display:none!important}@media(max-width:360px){body{padding:10px}.btn{padding:8px 10px}}
+
+
+/* All operation panels sit below their linked plots. Geometry is stable. */
+[data-play]{width:48px;min-width:48px;height:48px;padding:0!important;display:grid;place-items:center;font-size:22px;line-height:1}
+[data-reset-area]{border-radius:16px;touch-action:pan-y;overflow-anchor:none}
+.sci-controls{position:relative;isolation:isolate;padding:16px 12px 28px;margin-top:16px}
+.sci-controls::before{content:&quot;&quot;;position:absolute;inset:0;border-radius:inherit;background:var(--foreground);opacity:0;z-index:-1;pointer-events:none;transition:opacity 150ms}
+.sci-controls.flash::before{opacity:.07}
+[data-feedback]{min-height:2.8em;margin:12px 0 0}
+.form-range{width:100%;min-width:0}output{font-variant-numeric:tabular-nums;white-space:nowrap}
+@media(prefers-reduced-motion:reduce){.sci-controls::before{transition:none}}
+:root{--background:#faf6e9;--foreground:#293c42;--card:#fffdf5;--muted:#eee9dc;--muted-foreground:#59676b;--border:#c9ccbf;--primary:#346c79;--primary-foreground:#ffffff;--secondary:#eeeee5;--ring:#346c79;--viz-series-1:#407e8a;--viz-series-2:#aa7739;--viz-series-3:#6e70a1;--viz-series-4:#52836c;--viz-series-5:#9b6877;--viz-series-6:#7b7461}&lt;/style&gt;&lt;body&gt;&lt;script&gt;/* Shared lower control-area behavior. Load before legacy fragments. */
+(()=&gt;{
+&#x27;use strict&#x27;;
+window.SciControls={
+play(button,running,rest=&#x27;播放&#x27;){
+ button.textContent=running?&#x27;Ⅱ&#x27;:&#x27;▶&#x27;;
+ button.setAttribute(&#x27;aria-label&#x27;,running?&#x27;暂停&#x27;:rest);
+ button.setAttribute(&#x27;aria-pressed&#x27;,String(running));
+},
+mount(root,{reset,pause=()=&gt;{},cancelGesture=()=&gt;{}}){
+ const area=root.querySelector(&#x27;[data-reset-area]&#x27;);
+ if(!area)throw Error(&#x27;Missing lower control area&#x27;);
+ const feedback=area.querySelector(&#x27;[data-feedback]&#x27;);
+ const prompt=feedback.textContent,abort=new AbortController(),signal=abort.signal;
+ let candidate=null,timer=0,flash=0;const pointers=new Set();
+ const ignore=t=&gt;t.closest(&#x27;button,input,select,textarea,a,label,summary,[role=&quot;button&quot;]&#x27;);
+ const clear=()=&gt;{candidate=null;};
+ const listen=(el,type,fn,options={})=&gt;el.addEventListener(type,fn,{...options,signal});
+ const restore=()=&gt;{cancelGesture();reset();clearTimeout(timer);clearTimeout(flash);area.classList.add(&#x27;flash&#x27;);feedback.textContent=&#x27;已复位 ✓&#x27;;flash=setTimeout(()=&gt;area.classList.remove(&#x27;flash&#x27;),180);timer=setTimeout(()=&gt;feedback.textContent=prompt,900);};
+ listen(document,&#x27;pointerdown&#x27;,e=&gt;{pointers.add(e.pointerId);if(pointers.size&gt;1){clear();cancelGesture();}},{capture:true});
+ listen(area,&#x27;pointerdown&#x27;,e=&gt;{if(e.button&gt;0||!e.isPrimary||pointers.size&gt;1||ignore(e.target)){clear();return;}candidate={id:e.pointerId,x:e.clientX,y:e.clientY,t:performance.now()};});
+ listen(document,&#x27;pointermove&#x27;,e=&gt;{if(candidate&amp;&amp;candidate.id===e.pointerId&amp;&amp;Math.hypot(e.clientX-candidate.x,e.clientY-candidate.y)&gt;8)clear();},{capture:true});
+ listen(document,&#x27;pointerup&#x27;,e=&gt;{const c=candidate;clear();pointers.delete(e.pointerId);if(c&amp;&amp;c.id===e.pointerId&amp;&amp;area.contains(e.target)&amp;&amp;!ignore(e.target)&amp;&amp;performance.now()-c.t&lt;500&amp;&amp;Math.hypot(e.clientX-c.x,e.clientY-c.y)&lt;=8)restore();},{capture:true});
+ listen(document,&#x27;pointercancel&#x27;,e=&gt;{pointers.delete(e.pointerId);clear();cancelGesture();},{capture:true});
+ listen(area,&#x27;pointerleave&#x27;,clear);listen(area,&#x27;lostpointercapture&#x27;,clear);
+ listen(document,&#x27;scroll&#x27;,clear,{capture:true});
+ listen(document,&#x27;visibilitychange&#x27;,()=&gt;{clear();pointers.clear();cancelGesture();if(document.hidden)pause();});
+ listen(window,&#x27;blur&#x27;,()=&gt;{clear();pointers.clear();cancelGesture();pause();});
+ listen(root,&#x27;keydown&#x27;,e=&gt;{if(e.key.toLowerCase()===&#x27;r&#x27;&amp;&amp;!e.ctrlKey&amp;&amp;!e.metaKey&amp;&amp;!e.altKey&amp;&amp;!e.target.closest(&#x27;input,textarea,select,[contenteditable=&quot;true&quot;]&#x27;)){e.preventDefault();restore();}});
+ root.tabIndex=0;
+ root.sciApi={reset:restore,pause,getState:()=&gt;({...root.dataset})};
+ root.sciDisposeControls=()=&gt;{abort.abort();clearTimeout(timer);clearTimeout(flash);pause();};
+ return root.sciApi;
+}
+};
+})();
+&lt;/script&gt;&lt;section class=&quot;sci-extra&quot; data-sci-example=&quot;sampling-distribution&quot;&gt;
+&lt;style&gt;
+.sci-extra{overflow-anchor:none;color:var(--foreground)}.sci-extra svg{display:block;width:100%;overflow:visible}.sci-extra[data-sci-example=&quot;sampling-distribution&quot;] svg{height:310px}.sci-extra[data-sci-example=&quot;quantum-linked&quot;] svg{height:410px}.sci-extra [data-controls]{position:relative;isolation:isolate;padding:12px 4px 26px;min-height:150px}.sci-extra [data-controls]::before{content:&quot;&quot;;position:absolute;inset:0;background:var(--foreground);opacity:0;z-index:-1;pointer-events:none;transition:opacity .16s}.sci-extra [data-controls].flash::before{opacity:.07}.sci-extra .transport{display:flex;gap:12px;align-items:center}.sci-extra .transport input{flex:1;min-width:0}.sci-extra .play-slot{flex:0 0 48px}.sci-extra [data-reading]{min-height:3em;margin:8px 0}.sci-extra [data-latest]{min-height:1.5em}.sci-extra [data-feedback]{margin-top:14px}.sci-extra input{width:100%}.sci-extra .batch-row{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:12px}@media(prefers-reduced-motion:reduce){.sci-extra [data-controls]::before{transition:none}}
+&lt;/style&gt;
+&lt;h3&gt;随机采样 · 一次不确定，多次有分布&lt;/h3&gt;
+&lt;div data-latest class=&quot;tabular-nums&quot;&gt;&lt;/div&gt;
+&lt;svg role=&quot;img&quot; aria-label=&quot;离散误差的经验频率；固定虚线为总体理论频率，浅色底栏标记最新结果所属误差档。&quot;&gt;&lt;/svg&gt;
+&lt;div class=&quot;viz-row text-small&quot;&gt;&lt;span&gt;实柱：本批样本&lt;/span&gt;&lt;span&gt;短虚线：总体规律&lt;/span&gt;&lt;/div&gt;
+&lt;div data-controls&gt;
+&lt;div data-reading class=&quot;tabular-nums&quot; aria-live=&quot;polite&quot;&gt;&lt;/div&gt;
+&lt;div&gt;样本量 &lt;output data-value&gt;1&lt;/output&gt;&lt;/div&gt;
+&lt;div class=&quot;transport&quot;&gt;&lt;span class=&quot;play-slot&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn&quot; data-play aria-label=&quot;开始积累样本&quot; aria-pressed=&quot;false&quot;&gt;▶&lt;/button&gt;&lt;/span&gt;&lt;input type=&quot;range&quot; class=&quot;form-range&quot; min=&quot;1&quot; max=&quot;1000&quot; step=&quot;1&quot; value=&quot;1&quot; aria-label=&quot;样本量，拖动回看同一批样本&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn&quot; data-step aria-label=&quot;增加一次采样&quot;&gt;+1&lt;/button&gt;&lt;/div&gt;
+&lt;div class=&quot;batch-row&quot;&gt;&lt;span class=&quot;text-small&quot;&gt;固定总体 · 同批回看&lt;/span&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; data-batch&gt;换一批&lt;/button&gt;&lt;/div&gt;
+&lt;div data-feedback class=&quot;text-small&quot; role=&quot;status&quot;&gt;点操作区空白：回到同批第 1 项&lt;/div&gt;&lt;/div&gt;
+&lt;script&gt;
+/* Local instance runtime: no fixed IDs, no external dependencies. */
+(()=&gt;{
+const KIND=&#x27;sampling-distribution&#x27;;
+for(const root of document.querySelectorAll(`[data-sci-example=&quot;${KIND}&quot;]`)){
+if(root.dataset.mounted===&#x27;true&#x27;)continue;
+root.dataset.mounted=&#x27;true&#x27;;
+const $=q=&gt;root.querySelector(q), svg=$(&#x27;svg&#x27;), range=$(&#x27;input&#x27;), area=$(&#x27;[data-controls]&#x27;), feedback=$(&#x27;[data-feedback]&#x27;);
+const ns=&#x27;http://www.w3.org/2000/svg&#x27;, MAX=1000;
+let value=1,batch=1,samples=[],timer=null,candidate=null,flashTimer=null,feedbackTimer=null;
+function makeSamples(seed){let a=seed&gt;&gt;&gt;0;const random=()=&gt;{a=(Math.imul(1664525,a)+1013904223)&gt;&gt;&gt;0;return a/4294967296};return Array.from({length:MAX},()=&gt;{let x=-3;for(let j=0;j&lt;6;j++)x+=random()&lt;.5?1:0;return x})}
+function stats(n){const bins=Array(7).fill(0);let sum=0,squares=0;for(let i=0;i&lt;n;i++){const x=samples[i];bins[x+3]++;sum+=x;squares+=x*x}return{bins,mean:sum/n,sd:n&gt;1?Math.sqrt(Math.max(0,(squares-sum*sum/n)/(n-1))):null}}
+function el(tag,a={},text){const e=document.createElementNS(ns,tag);Object.entries(a).forEach(([k,v])=&gt;e.setAttribute(k,v));if(text!==undefined)e.textContent=text;svg.appendChild(e);return e}
+function label(x,y,t,anchor=&#x27;start&#x27;,extra={}){return el(&#x27;text&#x27;,{x,y,&#x27;text-anchor&#x27;:anchor,fill:&#x27;var(--foreground)&#x27;,&#x27;font-size&#x27;:18,...extra},t)}
+function line(x1,y1,x2,y2,extra={}){return el(&#x27;line&#x27;,{x1,y1,x2,y2,stroke:&#x27;var(--border)&#x27;,...extra})}
+function draw(){
+ const w=Math.max(280,svg.clientWidth||320), left=64,right=w-20;
+ svg.replaceChildren();svg.setAttribute(&#x27;viewBox&#x27;,`0 0 ${w} ${KIND===&#x27;sampling-distribution&#x27;?310:410}`);
+ if(KIND===&#x27;sampling-distribution&#x27;){
+  const s=stats(value),top=40,bottom=235,bar=(right-left)/7, theory=[1,6,15,20,15,6,1].map(v=&gt;v/64),Y=v=&gt;bottom-v*(bottom-top);
+  el(&#x27;rect&#x27;,{x:left,y:top,width:right-left,height:bottom-top,fill:&#x27;none&#x27;,stroke:&#x27;var(--border)&#x27;,&#x27;data-chart-frame&#x27;:&#x27;&#x27;});
+  label(left,23,&#x27;相对频率&#x27;,&#x27;start&#x27; ,{&#x27;data-axis&#x27;:&#x27;y&#x27;,class:&#x27;axis-title&#x27;});
+  for(const v of [0,.5,1]){label(left-8,Y(v)+6,`${v*100}%`,&#x27;end&#x27;);if(v===.5)line(left,Y(v),right,Y(v));}
+  for(let i=0;i&lt;7;i++){
+   const cx=left+(i+.5)*bar,h=s.bins[i]/value*(bottom-top),bw=bar*.65;
+   if(i===samples[value-1]+3)el(&#x27;rect&#x27;,{x:cx-bar*.48,y:top,width:bar*.96,height:bottom-top+32,fill:&#x27;var(--viz-series-1)&#x27;,opacity:.12,&#x27;data-latest-bin&#x27;:i-3});
+   el(&#x27;rect&#x27;,{x:cx-bw/2,y:bottom-h,width:bw,height:h,fill:&#x27;var(--viz-series-1)&#x27;});
+   line(cx-bar*.42,Y(theory[i]),cx+bar*.42,Y(theory[i]),{&#x27;stroke&#x27;:&#x27;var(--foreground)&#x27;,&#x27;stroke-dasharray&#x27;:&#x27;3 3&#x27;,&#x27;stroke-width&#x27;:2});
+   label(cx,259,String(i-3),&#x27;middle&#x27;);
+   
+   const title=el(&#x27;title&#x27;,{},`误差 ${i-3} nm：${s.bins[i]} / ${value}，${(100*s.bins[i]/value).toFixed(1)}%`);title.dataset.bin=String(i);
+  }
+  label(right,294,&#x27;单次误差 / nm&#x27;,&#x27;end&#x27;,{&#x27;data-axis&#x27;:&#x27;x&#x27;,class:&#x27;axis-title&#x27;});
+  $(&#x27;[data-value]&#x27;).textContent=String(value);
+  $(&#x27;[data-reading]&#x27;).textContent=`均值 ${s.mean.toFixed(3)} nm · 样本标准差 ${s.sd===null?&#x27;—&#x27;:s.sd.toFixed(3)+&#x27; nm&#x27;}`;
+  $(&#x27;[data-latest]&#x27;).textContent=`最新一次：${samples[value-1]&gt;0?&#x27;+&#x27;:&#x27;&#x27;}${samples[value-1]} nm → 下方浅底栏`;
+  root.dataset.mean=String(s.mean);root.dataset.bins=JSON.stringify(s.bins);root.dataset.batch=String(batch);
+ }else{
+  const top=40,bottom=190,Y=r=&gt;bottom-r/2*(bottom-top),X=q=&gt;left+q*(right-left);
+  el(&#x27;rect&#x27;,{x:left,y:top,width:right-left,height:bottom-top,fill:&#x27;none&#x27;,stroke:&#x27;var(--border)&#x27;,&#x27;data-chart-frame&#x27;:&#x27;&#x27;});
+  label(left,23,&#x27;概率密度 × L&#x27;, &#x27;start&#x27;,{&#x27;data-axis&#x27;:&#x27;y&#x27;,class:&#x27;axis-title&#x27;});
+  for(const r of [0,1,2])label(left-8,Y(r)+6,String(r),&#x27;end&#x27;);
+  let d=&#x27;&#x27;;for(let i=0;i&lt;=256;i++){const q=i/256,r=2*Math.sin(value*Math.PI*q)**2;d+=`${i?&#x27;L&#x27;:&#x27;M&#x27;}${X(q).toFixed(2)},${Y(r).toFixed(2)} `}
+  el(&#x27;path&#x27;,{d,fill:&#x27;none&#x27;,stroke:&#x27;var(--viz-series-1)&#x27;,&#x27;stroke-width&#x27;:2.5});
+  for(const q of [0,.5,1])label(X(q),214,String(q),q===0?&#x27;start&#x27;:q===1?&#x27;end&#x27;:&#x27;middle&#x27;);
+  label(right,241,&#x27;位置 x / L&#x27;,&#x27;end&#x27;,{&#x27;data-axis&#x27;:&#x27;x&#x27;,class:&#x27;axis-title&#x27;});
+  // Energy ladder is a separate representation, not another spatial plot.
+  const ey=e=&gt;383-(e-1)/15*100;
+  label(left,272,&#x27;能量 E / E₁&#x27;);
+  for(let n=1;n&lt;=4;n++){const y=ey(n*n);line(left,y,right-60,y,{stroke:n===value?&#x27;var(--viz-series-1)&#x27;:&#x27;var(--border)&#x27;,&#x27;stroke-width&#x27;:n===value?3:1});label(left-8,y+5,String(n*n),&#x27;end&#x27;);label(right,y+5,`n=${n}`,&#x27;end&#x27;);if(n===value)el(&#x27;circle&#x27;,{cx:left+8,cy:y,r:4,fill:&#x27;var(--viz-series-1)&#x27;})}
+  $(&#x27;[data-value]&#x27;).textContent=String(value);
+  $(&#x27;[data-reading]&#x27;).textContent=`${value} 个概率峰 · 内部 ${value-1} 个节点 · 能量 ${value*value} E₁`;
+  root.dataset.energy=String(value*value);
+ }
+ range.value=String(value);root.dataset.value=String(value);
+}
+function stop(){if(timer!==null)clearInterval(timer);timer=null;const b=$(&#x27;[data-play]&#x27;);if(b){b.textContent=&#x27;▶&#x27;;b.setAttribute(&#x27;aria-label&#x27;,&#x27;开始积累样本&#x27;);b.setAttribute(&#x27;aria-pressed&#x27;,&#x27;false&#x27;)}}
+function setValue(v){if(!Number.isFinite(Number(v)))throw new TypeError(&#x27;value must be finite&#x27;);v=Number(v);value=Math.max(1,Math.min(KIND===&#x27;sampling-distribution&#x27;?MAX:4,Math.round(v)));draw()}
+function reset(){stop();setValue(1);area.classList.add(&#x27;flash&#x27;);feedback.textContent=&#x27;已复位 ✓&#x27;;clearTimeout(flashTimer);clearTimeout(feedbackTimer);flashTimer=setTimeout(()=&gt;area.classList.remove(&#x27;flash&#x27;),200);feedbackTimer=setTimeout(()=&gt;feedback.textContent=KIND===&#x27;sampling-distribution&#x27;?&#x27;点操作区空白：回到同批第 1 项&#x27;:&#x27;点操作区空白：恢复 n=1&#x27;,900)}
+range.oninput=()=&gt;{stop();setValue(+range.value)};
+if(KIND===&#x27;sampling-distribution&#x27;){
+ samples=makeSamples(batch);
+ $(&#x27;[data-batch]&#x27;).onclick=()=&gt;{stop();batch++;samples=makeSamples(batch);draw()};
+ $(&#x27;[data-step]&#x27;).onclick=()=&gt;{stop();setValue(value+1)};
+ $(&#x27;[data-play]&#x27;).onclick=()=&gt;{if(timer!==null){stop();return}if(value===MAX)setValue(1);const b=$(&#x27;[data-play]&#x27;);b.textContent=&#x27;Ⅱ&#x27;;b.setAttribute(&#x27;aria-label&#x27;,&#x27;暂停积累样本&#x27;);b.setAttribute(&#x27;aria-pressed&#x27;,&#x27;true&#x27;);timer=setInterval(()=&gt;{if(!root.isConnected||document.hidden){stop();return}setValue(value+1);if(value===MAX)stop()},50)};
+}
+area.onpointerdown=e=&gt;{if(!e.isPrimary||e.button&gt;0||e.target.closest(&#x27;button,input,label,select,textarea,a&#x27;)){candidate=null;return}candidate={id:e.pointerId,x:e.clientX,y:e.clientY,start:performance.now()};};
+area.onpointermove=e=&gt;{if(candidate&amp;&amp;Math.hypot(e.clientX-candidate.x,e.clientY-candidate.y)&gt;8)candidate=null};
+area.onpointerup=e=&gt;{const c=candidate;candidate=null;if(c&amp;&amp;c.id===e.pointerId&amp;&amp;performance.now()-c.start&lt;500&amp;&amp;Math.hypot(e.clientX-c.x,e.clientY-c.y)&lt;=8)reset()};
+area.onpointercancel=area.onlostpointercapture=area.onpointerleave=()=&gt;candidate=null;
+root.onkeydown=e=&gt;{if(e.key.toLowerCase()===&#x27;r&#x27;&amp;&amp;!e.ctrlKey&amp;&amp;!e.metaKey&amp;&amp;!e.altKey){e.preventDefault();reset()}};
+const onScroll=()=&gt;candidate=null,onHidden=()=&gt;{candidate=null;if(document.hidden)stop()};
+document.addEventListener(&#x27;scroll&#x27;,onScroll,true);document.addEventListener(&#x27;visibilitychange&#x27;,onHidden);
+const ro=new ResizeObserver(draw);ro.observe(svg);
+root.sciApi={getState:()=&gt;({value,batch}),setValue:v=&gt;{stop();setValue(v)},reset};
+root.sciDestroy=()=&gt;{stop();ro.disconnect();clearTimeout(flashTimer);clearTimeout(feedbackTimer);document.removeEventListener(&#x27;scroll&#x27;,onScroll,true);document.removeEventListener(&#x27;visibilitychange&#x27;,onHidden);delete root.dataset.mounted;};
+draw();
+}
+})();
+
+&lt;/script&gt;
+&lt;/section&gt;
+
+&lt;script&gt;
+(()=&gt;{const allowed=[&quot;background&quot;, &quot;foreground&quot;, &quot;card&quot;, &quot;muted&quot;, &quot;muted-foreground&quot;, &quot;border&quot;, &quot;primary&quot;, &quot;primary-foreground&quot;, &quot;secondary&quot;, &quot;ring&quot;, &quot;viz-series-1&quot;, &quot;viz-series-2&quot;, &quot;viz-series-3&quot;, &quot;viz-series-4&quot;, &quot;viz-series-5&quot;, &quot;viz-series-6&quot;];window.addEventListener(&#x27;message&#x27;,e=&gt;{if(e.source!==parent||e.data?.type!==&#x27;sci-theme&#x27;)return;for(const[k,v]of Object.entries(e.data.tokens||{}))if(allowed.includes(k)&amp;&amp;/^#[0-9a-f]{6}$/i.test(v))document.documentElement.style.setProperty(&#x27;--&#x27;+k,v);document.documentElement.style.colorScheme=e.data.name===&#x27;dark&#x27;?&#x27;dark&#x27;:&#x27;light&#x27;});let last=0;const measure=()=&gt;{const h=Math.ceil(document.body.getBoundingClientRect().height);if(h!==last){last=h;parent.postMessage({type:&#x27;sci-height&#x27;,height:h},&#x27;*&#x27;)}};new ResizeObserver(measure).observe(document.body);measure();})();
+&lt;/script&gt;&lt;/body&gt;&lt;/html&gt;"></iframe></main><footer>各例独立操作与复位；切换主题保留当前状态。</footer><script>
+const themes={"warm": {"background": "#faf6e9", "foreground": "#293c42", "card": "#fffdf5", "muted": "#eee9dc", "muted-foreground": "#59676b", "border": "#c9ccbf", "primary": "#346c79", "primary-foreground": "#ffffff", "secondary": "#eeeee5", "ring": "#346c79", "viz-series-1": "#407e8a", "viz-series-2": "#aa7739", "viz-series-3": "#6e70a1", "viz-series-4": "#52836c", "viz-series-5": "#9b6877", "viz-series-6": "#7b7461"}, "paper": {"background": "#fcfcfb", "foreground": "#273944", "card": "#ffffff", "muted": "#edf0f2", "muted-foreground": "#5a6872", "border": "#c8d1d6", "primary": "#345d89", "primary-foreground": "#ffffff", "secondary": "#edf1f5", "ring": "#345d89", "viz-series-1": "#447eaf", "viz-series-2": "#9b742d", "viz-series-3": "#8a659b", "viz-series-4": "#3e887c", "viz-series-5": "#a66568", "viz-series-6": "#6d7581"}, "dark": {"background": "#1e252a", "foreground": "#e5eaed", "card": "#293138", "muted": "#303a42", "muted-foreground": "#bbc6ce", "border": "#687983", "primary": "#b0d2dc", "primary-foreground": "#1e252a", "secondary": "#36434c", "ring": "#b0d2dc", "viz-series-1": "#8dc4d1", "viz-series-2": "#e0b875", "viz-series-3": "#bcacd9", "viz-series-4": "#98cdb6", "viz-series-5": "#ddacb6", "viz-series-6": "#bdc6cf"}};let selected="warm";const frames=[...document.querySelectorAll('iframe')],select=document.querySelector('select');select.value=selected;function apply(){const tokens=themes[selected];for(const[k,v]of Object.entries(tokens))document.documentElement.style.setProperty('--'+k,v);for(const f of frames)f.contentWindow.postMessage({type:'sci-theme',name:selected,tokens},'*')}select.onchange=()=>{selected=select.value;apply()};for(const f of frames)f.addEventListener('load',apply);window.addEventListener('message',e=>{const f=frames.find(f=>f.contentWindow===e.source);if(!f||e.data?.type!=='sci-height')return;const h=Number(e.data.height);if(Number.isFinite(h)&&h>=100&&h<=20000)f.style.height=h+'px'});apply();</script></html>

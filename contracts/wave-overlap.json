@@ -1,5 +1,5 @@
 {
-  "version": "3.0",
+  "version": "3.2",
   "goal": "看懂两列脉冲相遇时位移相加，相消后仍继续传播。",
   "model": {
     "assumptions": "线性一维无色散波动方程的两个高斯行波；归一化位移；不是量子波函数或能量曲线。",
@@ -83,6 +83,17 @@
         "view"
       ],
       "feedback": "连续推进一次，到终点停止"
+    },
+    {
+      "id": "lower-blank-reset",
+      "kind": "observe",
+      "changes": [
+        "progress"
+      ],
+      "fixed": [
+        "pulse_type"
+      ],
+      "feedback": "下方操作区空白短按或根区域R键复位；进度恢复0，脉冲类型保持不变。控件、滚动、拖动、长按、多指和取消均不触发；轻暗反馈。"
     }
   ],
   "comparison": {

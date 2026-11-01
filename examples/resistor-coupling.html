@@ -1,0 +1,89 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>resistor-coupling</title><style>body{margin:auto;max-width:900px;font:18px/1.6 system-ui,sans-serif;padding:16px;background:var(--background);color:var(--foreground)}header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px}h1{font-size:22px;margin:0}select{font:inherit;min-height:44px;color:inherit;background:var(--background);border:1px solid var(--border);border-radius:10px}iframe{display:block;width:100%;height:700px;border:0;margin:0 0 24px}footer{font-size:15px}</style><header><h1>resistor-coupling</h1><label>主题 <select aria-label="主题"><option value="warm">暖纸</option><option value="paper">素纸</option><option value="dark">深色</option></select></label></header><main><iframe title="resistor-coupling" sandbox="allow-scripts" srcdoc="&lt;!doctype html&gt;&lt;html lang=&quot;zh-CN&quot;&gt;&lt;meta charset=&quot;utf-8&quot;&gt;&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1&quot;&gt;&lt;style&gt;/* Scoped inside each isolated example document. Themes supply semantics. */
+:root{font-family:system-ui,&quot;Noto Sans SC&quot;,sans-serif;font-size:18px;color:var(--foreground);background:var(--background);color-scheme:light}
+*{box-sizing:border-box}body{margin:0;padding:18px;line-height:1.55}h3{font-size:1.15rem;font-weight:600;margin:0 0 16px}p{margin:10px 0}svg,canvas{max-width:100%}button,input,select{font:inherit}button{min-height:44px;touch-action:manipulation}button:focus-visible,input:focus-visible{outline:2px solid var(--ring);outline-offset:3px}
+.btn{background:var(--secondary);color:var(--foreground);border:1px solid var(--border);border-radius:12px;padding:8px 14px;cursor:pointer}.btn-primary,button[aria-pressed=true],button[aria-selected=true]{background:var(--primary);color:var(--primary-foreground)}.btn-ghost{border-color:transparent;background:transparent}.form-range{accent-color:var(--primary);min-height:44px;max-width:100%}.form-label{display:block}.viz-row,.viz-controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.viz-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:16px}.card{background:var(--card);border-radius:16px;padding:16px}.text-small{font-size:.9rem}.text-muted{color:var(--muted-foreground)}.tabular-nums{font-variant-numeric:tabular-nums}.form-check{display:flex;align-items:center;gap:8px;min-height:44px}.form-check-input{width:22px;height:22px}.cursor-interaction{cursor:pointer}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}.nav{display:flex;gap:8px;flex-wrap:wrap}.nav-link{border:0;border-radius:12px;padding:10px;background:var(--secondary);color:var(--foreground)}.nav-link.active{background:var(--primary);color:var(--primary-foreground)}[hidden]{display:none!important}@media(max-width:360px){body{padding:10px}.btn{padding:8px 10px}}
+
+
+/* All operation panels sit below their linked plots. Geometry is stable. */
+[data-play]{width:48px;min-width:48px;height:48px;padding:0!important;display:grid;place-items:center;font-size:22px;line-height:1}
+[data-reset-area]{border-radius:16px;touch-action:pan-y;overflow-anchor:none}
+.sci-controls{position:relative;isolation:isolate;padding:16px 12px 28px;margin-top:16px}
+.sci-controls::before{content:&quot;&quot;;position:absolute;inset:0;border-radius:inherit;background:var(--foreground);opacity:0;z-index:-1;pointer-events:none;transition:opacity 150ms}
+.sci-controls.flash::before{opacity:.07}
+[data-feedback]{min-height:2.8em;margin:12px 0 0}
+.form-range{width:100%;min-width:0}output{font-variant-numeric:tabular-nums;white-space:nowrap}
+@media(prefers-reduced-motion:reduce){.sci-controls::before{transition:none}}
+:root{--background:#faf6e9;--foreground:#293c42;--card:#fffdf5;--muted:#eee9dc;--muted-foreground:#59676b;--border:#c9ccbf;--primary:#346c79;--primary-foreground:#ffffff;--secondary:#eeeee5;--ring:#346c79;--viz-series-1:#407e8a;--viz-series-2:#aa7739;--viz-series-3:#6e70a1;--viz-series-4:#52836c;--viz-series-5:#9b6877;--viz-series-6:#7b7461}&lt;/style&gt;&lt;body&gt;&lt;script&gt;/* Shared lower control-area behavior. Load before legacy fragments. */
+(()=&gt;{
+&#x27;use strict&#x27;;
+window.SciControls={
+play(button,running,rest=&#x27;播放&#x27;){
+ button.textContent=running?&#x27;Ⅱ&#x27;:&#x27;▶&#x27;;
+ button.setAttribute(&#x27;aria-label&#x27;,running?&#x27;暂停&#x27;:rest);
+ button.setAttribute(&#x27;aria-pressed&#x27;,String(running));
+},
+mount(root,{reset,pause=()=&gt;{},cancelGesture=()=&gt;{}}){
+ const area=root.querySelector(&#x27;[data-reset-area]&#x27;);
+ if(!area)throw Error(&#x27;Missing lower control area&#x27;);
+ const feedback=area.querySelector(&#x27;[data-feedback]&#x27;);
+ const prompt=feedback.textContent,abort=new AbortController(),signal=abort.signal;
+ let candidate=null,timer=0,flash=0;const pointers=new Set();
+ const ignore=t=&gt;t.closest(&#x27;button,input,select,textarea,a,label,summary,[role=&quot;button&quot;]&#x27;);
+ const clear=()=&gt;{candidate=null;};
+ const listen=(el,type,fn,options={})=&gt;el.addEventListener(type,fn,{...options,signal});
+ const restore=()=&gt;{cancelGesture();reset();clearTimeout(timer);clearTimeout(flash);area.classList.add(&#x27;flash&#x27;);feedback.textContent=&#x27;已复位 ✓&#x27;;flash=setTimeout(()=&gt;area.classList.remove(&#x27;flash&#x27;),180);timer=setTimeout(()=&gt;feedback.textContent=prompt,900);};
+ listen(document,&#x27;pointerdown&#x27;,e=&gt;{pointers.add(e.pointerId);if(pointers.size&gt;1){clear();cancelGesture();}},{capture:true});
+ listen(area,&#x27;pointerdown&#x27;,e=&gt;{if(e.button&gt;0||!e.isPrimary||pointers.size&gt;1||ignore(e.target)){clear();return;}candidate={id:e.pointerId,x:e.clientX,y:e.clientY,t:performance.now()};});
+ listen(document,&#x27;pointermove&#x27;,e=&gt;{if(candidate&amp;&amp;candidate.id===e.pointerId&amp;&amp;Math.hypot(e.clientX-candidate.x,e.clientY-candidate.y)&gt;8)clear();},{capture:true});
+ listen(document,&#x27;pointerup&#x27;,e=&gt;{const c=candidate;clear();pointers.delete(e.pointerId);if(c&amp;&amp;c.id===e.pointerId&amp;&amp;area.contains(e.target)&amp;&amp;!ignore(e.target)&amp;&amp;performance.now()-c.t&lt;500&amp;&amp;Math.hypot(e.clientX-c.x,e.clientY-c.y)&lt;=8)restore();},{capture:true});
+ listen(document,&#x27;pointercancel&#x27;,e=&gt;{pointers.delete(e.pointerId);clear();cancelGesture();},{capture:true});
+ listen(area,&#x27;pointerleave&#x27;,clear);listen(area,&#x27;lostpointercapture&#x27;,clear);
+ listen(document,&#x27;scroll&#x27;,clear,{capture:true});
+ listen(document,&#x27;visibilitychange&#x27;,()=&gt;{clear();pointers.clear();cancelGesture();if(document.hidden)pause();});
+ listen(window,&#x27;blur&#x27;,()=&gt;{clear();pointers.clear();cancelGesture();pause();});
+ listen(root,&#x27;keydown&#x27;,e=&gt;{if(e.key.toLowerCase()===&#x27;r&#x27;&amp;&amp;!e.ctrlKey&amp;&amp;!e.metaKey&amp;&amp;!e.altKey&amp;&amp;!e.target.closest(&#x27;input,textarea,select,[contenteditable=&quot;true&quot;]&#x27;)){e.preventDefault();restore();}});
+ root.tabIndex=0;
+ root.sciApi={reset:restore,pause,getState:()=&gt;({...root.dataset})};
+ root.sciDisposeControls=()=&gt;{abort.abort();clearTimeout(timer);clearTimeout(flash);pause();};
+ return root.sciApi;
+}
+};
+})();
+&lt;/script&gt;&lt;section id=&quot;resistor-coupling&quot;&gt;
+&lt;style&gt;
+#resistor-coupling{color:var(--foreground);padding:8px 0}#resistor-coupling svg{display:block;width:100%;height:170px;touch-action:pan-y}#resistor-coupling .result-chart{height:80px}#resistor-coupling svg text{font-size:18px;fill:var(--foreground)}#resistor-coupling .label{display:flex;justify-content:space-between;gap:12px;margin:12px 0 8px}#resistor-coupling .note{margin:10px 0;min-height:24px}
+&lt;/style&gt;
+&lt;h3&gt;电阻变大，发热一定更多吗？&lt;/h3&gt;
+
+&lt;svg role=&quot;img&quot; aria-label=&quot;拖动上方电阻改变阻值；下方操作区空白恢复3欧姆基准。&quot;&gt;&lt;/svg&gt;
+&lt;div data-result=&quot;current&quot;&gt;&lt;svg class=&quot;result-chart&quot; aria-hidden=&quot;true&quot;&gt;&lt;/svg&gt;&lt;/div&gt;
+&lt;div data-result=&quot;power&quot;&gt;&lt;svg class=&quot;result-chart&quot; aria-hidden=&quot;true&quot;&gt;&lt;/svg&gt;&lt;/div&gt;
+&lt;div class=&quot;text-small text-muted&quot;&gt;拖动电阻调节 · 虚影固定在 3 Ω&lt;/div&gt;
+&lt;div class=&quot;sci-controls&quot; data-reset-area&gt;
+&lt;div class=&quot;viz-controls&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn&quot; data-mode=&quot;voltage&quot; aria-pressed=&quot;true&quot;&gt;恒压 · 6 V&lt;/button&gt;&lt;button type=&quot;button&quot; class=&quot;btn&quot; data-mode=&quot;current&quot; aria-pressed=&quot;false&quot;&gt;恒流 · 2 A&lt;/button&gt;&lt;/div&gt;&lt;div class=&quot;label&quot;&gt;&lt;label for=&quot;resistance-value&quot;&gt;电阻 R&lt;/label&gt;&lt;output data-r&gt;6.0 Ω&lt;/output&gt;&lt;/div&gt;&lt;input id=&quot;resistance-value&quot; class=&quot;form-range&quot; type=&quot;range&quot; min=&quot;1.5&quot; max=&quot;12&quot; step=&quot;.1&quot; value=&quot;6&quot;&gt;
+&lt;div class=&quot;note&quot; data-note aria-live=&quot;polite&quot;&gt;&lt;/div&gt;
+&lt;div class=&quot;text-small&quot;&gt;浅色虚影：同一供电条件下 R = 3 Ω · 忽略温度反馈&lt;/div&gt;
+&lt;p class=&quot;text-small text-muted&quot; data-feedback role=&quot;status&quot;&gt;点操作区空白回到 3 Ω；保留供电方式&lt;/p&gt;&lt;/div&gt;
+&lt;script&gt;
+(()=&gt;{const root=document.getElementById(&#x27;resistor-coupling&#x27;),svg=root.querySelector(&#x27;svg&#x27;),range=root.querySelector(&#x27;input&#x27;);const NS=&#x27;http://www.w3.org/2000/svg&#x27;;let R=6,mode=&#x27;voltage&#x27;,drag=null,frame=0,target=svg;
+function cancel(){cancelAnimationFrame(frame);frame=0;}
+function reset(){cancel();R=3;draw();}
+function model(r){const I=mode===&#x27;voltage&#x27;?6/r:2,U=mode===&#x27;voltage&#x27;?6:2*r;return{I,U,P:U*I};}function add(tag,a,text){const e=document.createElementNS(NS,tag);Object.entries(a||{}).forEach(([k,v])=&gt;e.setAttribute(k,v));if(text!==undefined)e.textContent=text;target.append(e);return e;}
+function draw(){const w=Math.max(280,root.clientWidth),s=model(R),base=model(3),left=76,right=w-28,cx=(left+right)/2,len=24+(right-left-40)*(R-1.5)/10.5;target=svg;svg.setAttribute(&#x27;viewBox&#x27;,`0 0 ${w} 170`);svg.replaceChildren();add(&#x27;path&#x27;,{d:`M40 45 H${cx-len/2} M${cx+len/2} 45 H${right} V125 H40 V97 M40 53 V45`,fill:&#x27;none&#x27;,stroke:&#x27;var(--muted-foreground)&#x27;,&#x27;stroke-width&#x27;:1.5});add(&#x27;circle&#x27;,{cx:40,cy:75,r:22,fill:&#x27;var(--background)&#x27;,stroke:&#x27;var(--muted-foreground)&#x27;,&#x27;stroke-width&#x27;:1.5});add(&#x27;text&#x27;,{x:40,y:79,&#x27;text-anchor&#x27;:&#x27;middle&#x27;},mode===&#x27;voltage&#x27;?&#x27;U&#x27;:&#x27;I&#x27;);add(&#x27;rect&#x27;,{x:cx-len/2,y:31,width:len,height:28,rx:3,fill:&#x27;var(--muted)&#x27;,stroke:&#x27;var(--foreground)&#x27;,&#x27;stroke-width&#x27;:1.2});add(&#x27;text&#x27;,{x:cx,y:21,&#x27;text-anchor&#x27;:&#x27;middle&#x27;},&#x27;可调电阻&#x27;);add(&#x27;text&#x27;,{x:cx,y:81,&#x27;text-anchor&#x27;:&#x27;middle&#x27;},`R = ${R.toFixed(1)} Ω`);add(&#x27;text&#x27;,{x:20,y:157},`U = ${s.U.toFixed(1)} V`);add(&#x27;text&#x27;,{x:right,y:157,&#x27;text-anchor&#x27;:&#x27;end&#x27;},mode===&#x27;voltage&#x27;?&#x27;电压固定&#x27;:&#x27;电流固定&#x27;);
+function bar(y,title,value,baseline,max,unit,color){const a=20,b=w-20,span=b-a;add(&#x27;text&#x27;,{x:a,y},title);add(&#x27;text&#x27;,{x:b,y,&#x27;text-anchor&#x27;:&#x27;end&#x27;},value.toFixed(2)+&#x27; &#x27;+unit);add(&#x27;rect&#x27;,{x:a,y:y+12,width:span,height:26,rx:3,fill:&#x27;var(--muted)&#x27;});add(&#x27;rect&#x27;,{x:a,y:y+12,width:span*baseline/max,height:26,rx:3,fill:color,opacity:.17});add(&#x27;rect&#x27;,{x:a,y:y+18,width:span*value/max,height:14,rx:3,fill:color});add(&#x27;text&#x27;,{x:a,y:y+55},&#x27;0&#x27;);add(&#x27;text&#x27;,{x:b,y:y+55,&#x27;text-anchor&#x27;:&#x27;end&#x27;},max+&#x27; &#x27;+unit);}
+target=root.querySelector(&#x27;[data-result=&quot;current&quot;] svg&#x27;);target.setAttribute(&#x27;viewBox&#x27;,`0 0 ${w} 80`);target.replaceChildren();bar(16,&#x27;电流 I&#x27;,s.I,base.I,4,&#x27;A&#x27;,&#x27;var(--viz-series-1)&#x27;);target=root.querySelector(&#x27;[data-result=&quot;power&quot;] svg&#x27;);target.setAttribute(&#x27;viewBox&#x27;,`0 0 ${w} 80`);target.replaceChildren();bar(16,&#x27;发热功率 P&#x27;,s.P,base.P,48,&#x27;W&#x27;,&#x27;var(--viz-series-2)&#x27;);range.value=R;root.querySelector(&#x27;[data-r]&#x27;).textContent=R.toFixed(1)+&#x27; Ω&#x27;;const ratio=s.P/base.P;root.querySelector(&#x27;[data-note]&#x27;).textContent=R===3?&#x27;当前与 3 Ω 基准重合。&#x27;:`相对 3 Ω 基准：电阻 ${R&gt;3?&#x27;增大&#x27;:&#x27;减小&#x27;}，发热功率${ratio&gt;1?&#x27;增加&#x27;:&#x27;减少&#x27;} ${Math.abs((ratio-1)*100).toFixed(0)}%。`;root.dataset.mode=mode;root.dataset.resistance=R;root.dataset.current=s.I;root.dataset.voltage=s.U;root.dataset.power=s.P;}
+range.oninput=()=&gt;{cancel();R=+range.value;draw();};root.querySelectorAll(&#x27;[data-mode]&#x27;).forEach(b=&gt;b.onclick=()=&gt;{cancel();mode=b.dataset.mode;root.querySelectorAll(&#x27;[data-mode]&#x27;).forEach(c=&gt;c.setAttribute(&#x27;aria-pressed&#x27;,String(c===b)));draw();});
+svg.onpointerdown=e=&gt;{if(!e.isPrimary){drag=null;return;}const rect=svg.getBoundingClientRect(),y=(e.clientY-rect.top)*170/rect.height,x=e.clientX-rect.left;const w=Math.max(280,root.clientWidth),cx=(76+w-28)/2,len=24+(w-28-76-40)*(R-1.5)/10.5;const kind=y&gt;=22&amp;&amp;y&lt;=88&amp;&amp;Math.abs(x-cx)&lt;=len/2+18?&#x27;adjust&#x27;:null;if(!kind)return;cancel();drag={id:e.pointerId,x:e.clientX,y:e.clientY,r:R,kind,moved:false,start:performance.now()};svg.setPointerCapture(e.pointerId);};
+svg.onpointermove=e=&gt;{if(!drag||e.pointerId!==drag.id)return;if(Math.hypot(e.clientX-drag.x,e.clientY-drag.y)&gt;8)drag.moved=true;if(drag.kind===&#x27;adjust&#x27;){R=Math.max(1.5,Math.min(12,Math.round((drag.r+(e.clientX-drag.x)/svg.getBoundingClientRect().width*10.5)*10)/10));draw();}};
+svg.onpointerup=e=&gt;{const d=drag;drag=null;if(d&amp;&amp;e.pointerId===d.id&amp;&amp;d.kind===&#x27;reset&#x27;&amp;&amp;!d.moved&amp;&amp;performance.now()-d.start&lt;600)reset();};svg.onpointercancel=()=&gt;drag=null;svg.onlostpointercapture=()=&gt;drag=null;
+new ResizeObserver(draw).observe(root);draw();
+
+SciControls.mount(root,{reset:()=&gt;{reset();},pause:()=&gt;{cancel();},cancelGesture:()=&gt;{drag=null;}});
+})();
+&lt;/script&gt;
+&lt;/section&gt;
+
+&lt;script&gt;
+(()=&gt;{const allowed=[&quot;background&quot;, &quot;foreground&quot;, &quot;card&quot;, &quot;muted&quot;, &quot;muted-foreground&quot;, &quot;border&quot;, &quot;primary&quot;, &quot;primary-foreground&quot;, &quot;secondary&quot;, &quot;ring&quot;, &quot;viz-series-1&quot;, &quot;viz-series-2&quot;, &quot;viz-series-3&quot;, &quot;viz-series-4&quot;, &quot;viz-series-5&quot;, &quot;viz-series-6&quot;];window.addEventListener(&#x27;message&#x27;,e=&gt;{if(e.source!==parent||e.data?.type!==&#x27;sci-theme&#x27;)return;for(const[k,v]of Object.entries(e.data.tokens||{}))if(allowed.includes(k)&amp;&amp;/^#[0-9a-f]{6}$/i.test(v))document.documentElement.style.setProperty(&#x27;--&#x27;+k,v);document.documentElement.style.colorScheme=e.data.name===&#x27;dark&#x27;?&#x27;dark&#x27;:&#x27;light&#x27;});let last=0;const measure=()=&gt;{const h=Math.ceil(document.body.getBoundingClientRect().height);if(h!==last){last=h;parent.postMessage({type:&#x27;sci-height&#x27;,height:h},&#x27;*&#x27;)}};new ResizeObserver(measure).observe(document.body);measure();})();
+&lt;/script&gt;&lt;/body&gt;&lt;/html&gt;"></iframe></main><footer>各例独立操作与复位；切换主题保留当前状态。</footer><script>
+const themes={"warm": {"background": "#faf6e9", "foreground": "#293c42", "card": "#fffdf5", "muted": "#eee9dc", "muted-foreground": "#59676b", "border": "#c9ccbf", "primary": "#346c79", "primary-foreground": "#ffffff", "secondary": "#eeeee5", "ring": "#346c79", "viz-series-1": "#407e8a", "viz-series-2": "#aa7739", "viz-series-3": "#6e70a1", "viz-series-4": "#52836c", "viz-series-5": "#9b6877", "viz-series-6": "#7b7461"}, "paper": {"background": "#fcfcfb", "foreground": "#273944", "card": "#ffffff", "muted": "#edf0f2", "muted-foreground": "#5a6872", "border": "#c8d1d6", "primary": "#345d89", "primary-foreground": "#ffffff", "secondary": "#edf1f5", "ring": "#345d89", "viz-series-1": "#447eaf", "viz-series-2": "#9b742d", "viz-series-3": "#8a659b", "viz-series-4": "#3e887c", "viz-series-5": "#a66568", "viz-series-6": "#6d7581"}, "dark": {"background": "#1e252a", "foreground": "#e5eaed", "card": "#293138", "muted": "#303a42", "muted-foreground": "#bbc6ce", "border": "#687983", "primary": "#b0d2dc", "primary-foreground": "#1e252a", "secondary": "#36434c", "ring": "#b0d2dc", "viz-series-1": "#8dc4d1", "viz-series-2": "#e0b875", "viz-series-3": "#bcacd9", "viz-series-4": "#98cdb6", "viz-series-5": "#ddacb6", "viz-series-6": "#bdc6cf"}};let selected="warm";const frames=[...document.querySelectorAll('iframe')],select=document.querySelector('select');select.value=selected;function apply(){const tokens=themes[selected];for(const[k,v]of Object.entries(tokens))document.documentElement.style.setProperty('--'+k,v);for(const f of frames)f.contentWindow.postMessage({type:'sci-theme',name:selected,tokens},'*')}select.onchange=()=>{selected=select.value;apply()};for(const f of frames)f.addEventListener('load',apply);window.addEventListener('message',e=>{const f=frames.find(f=>f.contentWindow===e.source);if(!f||e.data?.type!=='sci-height')return;const h=Number(e.data.height);if(Number.isFinite(h)&&h>=100&&h<=20000)f.style.height=h+'px'});apply();</script></html>

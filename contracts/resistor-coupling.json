@@ -1,5 +1,5 @@
 {
-  "version": "3.0",
+  "version": "3.2",
   "goal": "同一个电阻变化在恒压与恒流下产生相反的发热趋势。",
   "model": {
     "assumptions": "理想欧姆电阻和无限顺应电源，温度不反馈到R；恒压6V或恒流2A；R=1.5至12Ω；I=U/R，P=UI，固定基准R=3Ω。",
@@ -67,18 +67,15 @@
       "feedback": "保持同一R，切换固定电压或固定电流；基准随控制条件重算"
     },
     {
-      "id": "reset-output",
-      "kind": "model",
+      "id": "lower-blank-reset",
+      "kind": "observe",
       "changes": [
-        "R",
-        "derived_values"
+        "resistance"
       ],
       "fixed": [
-        "supply_mode",
-        "source_setpoint",
-        "scales"
+        "supply_mode"
       ],
-      "feedback": "点按任一结果条，240毫秒恢复R=3Ω；滑动不触发，键盘可操作，减少动态效果偏好下立即恢复。"
+      "feedback": "下方操作区空白短按或根区域R键复位；恢复 R=3 Ω，供电方式保持不变。控件、滚动、拖动、长按、多指和取消均不触发；轻暗反馈。"
     }
   ],
   "comparison": {

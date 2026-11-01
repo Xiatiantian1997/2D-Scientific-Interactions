@@ -44,3 +44,4 @@ for(const kind of ['sampling-distribution','quantum-linked']){
  result.push(kind+': model, return path, two instances, init guard, guarded reset, lifecycle, SVG coordinates PASS');
 }
 console.log(result.join('\n'));
+

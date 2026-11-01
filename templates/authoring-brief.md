@@ -63,3 +63,4 @@
 - 采用的主题及不能随主题改变的含义：
 - 既有方法不足时，记录 need / reused / gap / proposal / departures / checks / outcome；不为普通换肤虚构例外。
 - 推荐做法偏离理由与替代验证：
+

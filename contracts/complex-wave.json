@@ -1,5 +1,5 @@
 {
-  "version": "3.0",
+  "version": "3.2",
   "goal": "从同一个复数箭头的两个投影理解实部与虚部，并看到余弦与正弦的来源。",
   "model": {
     "assumptions": "固定空间位置，模长归一化为1；相位θ为教学可控量，非真实空间转动或指定物理时间。a=cosθ,b=sinθ。",
@@ -81,6 +81,17 @@
         "space_position"
       ],
       "feedback": "播放相位变化，到360度停止，可随时暂停和拖动"
+    },
+    {
+      "id": "lower-blank-reset",
+      "kind": "observe",
+      "changes": [
+        "phase"
+      ],
+      "fixed": [
+        "amplitude"
+      ],
+      "feedback": "下方操作区空白短按或根区域R键复位；相位恢复45°。控件、滚动、拖动、长按、多指和取消均不触发；轻暗反馈。"
     }
   ],
   "comparison": {

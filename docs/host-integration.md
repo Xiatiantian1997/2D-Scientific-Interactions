@@ -32,3 +32,12 @@ python3 scripts/build_lesson.py fragments/sampling-distribution.html fragments/q
 - 真实浏览器主题切换、iframe高度、Android触屏、Notion宿主：待验证。
 
 “接入层已经实现”与“在用户设备通过”分别记录；缺设备验收不阻止审查源码，但不得宣称生产级全兼容。
+
+
+## 2D 旧例迁移（2026-11-01）
+
+11份旧例统一使用 `runtime/touch-controls.js`，需在片段脚本前加载；`build_lesson.py`自动注入。下方`data-reset-area`提供全区空白复位，具体reset/pause/cancelGesture由每个模型显式实现，不能推断公式符号并自动改参数。播放图标不依赖外部库。`root.sciApi`暴露reset/pause/getState供宿主和测试使用；新两例保留原接口。不是统一通用物理求解API。
+
+旧例仍有固定ID，请使用隔离iframe打包器，不要裸拼接。iframe删除会销毁其文档、计时器与监听；不要声称旧例已支持任意SPA原位卸载。`sciDisposeControls`只清理共享控制器，不能替代整个旧例的销毁。
+
+`python3 scripts/build_catalog.py`从片段重新生成13份独立运行页及同页检查页，避免源码修了、分发副本没变。主题切换通过令牌消息完成，不重建实例、不改变模型数据。

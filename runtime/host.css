@@ -2,3 +2,14 @@
 :root{font-family:system-ui,"Noto Sans SC",sans-serif;font-size:18px;color:var(--foreground);background:var(--background);color-scheme:light}
 *{box-sizing:border-box}body{margin:0;padding:18px;line-height:1.55}h3{font-size:1.15rem;font-weight:600;margin:0 0 16px}p{margin:10px 0}svg,canvas{max-width:100%}button,input,select{font:inherit}button{min-height:44px;touch-action:manipulation}button:focus-visible,input:focus-visible{outline:2px solid var(--ring);outline-offset:3px}
 .btn{background:var(--secondary);color:var(--foreground);border:1px solid var(--border);border-radius:12px;padding:8px 14px;cursor:pointer}.btn-primary,button[aria-pressed=true],button[aria-selected=true]{background:var(--primary);color:var(--primary-foreground)}.btn-ghost{border-color:transparent;background:transparent}.form-range{accent-color:var(--primary);min-height:44px;max-width:100%}.form-label{display:block}.viz-row,.viz-controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.viz-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:16px}.card{background:var(--card);border-radius:16px;padding:16px}.text-small{font-size:.9rem}.text-muted{color:var(--muted-foreground)}.tabular-nums{font-variant-numeric:tabular-nums}.form-check{display:flex;align-items:center;gap:8px;min-height:44px}.form-check-input{width:22px;height:22px}.cursor-interaction{cursor:pointer}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}.nav{display:flex;gap:8px;flex-wrap:wrap}.nav-link{border:0;border-radius:12px;padding:10px;background:var(--secondary);color:var(--foreground)}.nav-link.active{background:var(--primary);color:var(--primary-foreground)}[hidden]{display:none!important}@media(max-width:360px){body{padding:10px}.btn{padding:8px 10px}}
+
+
+/* All operation panels sit below their linked plots. Geometry is stable. */
+[data-play]{width:48px;min-width:48px;height:48px;padding:0!important;display:grid;place-items:center;font-size:22px;line-height:1}
+[data-reset-area]{border-radius:16px;touch-action:pan-y;overflow-anchor:none}
+.sci-controls{position:relative;isolation:isolate;padding:16px 12px 28px;margin-top:16px}
+.sci-controls::before{content:"";position:absolute;inset:0;border-radius:inherit;background:var(--foreground);opacity:0;z-index:-1;pointer-events:none;transition:opacity 150ms}
+.sci-controls.flash::before{opacity:.07}
+[data-feedback]{min-height:2.8em;margin:12px 0 0}
+.form-range{width:100%;min-width:0}output{font-variant-numeric:tabular-nums;white-space:nowrap}
+@media(prefers-reduced-motion:reduce){.sci-controls::before{transition:none}}

@@ -1,5 +1,5 @@
 {
-  "version": "3.0",
+  "version": "3.2",
   "goal": "同一位置对应势能图的斜率、力与实际直线运动，曲线不是轨道。",
   "model": {
     "assumptions": "一维理想谐振子，弹性系数1N/m、质量1kg、无阻尼；U=x²/2，F=−x，拖动为外部放置并清零速度；释放后精确x=Acos(t),v=−Asin(t)，演示一个周期。",
@@ -84,6 +84,17 @@
         "energy"
       ],
       "feedback": "暂停保持当前状态，继续从当前时刻恢复"
+    },
+    {
+      "id": "lower-blank-reset",
+      "kind": "observe",
+      "changes": [
+        "position_and_velocity"
+      ],
+      "fixed": [
+        "mass_and_stiffness"
+      ],
+      "feedback": "下方操作区空白短按或根区域R键复位；恢复x=2 m、v=0。控件、滚动、拖动、长按、多指和取消均不触发；轻暗反馈。"
     }
   ],
   "comparison": {
