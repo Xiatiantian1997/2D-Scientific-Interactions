@@ -55,6 +55,19 @@
         "particle_count"
       ],
       "feedback": "回到开始或开启正面投影虚影"
+    },
+    {
+      "id": "empty-tap-reset",
+      "kind": "model",
+      "changes": [
+        "time",
+        "observation_window"
+      ],
+      "fixed": [
+        "particle_identity",
+        "particle_count"
+      ],
+      "feedback": "图内空白短按复位；大于8px移动、多指、取消事件均不触发。键盘入口在同一操作区的折叠调节中。"
     }
   ],
   "comparison": {
@@ -89,7 +102,7 @@
     {
       "area": "interaction",
       "status": "tested",
-      "evidence": "模拟DOM初始化、时间或角度边界输入，无NaN；不是设备测试"
+      "evidence": "模拟DOM验证空白复位、拖动/滚动取消、多指不误复位；未完成真实设备手感测试。"
     },
     {
       "area": "layout",
