@@ -1,0 +1,115 @@
+{
+  "version": "3.0",
+  "goal": "同一个电阻变化在恒压与恒流下产生相反的发热趋势。",
+  "model": {
+    "assumptions": "理想欧姆电阻和无限顺应电源，温度不反馈到R；恒压6V或恒流2A；R=1.5至12Ω；I=U/R，P=UI，固定基准R=3Ω。",
+    "evidence": "欧姆定律与焦耳定律；或经典保守力F=−dU/dx与谐振子解析解。模型条件在页面注明。"
+  },
+  "states": [
+    {
+      "id": "voltage",
+      "meaning": "voltage"
+    },
+    {
+      "id": "current",
+      "meaning": "current"
+    }
+  ],
+  "encodings": [
+    {
+      "scope": "resistor-coupling",
+      "channel": "mark",
+      "token": "current",
+      "role": "quantity",
+      "meaning": "电流及电流条"
+    },
+    {
+      "scope": "resistor-coupling",
+      "channel": "mark",
+      "token": "power",
+      "role": "quantity",
+      "meaning": "功率及功率条"
+    },
+    {
+      "scope": "resistor-coupling",
+      "channel": "mark",
+      "token": "ghost",
+      "role": "observer",
+      "meaning": "当前供电模式下R=3Ω的基准"
+    }
+  ],
+  "actions": [
+    {
+      "id": "resistance",
+      "kind": "model",
+      "changes": [
+        "R",
+        "derived_values"
+      ],
+      "fixed": [
+        "supply_mode",
+        "source_setpoint"
+      ],
+      "feedback": "拖动改变R，电流电压功率按约束更新"
+    },
+    {
+      "id": "mode",
+      "kind": "compare",
+      "changes": [
+        "supply_mode",
+        "source_setpoint",
+        "derived_values"
+      ],
+      "fixed": [
+        "R",
+        "scales"
+      ],
+      "feedback": "保持同一R，切换固定电压或固定电流；基准随控制条件重算"
+    }
+  ],
+  "comparison": {
+    "required": true,
+    "baseline": "voltage",
+    "target": "current",
+    "action": "mode",
+    "fixed": [
+      "R",
+      "scales"
+    ],
+    "placement": "图上方两个供电条件按钮"
+  },
+  "preserved": [
+    {
+      "feature": "独立交互、直接拖动、必要比较",
+      "status": "retained",
+      "evidence": "两个独立单元；电路保留同位置基准虚影，势能多图使用同一x。"
+    }
+  ],
+  "checks": [
+    {
+      "area": "model",
+      "status": "tested",
+      "evidence": "欧姆/焦耳关系及恒压恒流极值，或谐振子能量守恒、中心非零速度，已计算核对。"
+    },
+    {
+      "area": "semantics",
+      "status": "reviewed",
+      "evidence": "源码检查基准随条件重算，或势能图与实际直线轨道明确分开；同一状态派生表示。"
+    },
+    {
+      "area": "interaction",
+      "status": "tested",
+      "evidence": "模拟DOM检查输入、条件切换/暂停、拖动取消或重新放置；不等于浏览器实测。"
+    },
+    {
+      "area": "layout",
+      "status": "pending",
+      "evidence": "实际浏览器排版和手机触摸未完成验证。"
+    },
+    {
+      "area": "host",
+      "status": "pending",
+      "evidence": "实际浏览器排版和手机触摸未完成验证。"
+    }
+  ]
+}
