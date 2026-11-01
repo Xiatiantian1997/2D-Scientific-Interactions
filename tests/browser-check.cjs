@@ -8,7 +8,7 @@ const base=path.resolve(__dirname,'..');
  const themes=JSON.parse(fs.readFileSync(path.join(base,'evidence/themes.json'),'utf8'));
  for(const width of [320,360,736]){
   const page=await browser.newPage({viewport:{width,height:1000},deviceScaleFactor:1});page.on('pageerror',e=>errors.push(e.message));
-  for(const name of names){
+  for(const name of names){try{
    const src=fs.readFileSync(path.join(base,'fragments',name),'utf8');
    const tokens=Object.entries(themes.warm).map(([k,v])=>`--${k}:${v}`).join(';');
    await page.setContent(`<style>${css}:root{${tokens}}</style><script>${helper}</script>${src}`);await page.waitForTimeout(80);
@@ -68,6 +68,7 @@ const base=path.resolve(__dirname,'..');
    await page.evaluate(tokens=>{for(const[k,v]of Object.entries(tokens))document.documentElement.style.setProperty('--'+k,v)},themes.warm);
    await page.screenshot({path:path.join(base,'evidence',`${name}-${width}.png`),fullPage:true});
    console.log('PASS behavior',name,width);
+   }catch(e){errors.push(name+' '+width+': '+e.message);console.error('CASE FAIL',name,width,e.message);}
   }
   await page.close();
  }
@@ -78,5 +79,5 @@ const base=path.resolve(__dirname,'..');
  const old=await frame.locator('section').evaluate(e=>({...e.dataset}));await page.locator('select').selectOption('dark');await page.waitForTimeout(50);
  assert.deepEqual(await frame.locator('section').evaluate(e=>({...e.dataset})),old,'theme preserves state');
  await browser.close();fs.writeFileSync(path.join(base,'evidence/browser-report.json'),JSON.stringify({errors,findings},null,2));
- assert.deepEqual(errors,[],'runtime errors');assert.deepEqual(findings,[],'layout review findings');console.log('PASS all browser checks');
+ console.log('LAYOUT FINDINGS',JSON.stringify(findings));console.log('BEHAVIOR FINDINGS',JSON.stringify(errors));assert.deepEqual(errors,[],'runtime errors');assert.deepEqual(findings,[],'layout review findings');console.log('PASS all browser checks');
 })().catch(e=>{console.error(e);process.exit(1)});
