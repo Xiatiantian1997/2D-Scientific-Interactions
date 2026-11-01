@@ -43,7 +43,7 @@
         "exchange_coefficient",
         "volumes"
       ],
-      "feedback": "横向拖动观察时间，点图内顶部空白回到初始分布；单次播放到终点。"
+      "feedback": "横向拖动观察时间，点击滑条上方时间读数回到初始分布并暂停；单次播放到终点。"
     },
     {
       "id": "compare",
@@ -55,7 +55,7 @@
         "scale",
         "layout"
       ],
-      "feedback": "点击已标明的图内区域恢复初始状态；不新增复位按钮。"
+      "feedback": "点击滑条上方标题与读数区域恢复初始状态，短暂高亮并显示已复位；图中短按不复位。"
     }
   ],
   "comparison": {
@@ -67,13 +67,18 @@
       "scale",
       "layout"
     ],
-    "placement": "图内直接操作及同位置虚影基准"
+    "placement": "滑条上方标题与读数复位，同位置虚影保留"
   },
   "preserved": [
     {
       "feature": "直接触摸、集中操作、固定布局、两实验独立",
       "status": "retained",
       "evidence": "每个独立片段；控件在图下方，播放暂停图标固定槽位；拖动不触发点击复位。"
+    },
+    {
+      "feature": "复位入口集中到参数读数；播放置于滑条左侧",
+      "status": "changed_with_reason",
+      "evidence": "用户指出图内空白入口难找且与操作区分离；读数本身是原生可点击控件，有可见提示及短暂反馈。"
     }
   ],
   "checks": [
@@ -90,7 +95,7 @@
     {
       "area": "interaction",
       "status": "tested",
-      "evidence": "模拟DOM执行脚本，测试滑条、拖动、点击复位；非实机测试。"
+      "evidence": "模拟DOM测试读数点击复位、图内短按不复位、拖动和方程；未进行实机测试。"
     },
     {
       "area": "layout",
