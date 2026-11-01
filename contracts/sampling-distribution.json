@@ -1,0 +1,153 @@
+{
+  "version": "3.0",
+  "goal": "单次抽样随机、经验频率随样本积累接近固定总体；更多样本不使个体分布收窄。",
+  "model": {
+    "assumptions": "教学离散误差 X=B-3 nm，B~Binomial(6,0.5)，均值0、方差1.5。不是实际仪器校准数据。 固定伪随机序列最多1000项，样本量回退仅取同一序列前缀；换一批才更换序列。",
+    "evidence": "二项分布六次独立伯努利求和，概率为[1,6,15,20,15,6,1]/64，公式直接可枚举验证。 https://online.stat.psu.edu/stat500/Lesson04"
+  },
+  "states": [
+    {
+      "id": "initial",
+      "meaning": "同批第1项样本"
+    },
+    {
+      "id": "accumulating",
+      "meaning": "accumulating"
+    },
+    {
+      "id": "paused",
+      "meaning": "paused"
+    },
+    {
+      "id": "complete",
+      "meaning": "complete"
+    },
+    {
+      "id": "new-batch",
+      "meaning": "new-batch"
+    }
+  ],
+  "encodings": [
+    {
+      "scope": "lesson",
+      "channel": "bars",
+      "token": "series-1",
+      "role": "quantity",
+      "meaning": "经验相对频率"
+    },
+    {
+      "scope": "lesson",
+      "channel": "reference",
+      "token": "neutral-outline",
+      "role": "quantity",
+      "meaning": "固定总体理论频率"
+    },
+    {
+      "scope": "lesson",
+      "channel": "dot",
+      "token": "series-2",
+      "role": "attention",
+      "meaning": "当前最后一项样本对应的箱"
+    }
+  ],
+  "actions": [
+    {
+      "id": "scrub",
+      "kind": "construct",
+      "changes": [
+        "sample_count"
+      ],
+      "fixed": [
+        "samples",
+        "population",
+        "axes"
+      ],
+      "feedback": "直方图、均值同步更新"
+    },
+    {
+      "id": "batch",
+      "kind": "model",
+      "changes": [
+        "samples"
+      ],
+      "fixed": [
+        "population",
+        "sample_count",
+        "axes"
+      ],
+      "feedback": "换一批独立伪随机抽样"
+    },
+    {
+      "id": "play",
+      "kind": "construct",
+      "changes": [
+        "sample_count"
+      ],
+      "fixed": [
+        "samples",
+        "population",
+        "axes"
+      ],
+      "feedback": "有限播放至1000，不冒充物理时间"
+    },
+    {
+      "id": "reset",
+      "kind": "compare",
+      "changes": [
+        "sample_count",
+        "playing"
+      ],
+      "fixed": [
+        "samples",
+        "population",
+        "axes"
+      ],
+      "feedback": "回到同一批样本的第1项"
+    }
+  ],
+  "comparison": {
+    "required": true,
+    "baseline": "initial",
+    "target": "accumulating",
+    "action": "reset",
+    "fixed": [
+      "model conditions",
+      "axes"
+    ],
+    "placement": "图下整片操作空白，R键等价复位"
+  },
+  "preserved": [
+    {
+      "feature": "操作集中图下、空白短按复位且防误触、主题与语义分离",
+      "status": "retained",
+      "evidence": "本例实现并单独验证，不宣称旧例已迁移"
+    }
+  ],
+  "checks": [
+    {
+      "area": "model",
+      "status": "tested",
+      "evidence": "tests/check-additions.cjs：计数、二项枚举、定态归一化和n²能量，已执行。"
+    },
+    {
+      "area": "semantics",
+      "status": "reviewed",
+      "evidence": "逐状态源码与实际SVG审查，理论线与样本柱、概率密度与能级分别标注。"
+    },
+    {
+      "area": "interaction",
+      "status": "tested",
+      "evidence": "tests/check-additions.cjs：实际片段JS的模拟DOM测试；同批回看、2实例、防误触、后台停止和清理，非浏览器实测。"
+    },
+    {
+      "area": "layout",
+      "status": "reviewed",
+      "evidence": "320/360/736 SVG实际渲染、坐标检查；缺中文字体，完整浏览器排版待测。"
+    },
+    {
+      "area": "host",
+      "status": "pending",
+      "evidence": "Android/Pad7/Notion真实宿主待验证。"
+    }
+  ]
+}
