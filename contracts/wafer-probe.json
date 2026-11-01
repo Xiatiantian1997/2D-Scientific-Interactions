@@ -1,0 +1,105 @@
+{
+  "version": "3.0",
+  "goal": "局部测量不能代表整片：移动探针只读取同一个固定厚度场。",
+  "model": {
+    "assumptions": "固定合成厚度场h=100+18exp(-((x-.42)^2+(y+.25)^2)/.08)+4(x²+y²)，x,y为晶圆半径归一化坐标。300mm圆片，非实测；调坐标不改变薄膜。",
+    "evidence": "SEMI MF1618公开摘要关于空间测点与均匀性：https://store-us.semi.org/products/mf161800-semi-mf1618-practice-for-determination-of-uniformity-of-thin-films-on-silicon-wafers"
+  },
+  "states": [
+    {
+      "id": "baseline",
+      "meaning": "中心基准位置"
+    },
+    {
+      "id": "adjusted",
+      "meaning": "移动后的观察位置或参数组合"
+    }
+  ],
+  "encodings": [
+    {
+      "scope": "wafer-probe",
+      "channel": "visual-token",
+      "token": "series-1",
+      "role": "quantity",
+      "meaning": "厚度，单色深浅对应100–122nm"
+    },
+    {
+      "scope": "wafer-probe",
+      "channel": "visual-token",
+      "token": "probe-ring",
+      "role": "observer",
+      "meaning": "当前测点，非材料缺陷"
+    }
+  ],
+  "actions": [
+    {
+      "id": "move",
+      "kind": "inspect",
+      "changes": [
+        "probe_position"
+      ],
+      "fixed": [
+        "thickness_field",
+        "color_scale"
+      ],
+      "feedback": "拖动图中探针或参数点，关联读数更新；下方滑条支持单轴和键盘操作。"
+    },
+    {
+      "id": "reset",
+      "kind": "compare",
+      "changes": [
+        "probe_position"
+      ],
+      "fixed": [
+        "thickness_field",
+        "color_scale"
+      ],
+      "feedback": "下方整片空白短按回到中心，轻暗反馈。控件、滚动、多指、取消不触发。R键等价复位。"
+    }
+  ],
+  "comparison": {
+    "required": true,
+    "baseline": "baseline",
+    "target": "adjusted",
+    "action": "reset",
+    "fixed": [
+      "thickness_field",
+      "color_scale"
+    ],
+    "placement": "原位置观察，中心基准与整片操作区复位"
+  },
+  "preserved": [
+    {
+      "feature": "普通文字读数、大面积空白复位、集中操作、固定色彩含义",
+      "status": "retained",
+      "evidence": "不把参数读数做成按钮；只有参数滑条为原生控件。"
+    }
+  ],
+  "checks": [
+    {
+      "area": "model",
+      "status": "tested",
+      "evidence": "解析响应与边界断言通过；晶圆探针始终位于圆内，往返同点读数相同；工艺窗口网格点分类与不等式一致。"
+    },
+    {
+      "area": "semantics",
+      "status": "reviewed",
+      "evidence": "测厚颜色只表达厚度，探针只读；窗口颜色表达合格交集，边界区分两项要求；普通读数无按钮外观。"
+    },
+    {
+      "area": "interaction",
+      "status": "tested",
+      "evidence": "模拟DOM执行滑条、空白复位、控件排除、拖动、多指、长按及取消；不是实机测试。"
+    },
+    {
+      "area": "layout",
+      "status": "tested",
+      "evidence": "实际脚本生成320/736像素SVG，经librsvg渲染；查看320像素绘图并修复厚度图网格接缝。测试环境中文字体不全，完整宿主文字排版未验。"
+    },
+    {
+      "area": "host",
+      "status": "pending",
+      "evidence": "真实手机/平板宿主布局与多指手感尚未实测。"
+    }
+  ]
+}
