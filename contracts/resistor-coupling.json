@@ -68,7 +68,7 @@
     },
     {
       "id": "lower-blank-reset",
-      "kind": "observe",
+      "kind": "model",
       "changes": [
         "resistance"
       ],

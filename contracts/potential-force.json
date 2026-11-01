@@ -87,7 +87,7 @@
     },
     {
       "id": "lower-blank-reset",
-      "kind": "observe",
+      "kind": "model",
       "changes": [
         "position_and_velocity"
       ],

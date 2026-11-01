@@ -29,7 +29,7 @@ python3 scripts/build_lesson.py fragments/sampling-distribution.html fragments/q
 - `python3 tests/test_packaging.py`：三主题、重复实例隔离、转义、消息来源检查，已执行。
 - `node tests/check-additions.cjs`：两个新例的实际脚本在模拟DOM执行，已执行。
 - SVG实际渲染：已执行；环境中文字体不全。
-- 真实浏览器主题切换、iframe高度、Android触屏、Notion宿主：待验证。
+- Chromium主题保留状态、同页重复旧例隔离、三宽度布局已通过；Android触屏、Notion宿主仍待验证。
 
 “接入层已经实现”与“在用户设备通过”分别记录；缺设备验收不阻止审查源码，但不得宣称生产级全兼容。
 

@@ -44,7 +44,7 @@
 
 已执行：两例模型边界、采样计数、精确二项概率枚举、归一化、n²能量；同批回退、多实例隔离、防重复初始化、复位防误触、后台暂停、有限播放、实例销毁清理；320/360/736宽度SVG坐标检查。通过librsvg实际渲染了SVG；环境缺中文字体，不能据此声称中文标签像素级检查通过。
 
-待验证：真实浏览器完整布局、主题切换、中文字体、Android指针事件/手势、Notion宿主及小米Pad7真机。测试脚本不模拟全部浏览器行为。
+后续Chromium已补测完整布局、主题切换、中文字体与同页实例；见迁移记录及Actions结果。仍待验证：Android指针事件/手势、Notion宿主及小米Pad7真机。自动检查不覆盖全部设备行为。
 
 片段依赖宿主主题变量和btn/form-range等控件样式，源码不是独立网页。新例采用data-sci-example根节点独立初始化；删除实例前调用root.sciDestroy()。sciDestroy负责计时器、ResizeObserver和文档事件清理，宿主仍需移除DOM节点。只是这两例的接入约定，不是全仓统一API。
 
@@ -58,3 +58,5 @@
 ## 2026-11-01 更新（覆盖上文旧的待迁移状态）
 
 11份旧例的字号、操作区、播放符号、空白复位与后台暂停已迁移；具体范围见[2D迁移记录](2d-migration.md)。旧的“12px”“wave-speeds控件夹在图间”已修复。所有13例可由同一打包器生成独立页并混排；旧例固定ID采用iframe隔离解决，未改成裸DOM组件。新增真实浏览器CI，结果以运行记录为准，Pad7/Notion真机继续单独列待验收。
+
+浏览器验收记录：[https://github.com/Xiatiantian1997/2d-scientific-interactions/actions/runs/41278458391](https://github.com/Xiatiantian1997/2d-scientific-interactions/actions/runs/41278458391)，13例、3宽度及3主题检查通过；见迁移记录中的实际测试范围。
