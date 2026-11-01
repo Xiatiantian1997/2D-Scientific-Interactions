@@ -3,7 +3,7 @@
   "goal": "同一个电阻变化在恒压与恒流下产生相反的发热趋势。",
   "model": {
     "assumptions": "理想欧姆电阻和无限顺应电源，温度不反馈到R；恒压6V或恒流2A；R=1.5至12Ω；I=U/R，P=UI，固定基准R=3Ω。",
-    "evidence": "欧姆定律与焦耳定律；或经典保守力F=−dU/dx与谐振子解析解。模型条件在页面注明。"
+    "evidence": "欧姆定律I=U/R及焦耳定律P=UI。"
   },
   "states": [
     {
@@ -65,6 +65,20 @@
         "scales"
       ],
       "feedback": "保持同一R，切换固定电压或固定电流；基准随控制条件重算"
+    },
+    {
+      "id": "reset-output",
+      "kind": "model",
+      "changes": [
+        "R",
+        "derived_values"
+      ],
+      "fixed": [
+        "supply_mode",
+        "source_setpoint",
+        "scales"
+      ],
+      "feedback": "点按任一结果条，240毫秒恢复R=3Ω；滑动不触发，键盘可操作，减少动态效果偏好下立即恢复。"
     }
   ],
   "comparison": {
@@ -82,7 +96,7 @@
     {
       "feature": "独立交互、直接拖动、必要比较",
       "status": "retained",
-      "evidence": "两个独立单元；电路保留同位置基准虚影，势能多图使用同一x。"
+      "evidence": "保留供电模式切换、原位基准虚影、滑条与电阻直接拖动。"
     }
   ],
   "checks": [
@@ -99,7 +113,7 @@
     {
       "area": "interaction",
       "status": "tested",
-      "evidence": "模拟DOM检查输入、条件切换/暂停、拖动取消或重新放置；不等于浏览器实测。"
+      "evidence": "模拟DOM验证两种供电条件保留、复位联动、键盘点按、滑动抑制和手动输入取消动画；不是浏览器实测。"
     },
     {
       "area": "layout",
