@@ -1,0 +1,126 @@
+{
+  "version": "3.0",
+  "goal": "同一个势阱定态的概率密度和能级是同一模型的不同表示，不能独立调节。",
+  "model": {
+    "assumptions": "一维无限深势阱，0<x<L，固定质量与宽度，选n=1..4。 q=x/L，rho*L=2sin²(nπq)，E/E1=n²；概率密度静止，不是粒子运动轨迹。 切换n是选择不同定态的比较，非模拟跃迁过程；能级图横向线长不表示空间范围。",
+    "evidence": "https://openstax.org/books/university-physics-volume-3/pages/7-4-the-quantum-particle-in-a-box"
+  },
+  "states": [
+    {
+      "id": "initial",
+      "meaning": "n=1基态"
+    },
+    {
+      "id": "n2",
+      "meaning": "n2"
+    },
+    {
+      "id": "n3",
+      "meaning": "n3"
+    },
+    {
+      "id": "n4",
+      "meaning": "n4"
+    }
+  ],
+  "encodings": [
+    {
+      "scope": "lesson",
+      "channel": "curve",
+      "token": "series-1",
+      "role": "quantity",
+      "meaning": "所选定态的位置概率密度"
+    },
+    {
+      "scope": "lesson",
+      "channel": "level",
+      "token": "series-1",
+      "role": "attention",
+      "meaning": "同一个所选定态的能量"
+    },
+    {
+      "scope": "lesson",
+      "channel": "other-level",
+      "token": "neutral",
+      "role": "quantity",
+      "meaning": "其余允许能级"
+    }
+  ],
+  "actions": [
+    {
+      "id": "select",
+      "kind": "model",
+      "changes": [
+        "n",
+        "density",
+        "energy"
+      ],
+      "fixed": [
+        "L",
+        "mass",
+        "axes"
+      ],
+      "feedback": "两图与读数同步切换到合法定态"
+    },
+    {
+      "id": "reset",
+      "kind": "compare",
+      "changes": [
+        "n",
+        "density",
+        "energy"
+      ],
+      "fixed": [
+        "L",
+        "mass",
+        "axes"
+      ],
+      "feedback": "恢复n=1基准"
+    }
+  ],
+  "comparison": {
+    "required": true,
+    "baseline": "initial",
+    "target": "n2",
+    "action": "reset",
+    "fixed": [
+      "model conditions",
+      "axes"
+    ],
+    "placement": "图下整片操作空白，R键等价复位"
+  },
+  "preserved": [
+    {
+      "feature": "操作集中图下、空白短按复位且防误触、主题与语义分离",
+      "status": "retained",
+      "evidence": "本例实现并单独验证，不宣称旧例已迁移"
+    }
+  ],
+  "checks": [
+    {
+      "area": "model",
+      "status": "tested",
+      "evidence": "tests/check-additions.cjs：计数、二项枚举、定态归一化和n²能量，已执行。"
+    },
+    {
+      "area": "semantics",
+      "status": "reviewed",
+      "evidence": "逐状态源码与实际SVG审查，理论线与样本柱、概率密度与能级分别标注。"
+    },
+    {
+      "area": "interaction",
+      "status": "tested",
+      "evidence": "tests/check-additions.cjs：实际片段JS的模拟DOM测试；同批回看、2实例、防误触、后台停止和清理，非浏览器实测。"
+    },
+    {
+      "area": "layout",
+      "status": "reviewed",
+      "evidence": "320/360/736 SVG实际渲染、坐标检查；缺中文字体，完整浏览器排版待测。"
+    },
+    {
+      "area": "host",
+      "status": "pending",
+      "evidence": "Android/Pad7/Notion真实宿主待验证。"
+    }
+  ]
+}
