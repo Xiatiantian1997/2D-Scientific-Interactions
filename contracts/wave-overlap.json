@@ -1,0 +1,134 @@
+{
+  "version": "3.0",
+  "goal": "看懂两列脉冲相遇时位移相加，相消后仍继续传播。",
+  "model": {
+    "assumptions": "线性一维无色散波动方程的两个高斯行波；归一化位移；不是量子波函数或能量曲线。",
+    "evidence": "解析模型 u=f(x-ct)+g(x+ct)，满足线性波动方程；相消是瞬时位移抵消。"
+  },
+  "states": [
+    {
+      "id": "same",
+      "meaning": "基准情景"
+    },
+    {
+      "id": "opposite",
+      "meaning": "对照情景"
+    },
+    {
+      "id": "playing",
+      "meaning": "连续推进，非循环"
+    },
+    {
+      "id": "paused",
+      "meaning": "停留并回看"
+    }
+  ],
+  "encodings": [
+    {
+      "scope": "wave-overlap",
+      "channel": "mark",
+      "token": "solid",
+      "role": "quantity",
+      "meaning": "总位移"
+    },
+    {
+      "scope": "wave-overlap",
+      "channel": "mark",
+      "token": "dash",
+      "role": "quantity",
+      "meaning": "右行分量"
+    },
+    {
+      "scope": "wave-overlap",
+      "channel": "mark",
+      "token": "dot",
+      "role": "quantity",
+      "meaning": "左行分量"
+    }
+  ],
+  "actions": [
+    {
+      "id": "compare",
+      "kind": "compare",
+      "changes": [
+        "scenario"
+      ],
+      "fixed": [
+        "progress",
+        "view",
+        "scale"
+      ],
+      "feedback": "原位切换情景，暂停播放，保留进度"
+    },
+    {
+      "id": "scrub",
+      "kind": "time",
+      "changes": [
+        "progress"
+      ],
+      "fixed": [
+        "scenario",
+        "view"
+      ],
+      "feedback": "图中横拖或进度条回看；拖动暂停"
+    },
+    {
+      "id": "play",
+      "kind": "time",
+      "changes": [
+        "progress"
+      ],
+      "fixed": [
+        "scenario",
+        "view"
+      ],
+      "feedback": "连续推进一次，到终点停止"
+    }
+  ],
+  "comparison": {
+    "required": true,
+    "baseline": "same",
+    "target": "opposite",
+    "action": "compare",
+    "fixed": [
+      "progress",
+      "view",
+      "scale"
+    ],
+    "placement": "图上方情景按钮"
+  },
+  "preserved": [
+    {
+      "feature": "独立讲解、原位比较、连续变化",
+      "status": "retained",
+      "evidence": "两个独立预览，不合并无关页签"
+    }
+  ],
+  "checks": [
+    {
+      "area": "model",
+      "status": "reviewed",
+      "evidence": "解析叠加极值或封口后内部厚度冻结已检查；视觉含义经源码审查。"
+    },
+    {
+      "area": "semantics",
+      "status": "reviewed",
+      "evidence": "解析叠加极值或封口后内部厚度冻结已检查；视觉含义经源码审查。"
+    },
+    {
+      "area": "interaction",
+      "status": "tested",
+      "evidence": "check.cjs 模拟 DOM 执行进度、原位切换、拖动方向、pointercancel 与播放；不等于浏览器或真机测试。"
+    },
+    {
+      "area": "layout",
+      "status": "pending",
+      "evidence": "浏览器预览未连通，本地浏览器下载失败；实际渲染与手机触摸待验证。"
+    },
+    {
+      "area": "host",
+      "status": "pending",
+      "evidence": "浏览器预览未连通，本地浏览器下载失败；实际渲染与手机触摸待验证。"
+    }
+  ]
+}

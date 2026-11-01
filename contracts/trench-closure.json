@@ -1,0 +1,148 @@
+{
+  "version": "3.0",
+  "goal": "看懂口部优先生长怎样导致封口留空，与相同顶部厚度的等厚覆盖比较。",
+  "model": {
+    "assumptions": "二维几何构造，非输运求解；口部宽度固定单位1，壁厚按指数深度衰减，封口后内部停止生长；近似等厚为理想参考，非无缝填充预测。",
+    "evidence": "Girolami & Abelson et al., JVST A 38 030802 (2020), doi:10.1116/6.0000035；定性依据为深沟槽供料耗尽和覆盖性，指数形貌为自行构造。"
+  },
+  "states": [
+    {
+      "id": "uniform",
+      "meaning": "基准情景"
+    },
+    {
+      "id": "depleted",
+      "meaning": "对照情景"
+    },
+    {
+      "id": "playing",
+      "meaning": "连续推进，非循环"
+    },
+    {
+      "id": "paused",
+      "meaning": "停留并回看"
+    }
+  ],
+  "encodings": [
+    {
+      "scope": "trench-closure",
+      "channel": "mark",
+      "token": "film",
+      "role": "identity",
+      "meaning": "新增薄膜"
+    },
+    {
+      "scope": "trench-closure",
+      "channel": "mark",
+      "token": "substrate",
+      "role": "identity",
+      "meaning": "原有基底"
+    },
+    {
+      "scope": "trench-closure",
+      "channel": "mark",
+      "token": "dashed",
+      "role": "observer",
+      "meaning": "沉积前界面"
+    }
+  ],
+  "actions": [
+    {
+      "id": "compare",
+      "kind": "compare",
+      "changes": [
+        "scenario"
+      ],
+      "fixed": [
+        "progress",
+        "view",
+        "scale"
+      ],
+      "feedback": "原位切换情景，暂停播放，保留进度"
+    },
+    {
+      "id": "scrub",
+      "kind": "construct",
+      "changes": [
+        "progress"
+      ],
+      "fixed": [
+        "scenario",
+        "view"
+      ],
+      "feedback": "图中横拖或进度条回看；拖动暂停"
+    },
+    {
+      "id": "play",
+      "kind": "construct",
+      "changes": [
+        "progress"
+      ],
+      "fixed": [
+        "scenario",
+        "view"
+      ],
+      "feedback": "连续推进一次，到终点停止"
+    },
+    {
+      "id": "aspect",
+      "kind": "model",
+      "changes": [
+        "aspect_ratio",
+        "width"
+      ],
+      "fixed": [
+        "depth",
+        "relative_top_thickness",
+        "scenario"
+      ],
+      "feedback": "改变真实绘制宽度，保持深度；不是缩放镜头"
+    }
+  ],
+  "comparison": {
+    "required": true,
+    "baseline": "uniform",
+    "target": "depleted",
+    "action": "compare",
+    "fixed": [
+      "progress",
+      "view",
+      "scale"
+    ],
+    "placement": "图上方情景按钮"
+  },
+  "preserved": [
+    {
+      "feature": "独立讲解、原位比较、连续变化",
+      "status": "retained",
+      "evidence": "两个独立预览，不合并无关页签"
+    }
+  ],
+  "checks": [
+    {
+      "area": "model",
+      "status": "reviewed",
+      "evidence": "解析叠加极值或封口后内部厚度冻结已检查；视觉含义经源码审查。"
+    },
+    {
+      "area": "semantics",
+      "status": "reviewed",
+      "evidence": "解析叠加极值或封口后内部厚度冻结已检查；视觉含义经源码审查。"
+    },
+    {
+      "area": "interaction",
+      "status": "tested",
+      "evidence": "check.cjs 模拟 DOM 执行进度、原位切换、拖动方向、pointercancel 与播放；不等于浏览器或真机测试。"
+    },
+    {
+      "area": "layout",
+      "status": "pending",
+      "evidence": "浏览器预览未连通，本地浏览器下载失败；实际渲染与手机触摸待验证。"
+    },
+    {
+      "area": "host",
+      "status": "pending",
+      "evidence": "浏览器预览未连通，本地浏览器下载失败；实际渲染与手机触摸待验证。"
+    }
+  ]
+}
