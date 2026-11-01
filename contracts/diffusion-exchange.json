@@ -1,0 +1,106 @@
+{
+  "version": "3.0",
+  "goal": "等体积两区随机交换可以双向同时发生；净迁移由浓度差产生，平衡时双向交换仍存在。",
+  "model": {
+    "assumptions": "两区充分混合、等体积、封闭总量100；对称一阶交换，左量=50+30exp(-2t)，右量=100-左量；箭头表示期望交换率而非确定粒子轨迹。",
+    "evidence": "解析教学模型；扩散采用对称两区一阶质量守恒方程，波采用线性叠加。不是材料参数预测。"
+  },
+  "states": [
+    {
+      "id": "baseline",
+      "meaning": "初始浓度80:20"
+    },
+    {
+      "id": "changed",
+      "meaning": "随时间趋于50:50"
+    }
+  ],
+  "encodings": [
+    {
+      "scope": "diffusion-exchange",
+      "channel": "fill-or-stroke",
+      "token": "series-1",
+      "role": "identity",
+      "meaning": "同一种扩散粒子及交换率"
+    },
+    {
+      "scope": "diffusion-exchange",
+      "channel": "opacity-or-dash",
+      "token": "ghost",
+      "role": "observer",
+      "meaning": "初始浓度虚影"
+    }
+  ],
+  "actions": [
+    {
+      "id": "adjust",
+      "kind": "time",
+      "changes": [
+        "time"
+      ],
+      "fixed": [
+        "total_amount",
+        "exchange_coefficient",
+        "volumes"
+      ],
+      "feedback": "横向拖动观察时间，点图内顶部空白回到初始分布；单次播放到终点。"
+    },
+    {
+      "id": "compare",
+      "kind": "compare",
+      "changes": [
+        "time"
+      ],
+      "fixed": [
+        "scale",
+        "layout"
+      ],
+      "feedback": "点击已标明的图内区域恢复初始状态；不新增复位按钮。"
+    }
+  ],
+  "comparison": {
+    "required": true,
+    "baseline": "baseline",
+    "target": "changed",
+    "action": "compare",
+    "fixed": [
+      "scale",
+      "layout"
+    ],
+    "placement": "图内直接操作及同位置虚影基准"
+  },
+  "preserved": [
+    {
+      "feature": "直接触摸、集中操作、固定布局、两实验独立",
+      "status": "retained",
+      "evidence": "每个独立片段；控件在图下方，播放暂停图标固定槽位；拖动不触发点击复位。"
+    }
+  ],
+  "checks": [
+    {
+      "area": "model",
+      "status": "tested",
+      "evidence": "Node断言扩散总量100；干涉0/90/180/360度振幅2/√2/0/2。"
+    },
+    {
+      "area": "semantics",
+      "status": "reviewed",
+      "evidence": "色彩意义不随状态改变；扩散箭头为交换率；相位调整是固定时刻快照。"
+    },
+    {
+      "area": "interaction",
+      "status": "tested",
+      "evidence": "模拟DOM执行脚本，测试滑条、拖动、点击复位；非实机测试。"
+    },
+    {
+      "area": "layout",
+      "status": "reviewed",
+      "evidence": "生成320和736宽SVG并审查坐标；本环境SVG截图工具不可用，未完成截图检查。"
+    },
+    {
+      "area": "host",
+      "status": "pending",
+      "evidence": "真实触屏宿主与完整排版未实测。"
+    }
+  ]
+}
