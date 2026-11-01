@@ -1,0 +1,121 @@
+{
+  "version": "3.0",
+  "goal": "一组参数必须同时满足两项要求；两个合格区的交集才是候选工艺窗口。",
+  "model": {
+    "assumptions": "教学响应模型：相对厚度h=1+.3x+.2y；不均匀度u=.02+.03(x-y)^2；-1≤x,y≤1为归一化温度和流量偏移。要求.9≤h≤1.1，u≤.05；模型与门限均为示意，不可用作配方。",
+    "evidence": "Minitab叠加等高线说明与示例图：https://support.minitab.com/en-us/minitab/help-and-how-to/statistical-modeling/using-fitted-models/supporting-topics/graphs/what-is-an-overlaid-contour-plot/"
+  },
+  "states": [
+    {
+      "id": "baseline",
+      "meaning": "中心基准位置"
+    },
+    {
+      "id": "adjusted",
+      "meaning": "移动后的观察位置或参数组合"
+    }
+  ],
+  "encodings": [
+    {
+      "scope": "process-window",
+      "channel": "visual-token",
+      "token": "series-1",
+      "role": "state",
+      "meaning": "同时合格区域"
+    },
+    {
+      "scope": "process-window",
+      "channel": "visual-token",
+      "token": "series-2",
+      "role": "relation",
+      "meaning": "厚度要求边界"
+    },
+    {
+      "scope": "process-window",
+      "channel": "visual-token",
+      "token": "series-3",
+      "role": "relation",
+      "meaning": "不均匀度要求边界"
+    },
+    {
+      "scope": "process-window",
+      "channel": "visual-token",
+      "token": "point",
+      "role": "observer",
+      "meaning": "当前参数组合"
+    }
+  ],
+  "actions": [
+    {
+      "id": "move",
+      "kind": "model",
+      "changes": [
+        "temperature_offset",
+        "flow_offset"
+      ],
+      "fixed": [
+        "response_models",
+        "acceptance_limits"
+      ],
+      "feedback": "拖动图中探针或参数点，关联读数更新；下方滑条支持单轴和键盘操作。"
+    },
+    {
+      "id": "reset",
+      "kind": "compare",
+      "changes": [
+        "temperature_offset",
+        "flow_offset"
+      ],
+      "fixed": [
+        "response_models",
+        "acceptance_limits"
+      ],
+      "feedback": "下方整片空白短按回到中心，轻暗反馈。控件、滚动、多指、取消不触发。R键等价复位。"
+    }
+  ],
+  "comparison": {
+    "required": true,
+    "baseline": "baseline",
+    "target": "adjusted",
+    "action": "reset",
+    "fixed": [
+      "response_models",
+      "acceptance_limits"
+    ],
+    "placement": "原位置观察，中心基准与整片操作区复位"
+  },
+  "preserved": [
+    {
+      "feature": "普通文字读数、大面积空白复位、集中操作、固定色彩含义",
+      "status": "retained",
+      "evidence": "不把参数读数做成按钮；只有参数滑条为原生控件。"
+    }
+  ],
+  "checks": [
+    {
+      "area": "model",
+      "status": "tested",
+      "evidence": "解析响应与边界断言通过；晶圆探针始终位于圆内，往返同点读数相同；工艺窗口网格点分类与不等式一致。"
+    },
+    {
+      "area": "semantics",
+      "status": "reviewed",
+      "evidence": "测厚颜色只表达厚度，探针只读；窗口颜色表达合格交集，边界区分两项要求；普通读数无按钮外观。"
+    },
+    {
+      "area": "interaction",
+      "status": "tested",
+      "evidence": "模拟DOM执行滑条、空白复位、控件排除、拖动、多指、长按及取消；不是实机测试。"
+    },
+    {
+      "area": "layout",
+      "status": "tested",
+      "evidence": "实际脚本生成320/736像素SVG，经librsvg渲染；查看320像素绘图并修复厚度图网格接缝。测试环境中文字体不全，完整宿主文字排版未验。"
+    },
+    {
+      "area": "host",
+      "status": "pending",
+      "evidence": "真实手机/平板宿主布局与多指手感尚未实测。"
+    }
+  ]
+}
