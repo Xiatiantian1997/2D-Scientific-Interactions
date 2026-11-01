@@ -41,3 +41,14 @@ python3 scripts/build_lesson.py fragments/sampling-distribution.html fragments/q
 旧例仍有固定ID，请使用隔离iframe打包器，不要裸拼接。iframe删除会销毁其文档、计时器与监听；不要声称旧例已支持任意SPA原位卸载。`sciDisposeControls`只清理共享控制器，不能替代整个旧例的销毁。
 
 `python3 scripts/build_catalog.py`从片段重新生成13份独立运行页及同页检查页，避免源码修了、分发副本没变。主题切换通过令牌消息完成，不重建实例、不改变模型数据。
+
+
+## 整体UI覆盖与折叠入口
+
+折叠入口默认为原生details/summary，外观为箭头与文字组成的紧凑按钮；宽度由内容决定，高度至少44px。展开后入口不横向伸长，内容另起一行。只点按钮才展开；其右侧空白属于既有操作区复位范围。
+
+打包时按 `sci-base → sci-fragments → sci-theme` 的CSS层顺序注入：平台基础样式、例子专用样式、讲义UI覆盖。`python3 scripts/build_lesson.py fragments/diffusion-lens.html --ui-css lecture-ui.css -o lesson.html` 可将同一份受信任UI样式送入每个隔离实例。只改外层页面CSS无法穿过iframe；必须用此入口重新构建。UI文件只接收作者维护的CSS，不接收用户输入的任意代码。
+
+整体UI可以统一按钮外观、圆角、留白、字体、折叠入口和主题。不要用!important竞争优先级，不更改数据属性、事件绑定、科学模型、比较尺度、默认静止和防误触语义。控件命中高度仍至少44px。
+
+图标目前仍有脚本更新文字的旧实现，换图标系统不应在外部临时插入图标节点（重绘可能覆盖它）；后续统一UI需要连同播放状态渲染函数一起适配，保留aria-label、状态及固定占位。CSS覆盖入口不是任意图标库的自动兼容承诺。

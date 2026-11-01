@@ -15,6 +15,12 @@ class TestPackaging(unittest.TestCase):
    for f in p.frames:
     self.assertEqual(f['sandbox'],'allow-scripts');self.assertIn('data-sci-example="sampling-distribution"',f['srcdoc']);self.assertIn('--foreground:',f['srcdoc']);self.assertIn("e.source!==parent",f['srcdoc'])
    self.assertIn('A &lt; B',result);self.assertIn('f.contentWindow===e.source',result)
+ def test_ui_override_in_every_instance(self):
+  p=Frames();p.feed(b.build([ROOT/'fragments/diffusion-lens.html']*2,ui_css='summary{border-radius:20px}'))
+  for f in p.frames:
+   self.assertIn('@layer sci-base,sci-fragments,sci-theme;',f['srcdoc'])
+   self.assertIn('@layer sci-theme{summary{border-radius:20px}}',f['srcdoc'])
+   self.assertIn('@layer sci-fragments {',f['srcdoc'])
  def test_theme_contract(self):
   for tokens in b.THEMES.values():self.assertEqual(set(tokens),set(b.THEMES['warm']))
 if __name__=='__main__':unittest.main()

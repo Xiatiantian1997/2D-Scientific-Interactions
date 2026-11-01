@@ -34,6 +34,15 @@ const base=path.resolve(__dirname,'..');
     });
     findings.push(...issues.map(x=>`${name} width=${width} ${theme}: ${x}`));
    }
+   // Native disclosure has an intrinsic-width, keyboard-operable toggle.
+   const summary=page.locator('summary');
+   if(await summary.count()){
+    const before=await summary.boundingBox(),areaBox=await page.locator('[data-reset-area]').boundingBox();
+    assert(before.width<areaBox.width-30,'disclosure is not a full-width hit target');assert(before.height>=44);
+    await summary.click();assert(await page.locator('details').evaluate(e=>e.open));
+    const after=await summary.boundingBox();assert.equal(before.width,after.width);
+    await summary.press('Enter');assert.equal(await page.locator('details').evaluate(e=>e.open),false);
+   }
    // Model controls remain local, returns are deterministic, reset geometry is fixed.
    const range=page.locator('input[type=range]').first();const initial=await root.evaluate(e=>({...e.dataset}));
    await range.evaluate(e=>{e.value=e.max;e.dispatchEvent(new Event('input',{bubbles:true}))});
@@ -79,6 +88,7 @@ const base=path.resolve(__dirname,'..');
  const frame=page.frames()[1];await frame.locator('input').first().evaluate(e=>{e.value=100;e.dispatchEvent(new Event('input'))});
  const old=await frame.locator('section').evaluate(e=>({...e.dataset}));await page.locator('select').selectOption('dark');await page.waitForTimeout(50);
  assert.deepEqual(await frame.locator('section').evaluate(e=>({...e.dataset})),old,'theme preserves state');
+ await page.goto('file://'+path.join(base,'evidence/ui-override.html'));await page.waitForTimeout(100);const uiFrame=page.frames()[1];assert.equal(await uiFrame.locator('summary').evaluate(e=>getComputedStyle(e).borderRadius),'20px','lecture UI overrides fragment defaults');
  await browser.close();fs.writeFileSync(path.join(base,'evidence/browser-report.json'),JSON.stringify({errors,findings},null,2));
  console.log('LAYOUT FINDINGS',JSON.stringify(findings));console.log('BEHAVIOR FINDINGS',JSON.stringify(errors));assert.deepEqual(errors,[],'runtime errors');assert.deepEqual(findings,[],'layout review findings');console.log('PASS all browser checks');
 })().catch(e=>{console.error(e);process.exit(1)});
