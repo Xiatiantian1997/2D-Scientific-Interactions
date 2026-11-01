@@ -25,10 +25,10 @@
 
 ## 当前状态
 
-仓库已初始化，尚未迁入旧示例。此处是创作方法与实现的入口，不是已经完成的通用仿真平台。
+本轮二维示例已覆盖七类表现方法：参数联动、连续过程、形貌变化、原位比较、局部读取、分量叠加、双参数共同约束。新补充晶圆测厚与工艺窗口；现有示例及验证边界见模板清单。这是方法和参考实现集合，不是已经完成的通用仿真平台。
 
 ## 模板与下一轮检查
 
-进入 [模板提炼入口](templates/README.md)，查看候选类型、现有参考与逐例检查表；复制 [模板工作稿](templates/authoring-brief.md) 填写一个教学单元。当前完成的是组织与工作入口，HTML 通用模板尚待逐例验证后提炼。
+进入 [模板提炼入口](templates/README.md)，查看候选类型、现有参考与逐例检查表；复制 [模板工作稿](templates/authoring-brief.md) 填写一个教学单元。当前已有可运行的对话预览源片段；共用组件提炼与真实触屏测试仍未完成。`fragments/` 依赖对话宿主主题和控件样式，不能把GitHub源码页当成运行页面。
 
-配套仓库：[3D Scientific Interactions](https://github.com/Xiatiantian1997/3d-scientific-interactions)。共同 UI 随后统一处理，本轮不迁移旧示例，不增加新演示。
+配套仓库：[3D Scientific Interactions](https://github.com/Xiatiantian1997/3d-scientific-interactions)。本轮2D示例扩充结束，下一阶段再进入3D；共同UI和旧例迁移按清单继续处理。
