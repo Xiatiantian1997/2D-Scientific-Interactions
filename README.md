@@ -36,7 +36,7 @@
 
 进入 [模板提炼入口](templates/README.md)，查看候选类型、现有参考与逐例检查表；复制 [模板工作稿](templates/authoring-brief.md) 填写一个教学单元。当前已有可运行的对话预览源片段；共用组件提炼与真实触屏测试仍未完成。`fragments/` 需要宿主样式。现提供 `scripts/build_lesson.py` 与 `runtime/host.css`，可打包为离线独立页并隔离多个实例；暖纸/素纸/深色主题可换。见[接入说明](docs/host-integration.md)和[双实例接入检查页源码](examples/composition-check.html)。GitHub源码页不是运行页面。
 
-配套仓库：[3D Scientific Interactions](https://github.com/Xiatiantian1997/3d-scientific-interactions)。2D暂不继续堆案例；后续重点是宿主样式、旧例迁移与真机验证。详见[收尾与接入检查](docs/2d-readiness.md)。
+配套仓库：[3D Scientific Interactions](https://github.com/Xiatiantian1997/3d-scientific-interactions)。2D暂不继续堆案例；宿主样式与旧例UI迁移已完成，后续重点为真机验证。详见[收尾与接入检查](docs/2d-readiness.md)。
 
 
 ## 2D收尾更新

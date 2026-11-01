@@ -15,7 +15,7 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: sudo apt-get install -y fonts-noto-cjk
       - run: python3 scripts/build_catalog.py
-      - run: node tests/check-additions.cjs && python3 -m unittest discover -s tests
+      - run: node tests/check-additions.cjs && node tests/check-controls.cjs && python3 -m unittest discover -s tests
       - run: node tests/browser-check.cjs
       - uses: actions/upload-artifact@v5
         if: always()

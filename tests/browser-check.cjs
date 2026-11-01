@@ -64,7 +64,7 @@ const base=path.resolve(__dirname,'..');
     await page.waitForTimeout(100);assert.deepEqual(await root.evaluate(e=>({...e.dataset})),paused,name+' no autoresume');
    }
    // Test all comparison modes without changing unrelated range values.
-   const modes=page.locator('[data-mode]');for(let i=0;i<await modes.count();i++){await modes.nth(i).click();assert.equal(await modes.nth(i).getAttribute('aria-pressed'),'true');}
+   const modes=page.locator('button[data-mode]');for(let i=0;i<await modes.count();i++){await modes.nth(i).click();assert.equal(await modes.nth(i).getAttribute('aria-pressed'),'true');}
    await page.evaluate(tokens=>{for(const[k,v]of Object.entries(tokens))document.documentElement.style.setProperty('--'+k,v)},themes.warm);
    await page.screenshot({path:path.join(base,'evidence',`${name}-${width}.png`),fullPage:true});
    console.log('PASS behavior',name,width);
@@ -74,7 +74,8 @@ const base=path.resolve(__dirname,'..');
  }
  // Multiple iframe instances retain state during theme changes.
  const page=await browser.newPage();await page.goto('file://'+path.join(base,'examples/composition-check.html'));await page.waitForTimeout(150);
- assert(page.frames().length>2,'composition contains isolated examples');
+ assert.equal(page.frames().length,6,'composition contains five isolated examples');
+ const oldA=page.frames()[4],oldB=page.frames()[5];await oldA.locator('input').evaluate(e=>{e.value=12;e.dispatchEvent(new Event('input'))});assert.equal(await oldA.locator('section').getAttribute('data-resistance'),'12');assert.equal(await oldB.locator('section').getAttribute('data-resistance'),'6','duplicate legacy ID stays isolated');
  const frame=page.frames()[1];await frame.locator('input').first().evaluate(e=>{e.value=100;e.dispatchEvent(new Event('input'))});
  const old=await frame.locator('section').evaluate(e=>({...e.dataset}));await page.locator('select').selectOption('dark');await page.waitForTimeout(50);
  assert.deepEqual(await frame.locator('section').evaluate(e=>({...e.dataset})),old,'theme preserves state');
