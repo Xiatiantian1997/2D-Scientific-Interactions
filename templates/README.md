@@ -1,18 +1,25 @@
 # 2D 模板覆盖清单
 
-本轮示例扩充已收尾：下列七类各有可查看、可继续修改的例子。此处统计的是表现方法覆盖，不代表通用组件库已全部实现，更不代表真实设备与教学效果已全面验证。
+目录已核对：13份片段、九类方法（文件数不等于方法数）。补录原先漏列的复数波和波速；新增随机采样和表示联动。下列例子需接入宿主才能运行。此处统计的是表现方法覆盖，不代表通用组件库已全部实现，更不代表真实设备与教学效果已全面验证。
 
 | 表现方法 | 当前参考 | 已展示的能力 |
 |---|---|---|
 | 参数与结果联动 | [电阻与功率](../fragments/resistor-coupling.html) | 固定条件、自由输入与派生结果 |
-| 连续过程与观察 | [扩散观察](../fragments/diffusion-lens.html)、[双向交换](../fragments/diffusion-exchange.html) | 播放、回看、净变化与双向交换区分 |
+| 连续过程与观察 | [扩散观察](../fragments/diffusion-lens.html)、[双向交换](../fragments/diffusion-exchange.html)、[相速度与群速度](../fragments/wave-speeds.html) | 播放、回看、净变化与双向交换区分 |
 | 形貌变化与反馈 | [沟槽封口](../fragments/trench-closure.html) | 口部收窄与内部未填满的关系 |
 | 原位置比较 | [波包重叠](../fragments/wave-overlap.html) | 固定画面位置与尺度比较变化 |
 | 局部读取与二维场 | [势能与力](../fragments/potential-force.html)、[晶圆测厚](../fragments/wafer-probe.html) | 移动观察位置，不改变被观察场 |
-| 分量与整体 | [波的叠加](../fragments/wave-addition.html) | 分量、相位与合成结果同步 |
+| 分量与整体 | [波的叠加](../fragments/wave-addition.html)、[复数波](../fragments/complex-wave.html) | 分量、相位与合成结果同步 |
 | 两参数与多项约束 | [工艺窗口](../fragments/process-window.html) | 二维参数点、边界和共同合格区 |
 
-## 本轮新增的两例
+| 随机采样与分布 | [随机采样](../fragments/sampling-distribution.html) | 单次不确定、固定总体、同批回看与重复抽样 |
+| 表示之间的联动 | [势阱定态](../fragments/quantum-linked.html) | 同一状态派生概率密度与能级，禁止独立乱调 |
+
+## 本轮收尾
+
+新两例的模型、边界和待办见[收尾与接入检查](../docs/2d-readiness.md)。检查脚本为 `tests/check-additions.cjs`；两例图中文字18px，独立实例和清理入口已做。全仓宿主样式、旧例迁移和真机测试仍未完成。
+
+## 上一批两例
 
 晶圆测厚采用固定合成数据，不能解释为实际晶圆测量或标准采样方案。工艺窗口采用公开写明的教学响应函数，不是校准工艺模型。相关公式、来源、输入、颜色意义及验证范围分别保存在 contracts/wafer-probe.json 和 contracts/process-window.json。
 
