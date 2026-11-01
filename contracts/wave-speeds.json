@@ -1,0 +1,140 @@
+{
+  "version": "3.0",
+  "goal": "区分载波相位前进与波包包络前进，并关联ω-k图的原点连线斜率和切线斜率。",
+  "model": {
+    "assumptions": "自由粒子ω=k²/2（ℏ=m=1，V=0，不含静止能）；无色散参考ω=k。窄带一阶展开：ψ≈exp[-(x−v_g t)²/(2σ²)]exp[i(k₀x−ω₀t)]，σ=3.2，短时忽略展宽。不是自由薛定谔方程精确解。",
+    "evidence": "Reading PPLATO PHYS10.4 https://met.reading.ac.uk/pplato2/h-flap/phys10_4.html；v_p=ω/k，v_g=dω/dk。"
+  },
+  "states": [
+    {
+      "id": "free",
+      "meaning": "自由粒子窄带近似，群速度两倍相速度"
+    },
+    {
+      "id": "linear",
+      "meaning": "无色散参考，两速度相等"
+    },
+    {
+      "id": "play",
+      "meaning": "时间从0到4一次推进"
+    },
+    {
+      "id": "pause",
+      "meaning": "停止或回看"
+    }
+  ],
+  "encodings": [
+    {
+      "scope": "speeds",
+      "channel": "stroke",
+      "token": "series1",
+      "role": "quantity",
+      "meaning": "载波相位及原点连线"
+    },
+    {
+      "scope": "speeds",
+      "channel": "stroke",
+      "token": "series2",
+      "role": "quantity",
+      "meaning": "包络中心及切线"
+    },
+    {
+      "scope": "speeds",
+      "channel": "stroke",
+      "token": "foreground",
+      "role": "quantity",
+      "meaning": "色散关系ω(k)"
+    }
+  ],
+  "actions": [
+    {
+      "id": "compare",
+      "kind": "compare",
+      "changes": [
+        "dispersion",
+        "velocities"
+      ],
+      "fixed": [
+        "k0",
+        "time",
+        "initial_envelope",
+        "axes"
+      ],
+      "feedback": "原位切换自由粒子与无色散参考，保留当前时刻"
+    },
+    {
+      "id": "k",
+      "kind": "model",
+      "changes": [
+        "k0",
+        "velocities",
+        "carrier_frequency"
+      ],
+      "fixed": [
+        "dispersion",
+        "time",
+        "initial_envelope"
+      ],
+      "feedback": "调整中心波数，两速度由色散关系重新计算"
+    },
+    {
+      "id": "time",
+      "kind": "time",
+      "changes": [
+        "time"
+      ],
+      "fixed": [
+        "k0",
+        "dispersion"
+      ],
+      "feedback": "同一相位标记与包络中心同步推进，可暂停回退"
+    }
+  ],
+  "comparison": {
+    "required": true,
+    "baseline": "linear",
+    "target": "free",
+    "action": "compare",
+    "fixed": [
+      "time",
+      "k0",
+      "initial_envelope",
+      "axes"
+    ],
+    "placement": "图上方情景按钮"
+  },
+  "preserved": [
+    {
+      "feature": "原位对照、连续动画、直接拖动",
+      "status": "retained",
+      "evidence": "沿用已认可2D布局，图上横拖回看"
+    }
+  ],
+  "checks": [
+    {
+      "area": "model",
+      "status": "tested",
+      "evidence": "三组k的速度比、恒相位位置与包络中心位移已计算核对；明确为忽略展宽的一阶窄带近似。"
+    },
+    {
+      "area": "semantics",
+      "status": "reviewed",
+      "evidence": "相速度对应圆点和原点连线，群速度对应方块和切线，范围一致。"
+    },
+    {
+      "area": "interaction",
+      "status": "tested",
+      "evidence": "模拟DOM检查原位切换保留时间、拖动取消、播放终止；不是浏览器实测。"
+    },
+    {
+      "area": "layout",
+      "status": "pending",
+      "evidence": "实际浏览器显示和手机触摸未验证。"
+    },
+    {
+      "area": "host",
+      "status": "pending",
+      "evidence": "实际浏览器显示和手机触摸未验证。"
+    }
+  ]
+}
