@@ -1,4 +1,4 @@
-/* node tests/check.cjs [optional output directory for SVG evidence]
+/* node tests/check-additions.cjs [optional output directory for SVG evidence]
  * Executes actual fragment JS in a minimal DOM. Not a real browser/touch test.
  */
 const fs=require('fs'),vm=require('vm'),assert=require('node:assert/strict'),path=require('path');
@@ -24,9 +24,10 @@ for(const kind of ['sampling-distribution','quantum-linked']){
  vm.runInNewContext(script,context);assert.equal(snap(),saved,'double init does not reset state');assert.equal(obs.length,2);
  if(kind==='sampling-distribution'){
   for(const n of [1,2,10,50,1000]){set(n);const bins=JSON.parse(a.dataset.bins);assert.equal(bins.reduce((x,y)=>x+y),n);const mean=bins.reduce((s,c,i)=>s+c*(i-3),0)/n;assert.equal(+a.dataset.mean,mean)}
+  const svg=a.querySelector('svg');assert.equal(svg.children.filter(e=>e.tag==='circle').length,0,'no unexplained dot');assert.equal(svg.children.filter(e=>'data-latest-bin' in e.attrs).length,1,'one latest-result column');
   let old=snap();a.querySelector('[data-batch]').onclick();assert.notEqual(snap(),old);assert.equal(a.dataset.value,'1000');
   set(1);a.querySelector('[data-step]').onclick();assert.equal(a.dataset.value,'2');
-  a.querySelector('[data-play]').onclick();let guard=0;while(timers.size&&guard++<1000){for(const f of [...timers.values()])f()}assert.equal(a.dataset.value,'1000');assert.equal(timers.size,0,'play finishes');
+  a.querySelector('[data-play]').onclick();const before=+a.dataset.value;[...timers.values()][0]();assert.equal(+a.dataset.value,before+1,'play adds exactly one observation per tick');let guard=0;while(timers.size&&guard++<1000){for(const f of [...timers.values()])f()}assert.equal(a.dataset.value,'1000');assert.equal(timers.size,0,'play finishes');
   set(20);a.querySelector('[data-play]').onclick();document.hidden=true;for(const f of listeners.visibilitychange)f();assert.equal(timers.size,0);assert.equal(a.dataset.value,'20');document.hidden=false;
   // Exact theoretical probabilities from all 64 outcomes.
   const counts=Array(7).fill(0);for(let i=0;i<64;i++)counts[i.toString(2).replaceAll('0','').length]++;

@@ -4,6 +4,11 @@
 
 面向触摸屏科学讲义的二维交互方法与 HTML 示例，优先让读者直接看懂变化和依赖关系。
 
+
+## 开放创作框架 3.1
+
+范例可引用、改编、组合，也允许新的表达方式；它们不是固定题型。科学约束、视觉含义和验证诚实是底线，UI与布局是可调整的默认做法。多模型可同页独立使用、共享同一状态，或按明确接口耦合。新形式说明缺口、做最小样例并验证，详见[开放创作规则](docs/platform-policy.md)。
+
 ## 范围
 
 - 函数曲线、波形、二维场与分布。
@@ -29,6 +34,6 @@
 
 ## 模板与下一轮检查
 
-进入 [模板提炼入口](templates/README.md)，查看候选类型、现有参考与逐例检查表；复制 [模板工作稿](templates/authoring-brief.md) 填写一个教学单元。当前已有可运行的对话预览源片段；共用组件提炼与真实触屏测试仍未完成。`fragments/` 依赖对话宿主主题和控件样式，不能把GitHub源码页当成运行页面。
+进入 [模板提炼入口](templates/README.md)，查看候选类型、现有参考与逐例检查表；复制 [模板工作稿](templates/authoring-brief.md) 填写一个教学单元。当前已有可运行的对话预览源片段；共用组件提炼与真实触屏测试仍未完成。`fragments/` 需要宿主样式。现提供 `scripts/build_lesson.py` 与 `runtime/host.css`，可打包为离线独立页并隔离多个实例；暖纸/素纸/深色主题可换。见[接入说明](docs/host-integration.md)和[双实例接入检查页源码](examples/composition-check.html)。GitHub源码页不是运行页面。
 
 配套仓库：[3D Scientific Interactions](https://github.com/Xiatiantian1997/3d-scientific-interactions)。2D暂不继续堆案例；后续重点是宿主样式、旧例迁移与真机验证。详见[收尾与接入检查](docs/2d-readiness.md)。

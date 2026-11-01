@@ -44,10 +44,10 @@
     },
     {
       "scope": "lesson",
-      "channel": "dot",
-      "token": "series-2",
+      "channel": "column.background",
+      "token": "series-1-low-opacity",
       "role": "attention",
-      "meaning": "当前最后一项样本对应的箱"
+      "meaning": "最新一次采样所属误差档，不是频率或额外物质"
     }
   ],
   "actions": [
@@ -121,6 +121,11 @@
       "feature": "操作集中图下、空白短按复位且防误触、主题与语义分离",
       "status": "retained",
       "evidence": "本例实现并单独验证，不宣称旧例已迁移"
+    },
+    {
+      "feature": "最新结果可追踪",
+      "status": "changed_with_reason",
+      "evidence": "用户不理解浮动黄点；改为最近结果文本和对应整栏淡底，无第二类别色。播放每次只增1项，消除隐式批量跳步。"
     }
   ],
   "checks": [
