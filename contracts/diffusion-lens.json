@@ -1,0 +1,105 @@
+{
+  "version": "3.0",
+  "goal": "局部随机运动与整体分布变化来自同一组粒子",
+  "model": {
+    "assumptions": "160个粒子作等概率一维随机游走，反射边界；纵坐标仅分散绘制，不是第二运动维度。固定随机种子；步间直线插值是显示过渡，不是分子轨迹。",
+    "evidence": "随机游走的定义；规则四面体坐标内积给出cosθ=-1/3。"
+  },
+  "states": [
+    {
+      "id": "baseline",
+      "meaning": "初始分布或正面观察"
+    },
+    {
+      "id": "changed",
+      "meaning": "演化分布或旋转观察"
+    }
+  ],
+  "encodings": [
+    {
+      "scope": "diffusion-lens",
+      "channel": "color",
+      "token": "series-1",
+      "role": "identity",
+      "meaning": "同一种粒子或同一种硅原子，颜色不表示异常"
+    },
+    {
+      "scope": "diffusion-lens",
+      "channel": "opacity",
+      "token": "ghost",
+      "role": "observer",
+      "meaning": "起始空间范围或正面投影参考，不是新增物质"
+    }
+  ],
+  "actions": [
+    {
+      "id": "change",
+      "kind": "time",
+      "changes": [
+        "time"
+      ],
+      "fixed": [
+        "particle_identity",
+        "particle_count"
+      ],
+      "feedback": "同一组对象连续更新，暂停或直接操作会中断旧动画"
+    },
+    {
+      "id": "baseline-compare",
+      "kind": "compare",
+      "changes": [
+        "comparison_visibility_or_time"
+      ],
+      "fixed": [
+        "particle_identity",
+        "particle_count"
+      ],
+      "feedback": "回到开始或开启正面投影虚影"
+    }
+  ],
+  "comparison": {
+    "required": true,
+    "baseline": "baseline",
+    "target": "changed",
+    "action": "baseline-compare",
+    "fixed": [
+      "particle_identity",
+      "particle_count"
+    ],
+    "placement": "原位浅色初始范围或可开启正面虚影"
+  },
+  "preserved": [
+    {
+      "feature": "触摸直接操作与基准参考",
+      "status": "retained",
+      "evidence": "框可拖动；模型可旋转缩放；均提供键盘替代入口"
+    }
+  ],
+  "checks": [
+    {
+      "area": "model",
+      "status": "reviewed",
+      "evidence": "160个粒子作等概率一维随机游走，反射边界；纵坐标仅分散绘制，不是第二运动维度。固定随机种子；步间直线插值是显示过渡，不是分子轨迹。"
+    },
+    {
+      "area": "semantics",
+      "status": "reviewed",
+      "evidence": "原子身份不随相机或观察框变化"
+    },
+    {
+      "area": "interaction",
+      "status": "tested",
+      "evidence": "模拟DOM初始化、时间或角度边界输入，无NaN；不是设备测试"
+    },
+    {
+      "area": "layout",
+      "status": "pending",
+      "evidence": "真实宿主小屏渲染待验证"
+    },
+    {
+      "area": "host",
+      "status": "pending",
+      "evidence": "触屏和多指手感待验证"
+    }
+  ]
+}
