@@ -87,40 +87,7 @@
       "R",
       "scales"
     ],
-    "placement": "图上方两个供电条件按钮"
+    "placement": "图下操作区两个供电条件按钮"
   },
-  "preserved": [
-    {
-      "feature": "独立交互、直接拖动、必要比较",
-      "status": "retained",
-      "evidence": "保留供电模式切换、原位基准虚影、滑条与电阻直接拖动。"
-    }
-  ],
-  "checks": [
-    {
-      "area": "model",
-      "status": "tested",
-      "evidence": "欧姆/焦耳关系及恒压恒流极值，或谐振子能量守恒、中心非零速度，已计算核对。"
-    },
-    {
-      "area": "semantics",
-      "status": "reviewed",
-      "evidence": "源码检查基准随条件重算，或势能图与实际直线轨道明确分开；同一状态派生表示。"
-    },
-    {
-      "area": "interaction",
-      "status": "tested",
-      "evidence": "模拟DOM验证两种供电条件保留、复位联动、键盘点按、滑动抑制和手动输入取消动画；不是浏览器实测。"
-    },
-    {
-      "area": "layout",
-      "status": "pending",
-      "evidence": "实际浏览器排版和手机触摸未完成验证。"
-    },
-    {
-      "area": "host",
-      "status": "pending",
-      "evidence": "实际浏览器排版和手机触摸未完成验证。"
-    }
-  ]
+  "validation": "../docs/validation.md"
 }

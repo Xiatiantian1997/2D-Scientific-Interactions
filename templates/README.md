@@ -1,47 +1,29 @@
-# 2D 模板覆盖清单
+# 模板目录
 
-目录已核对：13份片段、九类方法（文件数不等于方法数）。补录原先漏列的复数波和波速；新增随机采样和表示联动。下列例子需接入宿主才能运行。此处统计的是表现方法覆盖，不代表通用组件库已全部实现，更不代表真实设备与教学效果已全面验证。
+按读者需要理解的关系选方法，再改编科学模型。同一实验可以组合几种方法，不必强行归到唯一类别。
 
-| 表现方法 | 当前参考 | 已展示的能力 |
+| 方法 | 适用目标 | 参考源码 |
 |---|---|---|
-| 参数与结果联动 | [电阻与功率](../fragments/resistor-coupling.html) | 固定条件、自由输入与派生结果 |
-| 连续过程与观察 | [扩散观察](../fragments/diffusion-lens.html)、[双向交换](../fragments/diffusion-exchange.html)、[相速度与群速度](../fragments/wave-speeds.html) | 播放、回看、净变化与双向交换区分 |
-| 形貌变化与反馈 | [沟槽封口](../fragments/trench-closure.html) | 口部收窄与内部未填满的关系 |
-| 原位置比较 | [波包重叠](../fragments/wave-overlap.html) | 固定画面位置与尺度比较变化 |
-| 局部读取与二维场 | [势能与力](../fragments/potential-force.html)、[晶圆测厚](../fragments/wafer-probe.html) | 移动观察位置，不改变被观察场 |
-| 分量与整体 | [波的叠加](../fragments/wave-addition.html)、[复数波](../fragments/complex-wave.html) | 分量、相位与合成结果同步 |
-| 两参数与多项约束 | [工艺窗口](../fragments/process-window.html) | 二维参数点、边界和共同合格区 |
+| 参数联动 | 改变输入，看派生结果与固定条件 | [电阻与功率](../fragments/resistor-coupling.html) |
+| 连续过程 | 看状态随时间变化及交换关系 | [扩散与放大](../fragments/diffusion-lens.html)、[区域交换](../fragments/diffusion-exchange.html)、[相速与群速](../fragments/wave-speeds.html) |
+| 形态反馈 | 结构变化反过来限制后续过程 | [沟槽封口](../fragments/trench-closure.html) |
+| 原位比较 | 固定尺度和进度比较不同条件 | [波包相遇](../fragments/wave-overlap.html) |
+| 局部读取与联动 | 选位置，读取局部量或关联状态 | [势能与力](../fragments/potential-force.html)、[晶圆测厚探针](../fragments/wafer-probe.html) |
+| 分量与整体 | 看分量怎样构成同一个对象 | [波的叠加](../fragments/wave-addition.html)、[复数与相位](../fragments/complex-wave.html) |
+| 双参数约束 | 看多个条件同时成立的范围 | [工艺窗口](../fragments/process-window.html) |
+| 随机采样与分布 | 看单次不确定与大量结果的规律 | [采样分布](../fragments/sampling-distribution.html) |
+| 表示之间联动 | 看多张图如何描述同一状态 | [量子定态](../fragments/quantum-linked.html) |
 
-| 随机采样与分布 | [随机采样](../fragments/sampling-distribution.html) | 单次不确定、固定总体、同批回看与重复抽样 |
-| 表示之间的联动 | [势阱定态](../fragments/quantum-linked.html) | 同一状态派生概率密度与能级，禁止独立乱调 |
+## 使用一个范例
 
-## 本轮收尾
+1. 读取同名 `contracts/*.json`，确认假设、单位、颜色含义、操作与比较基准。
+2. 修改 `fragments/*.html`，按[创作简表](authoring-brief.md)核对新的模型。
+3. 按[接入说明](../docs/host-integration.md)打包，按[验证说明](../docs/validation.md)检查。
 
-新两例的模型、边界和待办见[收尾与接入检查](../docs/2d-readiness.md)。检查脚本为 `tests/check-additions.cjs`；两例图中文字18px，独立实例和清理入口已做。独立页宿主与三主题打包器已实现，见接入说明；11个旧例的UI迁移已完成；真机测试独立待验收。
+[独立 HTML 目录](../examples/)由源码生成；[组合检查页](../examples/composition-check.html)用于重复实例与同页隔离检查。源码链接不是在线运行预览。
 
-## 上一批两例
+## 选择时的边界
 
-晶圆测厚采用固定合成数据，不能解释为实际晶圆测量或标准采样方案。工艺窗口采用公开写明的教学响应函数，不是校准工艺模型。相关公式、来源、输入、颜色意义及验证范围分别保存在 contracts/wafer-probe.json 和 contracts/process-window.json。
+局部放大有两种含义：只是看得更大时使用缩放；需要保留整体位置并展示新细节时使用联动局部视图。像素放大不增加测量分辨率，俯视图也不能凭空变成膜层截面。
 
-二者已完成公式与边界检查、模拟DOM交互测试、320/736像素绘图生成；窄屏SVG经过实际渲染检查。本轮已用Chromium与Noto CJK补充中文、三宽度和隔离宿主检查；真实Pad7/Notion触摸仍待验证。
-
-## 操作语法
-
-- 参数名称和读数是普通文字，不因承担复位命中区域而出现小按钮外观。
-- 图下整片操作区空白短按复位，并给整片轻暗反馈。文字周围与控件间隙均包含在内。
-- 滑条、播放、输入等独立控件排除；拖动、长按、多指、滚动、取消不复位。
-- 有播放时采用左侧符号键，进度条在右；占位固定。键盘聚焦滑条时可按 R 复位。
-- 旧例逐个迁移，不声称全仓库自动使用同一实现。当前13例均使用下方空白复位；11旧例共享控制器，2新例保留独立实现。
-
-## 后续工作
-
-暂不追加2D题目；下一阶段再做3D。2D已提供主题与隔离接入层；旧例迁移已完成，实际Pad7/Notion宿主仍待验收。只有来源、模型接入点、交互边界和验证环境清楚时，才把某个例子升级成通用模板。
-
-## 局部观察的收尾约定
-
-保留扩散等作品中有明确对应关系的整体—局部联动。普通放大只改变视图，使用缩放和平移；局部详图只有在提供独立信息时启用。不得把像素放大当作测量分辨率提高，也不得把顶视图缩放冒充薄膜截面。当前2D示例阶段收尾，后续处理共用UI和宿主验证，不因放大能力另凑模板数量。
-
-## 采用方式已确定
-
-参见[开放创作规则](../docs/platform-policy.md)与[接入说明](../docs/host-integration.md)。现有九类仅作检索入口；允许组合与新方法。采样图现用最新结果读数及整栏淡底，取消黄点；播放逐项增加。控件分为进度操作与换批动作，保留操作空白复位。
-
+晶圆测厚场与工艺窗口使用教学示意数据或响应函数，不是实测结果或经过标定的工艺预测。沟槽封口也是简化几何模型。其他模型的具体边界以各自约定为准。

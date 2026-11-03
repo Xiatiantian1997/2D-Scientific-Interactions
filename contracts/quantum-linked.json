@@ -89,38 +89,5 @@
     ],
     "placement": "图下整片操作空白，R键等价复位"
   },
-  "preserved": [
-    {
-      "feature": "操作集中图下、空白短按复位且防误触、主题与语义分离",
-      "status": "retained",
-      "evidence": "本例实现并单独验证，不宣称旧例已迁移"
-    }
-  ],
-  "checks": [
-    {
-      "area": "model",
-      "status": "tested",
-      "evidence": "tests/check-additions.cjs：计数、二项枚举、定态归一化和n²能量，已执行。"
-    },
-    {
-      "area": "semantics",
-      "status": "reviewed",
-      "evidence": "逐状态源码与实际SVG审查，理论线与样本柱、概率密度与能级分别标注。"
-    },
-    {
-      "area": "interaction",
-      "status": "tested",
-      "evidence": "tests/check-additions.cjs：实际片段JS的模拟DOM测试；同批回看、2实例、防误触、后台停止和清理，非浏览器实测。"
-    },
-    {
-      "area": "layout",
-      "status": "reviewed",
-      "evidence": "320/360/736 SVG实际渲染、坐标检查；缺中文字体，完整浏览器排版待测。"
-    },
-    {
-      "area": "host",
-      "status": "pending",
-      "evidence": "Android/Pad7/Notion真实宿主待验证。"
-    }
-  ]
+  "validation": "../docs/validation.md"
 }

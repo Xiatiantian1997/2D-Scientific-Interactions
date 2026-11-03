@@ -3,7 +3,7 @@
   "goal": "同频同幅同向的两个波在同一点代数相加；相位差改变合成幅度。",
   "model": {
     "assumptions": "y1=sin(kx), y2=sin(kx+phi), sum=y1+y2。固定时刻的空间快照；调相位不代表时间演进。",
-    "evidence": "解析教学模型；扩散采用对称两区一阶质量守恒方程，波采用线性叠加。不是材料参数预测。"
+    "evidence": "线性叠加 y=y1+y2 与三角恒等式；固定时刻的空间快照。"
   },
   "states": [
     {
@@ -84,43 +84,5 @@
     ],
     "placement": "图下整片操作区空白与读数；无需精确瞄准文字"
   },
-  "preserved": [
-    {
-      "feature": "直接触摸、集中操作、固定布局、两实验独立",
-      "status": "retained",
-      "evidence": "每个独立片段；控件在图下方，播放暂停图标固定槽位；拖动不触发点击复位。"
-    },
-    {
-      "feature": "大面积空白复位，播放和滑条保留原操作",
-      "status": "changed_with_reason",
-      "evidence": "用户澄清复位应作用于下方整片空白，而非限定标题读数。读数已改成普通文字；键盘聚焦交互内时R复位，不新增独立复位按钮。"
-    }
-  ],
-  "checks": [
-    {
-      "area": "model",
-      "status": "tested",
-      "evidence": "Node断言扩散总量100；干涉0/90/180/360度振幅2/√2/0/2。"
-    },
-    {
-      "area": "semantics",
-      "status": "reviewed",
-      "evidence": "色彩意义不随状态改变；扩散箭头为交换率；相位调整是固定时刻快照。"
-    },
-    {
-      "area": "interaction",
-      "status": "tested",
-      "evidence": "模拟DOM执行大面积空白复位、独立控件排除、拖动/取消/多指不复位，以及旧模型与图内拖动检查。真实宿主未测。"
-    },
-    {
-      "area": "layout",
-      "status": "reviewed",
-      "evidence": "生成320和736宽SVG并审查坐标；本环境SVG截图工具不可用，未完成截图检查。"
-    },
-    {
-      "area": "host",
-      "status": "pending",
-      "evidence": "真实触屏宿主与完整排版未实测。"
-    }
-  ]
+  "validation": "../docs/validation.md"
 }

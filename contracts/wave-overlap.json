@@ -106,40 +106,7 @@
       "view",
       "scale"
     ],
-    "placement": "图上方情景按钮"
+    "placement": "图下操作区情景按钮"
   },
-  "preserved": [
-    {
-      "feature": "独立讲解、原位比较、连续变化",
-      "status": "retained",
-      "evidence": "两个独立预览，不合并无关页签"
-    }
-  ],
-  "checks": [
-    {
-      "area": "model",
-      "status": "reviewed",
-      "evidence": "解析叠加极值或封口后内部厚度冻结已检查；视觉含义经源码审查。"
-    },
-    {
-      "area": "semantics",
-      "status": "reviewed",
-      "evidence": "解析叠加极值或封口后内部厚度冻结已检查；视觉含义经源码审查。"
-    },
-    {
-      "area": "interaction",
-      "status": "tested",
-      "evidence": "check.cjs 模拟 DOM 执行进度、原位切换、拖动方向、pointercancel 与播放；不等于浏览器或真机测试。"
-    },
-    {
-      "area": "layout",
-      "status": "pending",
-      "evidence": "浏览器预览未连通，本地浏览器下载失败；实际渲染与手机触摸待验证。"
-    },
-    {
-      "area": "host",
-      "status": "pending",
-      "evidence": "浏览器预览未连通，本地浏览器下载失败；实际渲染与手机触摸待验证。"
-    }
-  ]
+  "validation": "../docs/validation.md"
 }

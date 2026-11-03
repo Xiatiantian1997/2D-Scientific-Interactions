@@ -3,7 +3,7 @@
   "goal": "同一位置对应势能图的斜率、力与实际直线运动，曲线不是轨道。",
   "model": {
     "assumptions": "一维理想谐振子，弹性系数1N/m、质量1kg、无阻尼；U=x²/2，F=−x，拖动为外部放置并清零速度；释放后精确x=Acos(t),v=−Asin(t)，演示一个周期。",
-    "evidence": "欧姆定律与焦耳定律；或经典保守力F=−dU/dx与谐振子解析解。模型条件在页面注明。"
+    "evidence": "经典保守力 F=−dU/dx 与一维理想谐振子解析解；模型条件在页面注明。"
   },
   "states": [
     {
@@ -101,38 +101,5 @@
     "required": false,
     "reason": "同一位置的势能、力和直线运动同时联动；不是正常/异常状态比较。"
   },
-  "preserved": [
-    {
-      "feature": "独立交互、直接拖动、必要比较",
-      "status": "retained",
-      "evidence": "两个独立单元；电路保留同位置基准虚影，势能多图使用同一x。"
-    }
-  ],
-  "checks": [
-    {
-      "area": "model",
-      "status": "tested",
-      "evidence": "欧姆/焦耳关系及恒压恒流极值，或谐振子能量守恒、中心非零速度，已计算核对。"
-    },
-    {
-      "area": "semantics",
-      "status": "reviewed",
-      "evidence": "源码检查基准随条件重算，或势能图与实际直线轨道明确分开；同一状态派生表示。"
-    },
-    {
-      "area": "interaction",
-      "status": "tested",
-      "evidence": "模拟DOM检查输入、条件切换/暂停、拖动取消或重新放置；不等于浏览器实测。"
-    },
-    {
-      "area": "layout",
-      "status": "pending",
-      "evidence": "实际浏览器排版和手机触摸未完成验证。"
-    },
-    {
-      "area": "host",
-      "status": "pending",
-      "evidence": "实际浏览器排版和手机触摸未完成验证。"
-    }
-  ]
+  "validation": "../docs/validation.md"
 }

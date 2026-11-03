@@ -79,38 +79,5 @@
     ],
     "placement": "原位浅色初始范围与同批粒子回看"
   },
-  "preserved": [
-    {
-      "feature": "触摸直接操作与基准参考",
-      "status": "retained",
-      "evidence": "观察框可拖动；下方时间和观察位置滑条支持键盘"
-    }
-  ],
-  "checks": [
-    {
-      "area": "model",
-      "status": "reviewed",
-      "evidence": "160个粒子作等概率一维随机游走，反射边界；纵坐标仅分散绘制，不是第二运动维度。固定随机种子；步间直线插值是显示过渡，不是分子轨迹。"
-    },
-    {
-      "area": "semantics",
-      "status": "reviewed",
-      "evidence": "原子身份不随相机或观察框变化"
-    },
-    {
-      "area": "interaction",
-      "status": "tested",
-      "evidence": "模拟DOM验证空白复位、拖动/滚动取消、多指不误复位；未完成真实设备手感测试。"
-    },
-    {
-      "area": "layout",
-      "status": "pending",
-      "evidence": "真实宿主小屏渲染待验证"
-    },
-    {
-      "area": "host",
-      "status": "pending",
-      "evidence": "触屏和多指手感待验证"
-    }
-  ]
+  "validation": "../docs/validation.md"
 }

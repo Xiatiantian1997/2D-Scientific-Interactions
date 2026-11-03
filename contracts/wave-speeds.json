@@ -112,40 +112,7 @@
       "initial_envelope",
       "axes"
     ],
-    "placement": "图上方情景按钮"
+    "placement": "图下操作区情景按钮"
   },
-  "preserved": [
-    {
-      "feature": "原位对照、连续动画、直接拖动",
-      "status": "retained",
-      "evidence": "沿用已认可2D布局，图上横拖回看"
-    }
-  ],
-  "checks": [
-    {
-      "area": "model",
-      "status": "tested",
-      "evidence": "三组k的速度比、恒相位位置与包络中心位移已计算核对；明确为忽略展宽的一阶窄带近似。"
-    },
-    {
-      "area": "semantics",
-      "status": "reviewed",
-      "evidence": "相速度对应圆点和原点连线，群速度对应方块和切线，范围一致。"
-    },
-    {
-      "area": "interaction",
-      "status": "tested",
-      "evidence": "模拟DOM检查原位切换保留时间、拖动取消、播放终止；不是浏览器实测。"
-    },
-    {
-      "area": "layout",
-      "status": "pending",
-      "evidence": "实际浏览器显示和手机触摸未验证。"
-    },
-    {
-      "area": "host",
-      "status": "pending",
-      "evidence": "实际浏览器显示和手机触摸未验证。"
-    }
-  ]
+  "validation": "../docs/validation.md"
 }

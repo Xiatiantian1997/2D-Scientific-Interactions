@@ -98,38 +98,5 @@
     "required": false,
     "reason": "本单元展示同一对象同时存在的两个分量；坐标轴与完整单位圆为固定参考，无正常/异常或基准工况。"
   },
-  "preserved": [
-    {
-      "feature": "直接拖动、暂停、连续变化",
-      "status": "retained",
-      "evidence": "箭头拖动与等价滑条，播放可中断；未合并其他主题"
-    }
-  ],
-  "checks": [
-    {
-      "area": "model",
-      "status": "tested",
-      "evidence": "6个相位的a²+b²=1已计算核对；解析式与三角函数定义一致。"
-    },
-    {
-      "area": "semantics",
-      "status": "reviewed",
-      "evidence": "箭头=完整复数，实部实线、虚部虚线；下图横轴明确为相位而非空间位置。"
-    },
-    {
-      "area": "interaction",
-      "status": "tested",
-      "evidence": "模拟DOM执行播放、暂停、角度拖动及pointercancel；不是浏览器实测。"
-    },
-    {
-      "area": "layout",
-      "status": "pending",
-      "evidence": "代码按容器宽度布局；实际浏览器画面、小屏与真机触摸未验证。"
-    },
-    {
-      "area": "host",
-      "status": "pending",
-      "evidence": "代码按容器宽度布局；实际浏览器画面、小屏与真机触摸未验证。"
-    }
-  ]
+  "validation": "../docs/validation.md"
 }
