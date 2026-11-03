@@ -12,6 +12,10 @@
 
 配套：[触摸与控件](docs/touch-and-controls.md) · [创作简表](templates/authoring-brief.md) · [验证说明](docs/validation.md)
 
+## 当前基线
+
+2D 方法与交互行为约定已确定，控件遵循 [当前组件规范](https://github.com/Xiatiantian1997/UI-design/blob/main/docs/controls.md)。现有 13 个参考实现仍包含旧控件，不代表已全部迁移；科学模型可复用，旧整区复位、独立播放按钮等需在接入时替换。UI 与主题可继续调整，无需重做科学模型。
+
 ## 快速使用
 
 ```sh
