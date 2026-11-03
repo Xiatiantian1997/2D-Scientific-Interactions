@@ -25,3 +25,7 @@ details[open]>summary{margin-bottom:12px}
 .sci-flash{animation:sci-reset .3s ease-out}@keyframes sci-reset{from{background:var(--muted)}to{background:transparent}}
 @media(prefers-reduced-motion:reduce){.sci-flash{animation:none;background:var(--muted)}}
 .sci-panel{display:flex;flex-direction:column;gap:16px}.sci-group{width:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:12px;align-items:start}
+/* Readout slots reserve enough height for a two-line result on narrow screens. */
+[data-readouts]>output,[data-readouts]>span[data-time]{display:none}
+[data-readouts]>[data-reading]{flex-basis:100%;min-height:3.1em}
+[data-latest]{min-height:3.1em!important}

@@ -53,7 +53,7 @@ const scope=k=>`[data-scope="${k}"]`;
    const track=page.locator(scope(animated.key)+' [role=slider]');await page.evaluate(k=>document.querySelector('section').sciApi.reset(k),animated.key);
    const b=await track.boundingBox(),tx=animated.kind==='wheel'?b.x+b.width*.12:b.x+b.width*.5;
    await page.mouse.click(tx,b.y+b.height/2);await page.clock.runFor(120);assert.equal(await track.getAttribute('data-playing'),'true',file+' starts');
-   await page.mouse.click(tx,b.y+b.height/2);assert.equal(await track.getAttribute('data-playing'),'false',file+' pauses');
+   await page.mouse.click(tx,b.y+b.height/2);assert.equal(await track.getAttribute('data-playing'),'false',file+' pauses '+JSON.stringify({before:b,after:await track.boundingBox()}));
    const frozen=await page.evaluate(k=>document.querySelector('section').sciApi.getControl(k),animated.key);await page.clock.runFor(300);assert.equal(await page.evaluate(k=>document.querySelector('section').sciApi.getControl(k),animated.key),frozen,file+' pause retains time');
    await page.mouse.click(tx,b.y+b.height/2);await page.clock.runFor(15500);assert.equal(await track.getAttribute('data-playing'),'false',file+' stops at end');
    const end=await page.evaluate(k=>document.querySelector('section').sciApi.getControl(k),animated.key);assert(Math.abs(end-(file==='sampling-distribution.html'?1:0))<.011,file+' end resets only time');

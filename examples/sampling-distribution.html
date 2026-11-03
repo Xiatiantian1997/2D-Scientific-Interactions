@@ -25,6 +25,10 @@ details[open]&gt;summary{margin-bottom:12px}
 .sci-flash{animation:sci-reset .3s ease-out}@keyframes sci-reset{from{background:var(--muted)}to{background:transparent}}
 @media(prefers-reduced-motion:reduce){.sci-flash{animation:none;background:var(--muted)}}
 .sci-panel{display:flex;flex-direction:column;gap:16px}.sci-group{width:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:12px;align-items:start}
+/* Readout slots reserve enough height for a two-line result on narrow screens. */
+[data-readouts]&gt;output,[data-readouts]&gt;span[data-time]{display:none}
+[data-readouts]&gt;[data-reading]{flex-basis:100%;min-height:3.1em}
+[data-latest]{min-height:3.1em!important}
 }:root{--background:#faf6e9;--foreground:#293c42;--card:#fffdf5;--muted:#eee9dc;--muted-foreground:#59676b;--border:#c9ccbf;--primary:#346c79;--primary-foreground:#ffffff;--secondary:#eeeee5;--ring:#346c79;--viz-series-1:#407e8a;--viz-series-2:#aa7739;--viz-series-3:#6e70a1;--viz-series-4:#52836c;--viz-series-5:#9b6877;--viz-series-6:#7b7461}&lt;/style&gt;&lt;body&gt;&lt;script&gt;/* Scientific component behavior. Models own state; themes own appearance. */
 (()=&gt;{
 &#x27;use strict&#x27;;
