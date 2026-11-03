@@ -4,90 +4,149 @@
 .btn{background:var(--secondary);color:var(--foreground);border:1px solid var(--border);border-radius:12px;padding:8px 14px;cursor:pointer}.btn-primary,button[aria-pressed=true],button[aria-selected=true]{background:var(--primary);color:var(--primary-foreground)}.btn-ghost{border-color:transparent;background:transparent}.form-range{accent-color:var(--primary);min-height:44px;max-width:100%}.form-label{display:block}.viz-row,.viz-controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.viz-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:16px}.card{background:var(--card);border-radius:16px;padding:16px}.text-small{font-size:.9rem}.text-muted{color:var(--muted-foreground)}.tabular-nums{font-variant-numeric:tabular-nums}.form-check{display:flex;align-items:center;gap:8px;min-height:44px}.form-check-input{width:22px;height:22px}.cursor-interaction{cursor:pointer}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}.nav{display:flex;gap:8px;flex-wrap:wrap}.nav-link{border:0;border-radius:12px;padding:10px;background:var(--secondary);color:var(--foreground)}.nav-link.active{background:var(--primary);color:var(--primary-foreground)}[hidden]{display:none!important}@media(max-width:360px){body{padding:10px}.btn{padding:8px 10px}}
 
 
-/* All operation panels sit below their linked plots. Geometry is stable. */
-[data-play]{width:48px;min-width:48px;height:48px;padding:0;display:grid;place-items:center;font-size:22px;line-height:1}
-[data-reset-area]{border-radius:16px;touch-action:pan-y;overflow-anchor:none}
-.sci-controls{position:relative;isolation:isolate;padding:16px 12px 28px;margin-top:16px}
-.sci-controls::before{content:&quot;&quot;;position:absolute;inset:0;border-radius:inherit;background:var(--foreground);opacity:0;z-index:-1;pointer-events:none;transition:opacity 150ms}
-.sci-controls.flash::before{opacity:.07}
-[data-feedback]{min-height:2.8em;margin:12px 0 0}
-.form-range{width:100%;min-width:0}output{font-variant-numeric:tabular-nums;white-space:nowrap}
-@media(prefers-reduced-motion:reduce){.sci-controls::before{transition:none}}
-
 /* Intrinsic-width disclosure: only arrow + label is the toggle target. */
 summary{box-sizing:border-box;display:list-item;list-style-position:inside;inline-size:fit-content;max-inline-size:100%;min-block-size:44px;padding:8px 12px;border:1px solid var(--border);border-radius:var(--sci-control-radius,12px);background:var(--secondary);color:var(--foreground);touch-action:manipulation;cursor:pointer}
 summary:focus-visible{outline:2px solid var(--ring);outline-offset:3px}
 details[open]&gt;summary{margin-bottom:12px}
-}:root{--background:#faf6e9;--foreground:#293c42;--card:#fffdf5;--muted:#eee9dc;--muted-foreground:#59676b;--border:#c9ccbf;--primary:#346c79;--primary-foreground:#ffffff;--secondary:#eeeee5;--ring:#346c79;--viz-series-1:#407e8a;--viz-series-2:#aa7739;--viz-series-3:#6e70a1;--viz-series-4:#52836c;--viz-series-5:#9b6877;--viz-series-6:#7b7461}&lt;/style&gt;&lt;body&gt;&lt;script&gt;/* Shared lower control-area behavior. Load before legacy fragments. */
+
+
+/* Shared control family. Override these tokens in the host UI, never in model code. */
+.sci-panel{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:12px;align-items:start;margin-top:16px}
+.sci-field{position:relative;display:flex;flex-direction:column;align-items:center;gap:12px;min-width:0;padding:16px 18px 34px;border:1px solid var(--border);border-radius:var(--sci-control-radius,16px);touch-action:pan-y;overflow:hidden}
+.sci-heading{display:flex;align-items:baseline;justify-content:space-between;gap:10px;width:100%;min-height:30px}.sci-label{font-weight:500}.sci-value{font-variant-numeric:tabular-nums;font-size:1rem}
+.sci-button{width:var(--sci-button-width,180px);max-width:100%;height:var(--sci-control-height,48px);border:1px solid var(--border);border-radius:var(--sci-control-radius,16px);background:var(--secondary);color:var(--foreground);padding:8px 12px;white-space:nowrap;font:inherit;cursor:pointer}
+.sci-slider,.sci-wheel{width:100%;height:var(--sci-control-height,48px);position:relative;overflow:hidden;border-radius:var(--sci-control-radius,16px);background:var(--muted);touch-action:pan-y;cursor:ew-resize;user-select:none;border:1px solid var(--border)}
+.sci-wheel{width:var(--sci-wheel-width,260px);max-width:100%;height:56px}
+.sci-fill{position:absolute;inset:0 auto 0 0;width:var(--sci-progress);background:var(--primary);opacity:.65;pointer-events:none}
+.sci-strip{position:absolute;inset:0;pointer-events:none}.sci-tick{position:absolute;width:33.333%;left:33.333%;height:100%;display:grid;place-items:center;font-variant-numeric:tabular-nums}.sci-wheel::after{content:&#x27;&#x27;;position:absolute;inset:5px 31%;border:1px solid var(--border);border-radius:10px;pointer-events:none}
+.sci-slider[data-playing=true],.sci-wheel[data-playing=true]{box-shadow:inset 0 0 0 2px var(--primary)}
+.sci-hint{font-size:.8rem;color:var(--muted-foreground);pointer-events:none;min-height:22px}.sci-readouts{display:flex;flex-wrap:wrap;gap:10px 20px;margin:12px 0}.sci-readouts:empty{display:none}
+.sci-field:focus-visible,.sci-slider:focus-visible,.sci-wheel:focus-visible,.sci-button:focus-visible{outline:2px solid var(--ring);outline-offset:2px}
+.sci-flash{animation:sci-reset .3s ease-out}@keyframes sci-reset{from{background:var(--muted)}to{background:transparent}}
+@media(prefers-reduced-motion:reduce){.sci-flash{animation:none;background:var(--muted)}}
+.sci-panel{display:flex;flex-direction:column;gap:16px}.sci-group{width:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:12px;align-items:start}
+}:root{--background:#faf6e9;--foreground:#293c42;--card:#fffdf5;--muted:#eee9dc;--muted-foreground:#59676b;--border:#c9ccbf;--primary:#346c79;--primary-foreground:#ffffff;--secondary:#eeeee5;--ring:#346c79;--viz-series-1:#407e8a;--viz-series-2:#aa7739;--viz-series-3:#6e70a1;--viz-series-4:#52836c;--viz-series-5:#9b6877;--viz-series-6:#7b7461}&lt;/style&gt;&lt;body&gt;&lt;script&gt;/* Scientific component behavior. Models own state; themes own appearance. */
 (()=&gt;{
 &#x27;use strict&#x27;;
-window.SciControls={
-play(button,running,rest=&#x27;播放&#x27;){
- button.textContent=running?&#x27;Ⅱ&#x27;:&#x27;▶&#x27;;
- button.setAttribute(&#x27;aria-label&#x27;,running?&#x27;暂停&#x27;:rest);
- button.setAttribute(&#x27;aria-pressed&#x27;,String(running));
-},
-mount(root,{reset,pause=()=&gt;{},cancelGesture=()=&gt;{}}){
- const area=root.querySelector(&#x27;[data-reset-area]&#x27;);
- if(!area)throw Error(&#x27;Missing lower control area&#x27;);
- const feedback=area.querySelector(&#x27;[data-feedback]&#x27;);
- const prompt=feedback.textContent,abort=new AbortController(),signal=abort.signal;
- let candidate=null,timer=0,flash=0;const pointers=new Set();
- const ignore=t=&gt;t.closest(&#x27;button,input,select,textarea,a,label,summary,[role=&quot;button&quot;]&#x27;);
- const clear=()=&gt;{candidate=null;};
- const listen=(el,type,fn,options={})=&gt;el.addEventListener(type,fn,{...options,signal});
- const restore=()=&gt;{cancelGesture();reset();clearTimeout(timer);clearTimeout(flash);area.classList.add(&#x27;flash&#x27;);feedback.textContent=&#x27;已复位 ✓&#x27;;flash=setTimeout(()=&gt;area.classList.remove(&#x27;flash&#x27;),180);timer=setTimeout(()=&gt;feedback.textContent=prompt,900);};
- listen(document,&#x27;pointerdown&#x27;,e=&gt;{pointers.add(e.pointerId);if(pointers.size&gt;1){clear();cancelGesture();}},{capture:true});
- listen(area,&#x27;pointerdown&#x27;,e=&gt;{if(e.button&gt;0||!e.isPrimary||pointers.size&gt;1||ignore(e.target)){clear();return;}candidate={id:e.pointerId,x:e.clientX,y:e.clientY,t:performance.now()};});
- listen(document,&#x27;pointermove&#x27;,e=&gt;{if(candidate&amp;&amp;candidate.id===e.pointerId&amp;&amp;Math.hypot(e.clientX-candidate.x,e.clientY-candidate.y)&gt;8)clear();},{capture:true});
- listen(document,&#x27;pointerup&#x27;,e=&gt;{const c=candidate;clear();pointers.delete(e.pointerId);if(c&amp;&amp;c.id===e.pointerId&amp;&amp;area.contains(e.target)&amp;&amp;!ignore(e.target)&amp;&amp;performance.now()-c.t&lt;500&amp;&amp;Math.hypot(e.clientX-c.x,e.clientY-c.y)&lt;=8)restore();},{capture:true});
- listen(document,&#x27;pointercancel&#x27;,e=&gt;{pointers.delete(e.pointerId);clear();cancelGesture();},{capture:true});
- listen(area,&#x27;pointerleave&#x27;,clear);listen(area,&#x27;lostpointercapture&#x27;,clear);
- listen(document,&#x27;scroll&#x27;,clear,{capture:true});
- listen(document,&#x27;visibilitychange&#x27;,()=&gt;{clear();pointers.clear();cancelGesture();if(document.hidden)pause();});
- listen(window,&#x27;blur&#x27;,()=&gt;{clear();pointers.clear();cancelGesture();pause();});
- listen(root,&#x27;keydown&#x27;,e=&gt;{if(e.key.toLowerCase()===&#x27;r&#x27;&amp;&amp;!e.ctrlKey&amp;&amp;!e.metaKey&amp;&amp;!e.altKey&amp;&amp;!e.target.closest(&#x27;input,textarea,select,[contenteditable=&quot;true&quot;]&#x27;)){e.preventDefault();restore();}});
- root.tabIndex=0;
- root.sciApi={reset:restore,pause,getState:()=&gt;({...root.dataset})};
- root.sciDisposeControls=()=&gt;{abort.abort();clearTimeout(timer);clearTimeout(flash);pause();};
- return root.sciApi;
-}
-};
+const clamp=(v,a,b)=&gt;Math.max(a,Math.min(b,v));
+const modulo=(v,p)=&gt;((v%p)+p)%p;
+window.SciControls={mount(root,{controls,pause=()=&gt;{},cancelGesture=()=&gt;{},transport,graph}){
+ const host=root.querySelector(&#x27;[data-controls]&#x27;), abort=new AbortController(), signal=abort.signal;
+ if(!host)throw Error(&#x27;An experiment requires a data-controls host&#x27;);
+ const listen=(node,type,fn,options={})=&gt;node.addEventListener(type,fn,{...options,signal});
+ const make=(tag,cls,text)=&gt;{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
+ const groups=new Map();
+ const refresh=[],resets=new Map(),values=new Map(),pointers=new Set();let syncing=false,gesture=null;
+ const sync=()=&gt;{if(syncing)return;syncing=true;try{refresh.forEach(f=&gt;f());}finally{syncing=false;}};
+ root.sciSync=sync;host.className=&#x27;sci-panel&#x27;;
+ // A pointer must remain a short, single-pointer tap. A vertical swipe belongs to scrolling.
+ function bindGesture(el,{axis=&#x27;x&#x27;,accept=()=&gt;true,start=()=&gt;{},move=()=&gt;{},tap=()=&gt;{},end=()=&gt;{},cancel=()=&gt;{}}){
+  let g=null;
+  const discard=()=&gt;{if(g){g=null;cancel();}if(gesture===discard)gesture=null;};
+  listen(el,&#x27;pointerdown&#x27;,e=&gt;{if(!e.isPrimary||e.button&gt;0||pointers.size&gt;1||!accept(e))return;g={id:e.pointerId,x:e.clientX,y:e.clientY,t:performance.now(),moved:false};gesture=discard;start(e);});
+  listen(document,&#x27;pointermove&#x27;,e=&gt;{if(!g||g.id!==e.pointerId)return;const dx=e.clientX-g.x,dy=e.clientY-g.y;if(axis===&#x27;x&#x27;&amp;&amp;!g.moved&amp;&amp;Math.abs(dy)&gt;8&amp;&amp;Math.abs(dy)&gt;Math.abs(dx)){discard();return;}if(Math.abs(dx)&gt;6||(axis===&#x27;free&#x27;&amp;&amp;Math.abs(dy)&gt;6)||g.moved){g.moved=true;move(e,dx);}}, {capture:true});
+  listen(document,&#x27;pointerup&#x27;,e=&gt;{if(!g||g.id!==e.pointerId)return;const q=g;g=null;gesture=null;if(q.moved)end(e);else if(performance.now()-q.t&lt;500&amp;&amp;Math.hypot(e.clientX-q.x,e.clientY-q.y)&lt;=8)tap(e);else cancel();sync();},{capture:true});
+  listen(document,&#x27;pointercancel&#x27;,discard,{capture:true});
+  return discard;
+ }
+ listen(document,&#x27;pointerdown&#x27;,e=&gt;{pointers.add(e.pointerId);if(pointers.size&gt;1){gesture?.();cancelGesture();}},{capture:true});
+ for(const type of [&#x27;pointerup&#x27;,&#x27;pointercancel&#x27;])listen(document,type,e=&gt;pointers.delete(e.pointerId));
+ const stopAll=()=&gt;{gesture?.();pointers.clear();cancelGesture();pause();sync();};
+ listen(document,&#x27;scroll&#x27;,()=&gt;{gesture?.();cancelGesture();},{capture:true});
+ listen(window,&#x27;blur&#x27;,stopAll);listen(document,&#x27;visibilitychange&#x27;,()=&gt;{if(document.hidden)stopAll();});
+ for(const c of controls){
+  const field=make(&#x27;div&#x27;,&#x27;sci-field&#x27;);field.dataset.scope=c.key;field.tabIndex=0;
+  const heading=make(&#x27;div&#x27;,&#x27;sci-heading&#x27;),label=make(&#x27;span&#x27;,&#x27;sci-label&#x27;,c.label),out=make(&#x27;output&#x27;,&#x27;sci-value&#x27;);heading.append(label,out);field.append(heading);
+  const input=c.input;let get=c.get,set=c.set;
+  if(input){get=()=&gt;Number(input.value);set=v=&gt;{input.value=v;input.dispatchEvent(new Event(&#x27;input&#x27;,{bubbles:true}));};}
+  const read=()=&gt;get?.();values.set(c.key,read);
+  function apply(v){const resume=transport?.isPlaying();set(v);if(resume&amp;&amp;!c.transport&amp;&amp;!transport.isPlaying())transport.toggle();sync();}
+  const defaultValue=c.defaultValue??c.items?.[0]?.[0];
+  if(c.kind===&#x27;action&#x27;){
+   const button=make(&#x27;button&#x27;,&#x27;sci-button&#x27;,c.text);button.type=&#x27;button&#x27;;listen(button,&#x27;click&#x27;,()=&gt;{c.act();sync();});field.append(button);out.hidden=true;
+  }else if(c.kind===&#x27;choice&#x27;){
+   const button=make(&#x27;button&#x27;,&#x27;sci-button&#x27;);button.type=&#x27;button&#x27;;button.setAttribute(&#x27;aria-label&#x27;,c.label+&#x27;：点击切换&#x27;);
+   listen(button,&#x27;click&#x27;,()=&gt;{const i=c.items.findIndex(a=&gt;a[0]===read());apply(c.items[(i+1)%c.items.length][0]);});field.append(button);out.hidden=true;
+   refresh.push(()=&gt;{button.textContent=c.items.find(a=&gt;a[0]===read())?.[1]??String(read());button.dataset.value=read();button.setAttribute(&#x27;aria-label&#x27;,c.label+&#x27;：&#x27;+button.textContent+&#x27;，点击切换&#x27;);});
+  }else{
+   const min=c.min??Number(input.min),max=c.max??Number(input.max),step=c.step??Number(input.step||1);
+   // Existing native inputs are the model&#x27;s adapter; all visible controls share this runtime.
+   if(input){input.hidden=true;input.tabIndex=-1;input.setAttribute(&#x27;aria-hidden&#x27;,&#x27;true&#x27;);field.append(input);}
+   const track=make(&#x27;div&#x27;,c.kind===&#x27;wheel&#x27;?&#x27;sci-wheel&#x27;:&#x27;sci-slider&#x27;);track.tabIndex=0;track.setAttribute(&#x27;role&#x27;,&#x27;slider&#x27;);track.setAttribute(&#x27;aria-label&#x27;,c.label);track.setAttribute(&#x27;aria-valuemin&#x27;,min);track.setAttribute(&#x27;aria-valuemax&#x27;,max);field.append(track);
+   const fill=make(&#x27;span&#x27;,&#x27;sci-fill&#x27;),strip=make(&#x27;span&#x27;,&#x27;sci-strip&#x27;);track.append(fill,strip);
+   let origin=0,wasPlaying=false,didPause=false,raw=0;
+   const normalize=v=&gt;c.period?min+modulo(v-min,c.period):clamp(v,min,max);
+   const update=v=&gt;{raw=v;const n=normalize(v);set(c.discrete?normalize(Math.round(v)):Math.round(n/step)*step);sync();};
+   const isWheel=c.kind===&#x27;wheel&#x27;,stops=c.stops||[];
+   const formatted=v=&gt;(Math.round(v*100)/100)+(c.unit||&#x27;&#x27;);
+   const next=()=&gt;{const current=read(),n=stops.find(v=&gt;v&gt;current+1e-7);apply(n??stops[0]);};
+   const toggle=()=&gt;{c.transport?.toggle();sync();};
+   bindGesture(track,{
+    start:()=&gt;{origin=read();raw=origin;wasPlaying=!!c.transport?.isPlaying();didPause=false;},
+    move:(e,dx)=&gt;{if(!didPause){if(c.transport)pause();didPause=true;}const width=track.getBoundingClientRect().width;update(origin+(isWheel?-dx/Math.max(60,width/3)*(stops[1]-stops[0]||1):dx/width*(max-min)));},
+    tap:e=&gt;{if(isWheel){const b=track.getBoundingClientRect(),part=(e.clientX-b.left)/b.width;if(c.transport&amp;&amp;(part&lt;.3||part&gt;.7))toggle();else next();}else if(c.transport)toggle();else{const b=track.getBoundingClientRect();update(min+(e.clientX-b.left)/b.width*(max-min));}},
+    end:()=&gt;{if(isWheel){const current=normalize(raw),near=(c.period?[...stops,stops[0]+c.period]:stops).reduce((a,v)=&gt;Math.abs(v-current)&lt;Math.abs(a-current)?v:a,stops[0]);const gap=stops[1]-stops[0]||1;if(c.discrete)update(Math.round(raw));else if(Math.abs(near-current)&lt;=gap*.14)update(near);}
+     if(wasPlaying&amp;&amp;!c.transport.isPlaying())c.transport.toggle();},
+    cancel:()=&gt;{if(didPause&amp;&amp;c.transport)pause();}
+   });
+   listen(track,&#x27;keydown&#x27;,e=&gt;{if([&#x27;ArrowLeft&#x27;,&#x27;ArrowRight&#x27;,&#x27;Home&#x27;,&#x27;End&#x27;,&#x27; &#x27;].includes(e.key)){e.preventDefault();if(e.key===&#x27; &#x27;){if(c.transport)toggle();else if(isWheel)next();return;}update(e.key===&#x27;Home&#x27;?min:e.key===&#x27;End&#x27;?max:read()+(e.key===&#x27;ArrowRight&#x27;?1:-1)*(isWheel?(stops[1]-stops[0]||1):step));}});
+   refresh.push(()=&gt;{const v=read();out.textContent=formatted(v);track.setAttribute(&#x27;aria-valuenow&#x27;,v);track.setAttribute(&#x27;aria-valuetext&#x27;,formatted(v));track.dataset.playing=String(!!c.transport?.isPlaying());track.style.setProperty(&#x27;--sci-progress&#x27;,100*clamp((v-min)/(max-min),0,1)+&#x27;%&#x27;);
+    if(isWheel){const gap=stops[1]-stops[0]||1,index=Math.floor((v-min)/gap),fraction=(v-min)/gap-index;strip.replaceChildren();for(let i=-2;i&lt;=2;i++){const item=make(&#x27;span&#x27;,&#x27;sci-tick&#x27;,formatted(normalize(min+(index+i)*gap)));item.style.transform=`translateX(${(i-fraction)*100}%)`;strip.append(item);}fill.hidden=true;}
+   });
+  }
+  if(c.kind!==&#x27;action&#x27;){
+   const hint=make(&#x27;span&#x27;,&#x27;sci-hint&#x27;,&#x27;点本区空白复位&#x27;);field.append(hint);
+   const reset=()=&gt;{cancelGesture();apply(defaultValue);field.classList.remove(&#x27;sci-flash&#x27;);void field.offsetWidth;field.classList.add(&#x27;sci-flash&#x27;);field.setAttribute(&#x27;aria-label&#x27;,c.label+&#x27;，已复位&#x27;);};resets.set(c.key,reset);
+   // Reset only when down and up are on this field&#x27;s actual blank background.
+   let blank=false;bindGesture(field,{accept:e=&gt;e.target===field,start:e=&gt;{blank=true;},tap:e=&gt;{if(blank&amp;&amp;e.target===field)reset();},move:()=&gt;{blank=false;},cancel:()=&gt;{blank=false;}});
+   listen(field,&#x27;keydown&#x27;,e=&gt;{if(e.key===&#x27;Escape&#x27;&amp;&amp;!e.target.closest(&#x27;input,textarea,[contenteditable=true]&#x27;)){e.stopPropagation();reset();}});
+  }
+  const family=[&#x27;action&#x27;,&#x27;choice&#x27;].includes(c.kind)?&#x27;buttons&#x27;:c.kind===&#x27;wheel&#x27;?&#x27;wheels&#x27;:&#x27;sliders&#x27;;if(!groups.has(family)){const group=make(&#x27;div&#x27;,&#x27;sci-group&#x27;);group.dataset.family=family;groups.set(family,group);host.append(group);}groups.get(family).append(field);
+ }
+ // Graph taps pause/play; existing model-specific drags still edit the same state.
+ if(graph&amp;&amp;transport){
+  let before=false,oldDown=graph.onpointerdown,oldMove=graph.onpointermove,oldUp=graph.onpointerup;
+  graph.onpointerdown=graph.onpointermove=graph.onpointerup=null;
+  let event=null,started=false;
+  bindGesture(graph,{axis:root.id===&#x27;complex-wave&#x27;?&#x27;free&#x27;:&#x27;x&#x27;,start:e=&gt;{before=transport.isPlaying();event=e;started=false;},move:e=&gt;{if(!started){started=true;pause();oldDown?.call(graph,event);}oldMove?.call(graph,e);},tap:()=&gt;transport.toggle(),end:e=&gt;{oldUp?.call(graph,e);cancelGesture();if(before&amp;&amp;!transport.isPlaying())transport.toggle();},cancel:()=&gt;cancelGesture()});
+ }
+ root.sciApi={getState:()=&gt;({...root.dataset}),getControl:key=&gt;values.get(key)?.(),reset:key=&gt;{if(!resets.has(key))throw Error(&#x27;A valid local scope is required&#x27;);resets.get(key)();},pause:()=&gt;{pause();sync();},controls:controls.map(c=&gt;({key:c.key,kind:c.kind||&#x27;slider&#x27;,playable:!!c.transport,defaultValue:c.defaultValue??c.items?.[0]?.[0]}))};
+ root.sciDisposeControls=()=&gt;{abort.abort();pause();delete root.sciSync;};sync();return root.sciApi;
+}};
 })();
 &lt;/script&gt;&lt;section id=&quot;complex-wave&quot;&gt;
 &lt;style&gt;@layer sci-fragments {
-#complex-wave{color:var(--foreground);padding:8px 0}#complex-wave svg{width:100%;display:block}#complex-wave svg text{fill:var(--foreground);font-size:18px}#complex-wave .values{display:flex;flex-wrap:wrap;justify-content:center;gap:12px 24px;margin:8px 0 16px}#complex-wave .swatch{width:20px;display:inline-block;vertical-align:middle;margin-right:6px;border-top:3px solid var(--viz-series-1)}#complex-wave .imag{border-top:3px dashed var(--viz-series-2)}#complex-wave .phase-row{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;margin:12px 0}#complex-wave .range-label{display:flex;justify-content:space-between;gap:12px;margin-bottom:8px}#complex-wave .dial-hit{touch-action:none;cursor:grab}#complex-wave .dial-hit:active{cursor:grabbing}
-}&lt;/style&gt;
+#complex-wave{color:var(--foreground);padding:8px 0}#complex-wave svg{width:100%;display:block}#complex-wave svg text{fill:var(--foreground);font-size:18px}#complex-wave .values{display:flex;flex-wrap:wrap;justify-content:center;gap:12px 24px;margin:8px 0 16px}#complex-wave .swatch{width:20px;display:inline-block;vertical-align:middle;margin-right:6px;border-top:3px solid var(--viz-series-1)}#complex-wave .imag{border-top:3px dashed var(--viz-series-2)}#complex-wave .range-label{display:flex;justify-content:space-between;gap:12px;margin-bottom:8px}#complex-wave .dial-hit{touch-action:none;cursor:grab}#complex-wave .dial-hit:active{cursor:grabbing}}&lt;/style&gt;
 &lt;h3&gt;一个复数，两个分量&lt;/h3&gt;
 &lt;svg data-dial role=&quot;img&quot; aria-label=&quot;单位圆上的复数箭头。横向投影是实部，纵向投影是虚部。拖动圆内可改变相位。&quot;&gt;&lt;/svg&gt;
 &lt;div class=&quot;values tabular-nums&quot;&gt;&lt;span&gt;&lt;i class=&quot;swatch&quot;&gt;&lt;/i&gt;实部 a：&lt;output data-real&gt;&lt;/output&gt;&lt;/span&gt;&lt;span&gt;&lt;i class=&quot;swatch imag&quot;&gt;&lt;/i&gt;虚部 b：&lt;output data-imag&gt;&lt;/output&gt;&lt;/span&gt;&lt;/div&gt;
 &lt;svg data-trace role=&quot;img&quot; aria-label=&quot;相位从0度到360度，实部描出余弦，虚部描出正弦；标记对应上方箭头的当前相位。&quot;&gt;&lt;/svg&gt;
-&lt;div class=&quot;sci-controls&quot; data-reset-area&gt;
-&lt;div class=&quot;phase-row&quot;&gt;&lt;button class=&quot;btn&quot; type=&quot;button&quot; data-play&gt;播放&lt;/button&gt;&lt;div&gt;&lt;div class=&quot;range-label&quot;&gt;&lt;label for=&quot;complex-phase&quot;&gt;相位 θ&lt;/label&gt;&lt;output data-angle&gt;45°&lt;/output&gt;&lt;/div&gt;&lt;input class=&quot;form-range&quot; id=&quot;complex-phase&quot; type=&quot;range&quot; min=&quot;0&quot; max=&quot;360&quot; step=&quot;1&quot; value=&quot;45&quot;&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;div class=&quot;text-small&quot; aria-live=&quot;polite&quot; data-status&gt;固定位置 · 箭头长度固定为 1&lt;/div&gt;
-&lt;p class=&quot;text-small text-muted&quot; data-feedback role=&quot;status&quot;&gt;点操作区空白回到 45°&lt;/p&gt;&lt;/div&gt;
+&lt;div data-readouts class=&quot;sci-readouts&quot;&gt;&lt;output data-angle&gt;45°&lt;/output&gt;&lt;div class=&quot;text-small&quot; aria-live=&quot;polite&quot; data-status&gt;固定位置 · 箭头长度固定为 1&lt;/div&gt;&lt;/div&gt;
+&lt;div data-controls&gt;&lt;input class=&quot;form-range&quot; id=&quot;complex-phase&quot; type=&quot;range&quot; min=&quot;0&quot; max=&quot;360&quot; step=&quot;1&quot; value=&quot;45&quot;&gt;&lt;/div&gt;
 &lt;script&gt;
-(()=&gt;{const root=document.getElementById(&#x27;complex-wave&#x27;),dial=root.querySelector(&#x27;[data-dial]&#x27;),plot=root.querySelector(&#x27;[data-trace]&#x27;),range=root.querySelector(&#x27;input&#x27;),play=root.querySelector(&#x27;[data-play]&#x27;),real=root.querySelector(&#x27;[data-real]&#x27;),imag=root.querySelector(&#x27;[data-imag]&#x27;),angle=root.querySelector(&#x27;[data-angle]&#x27;);const NS=&#x27;http://www.w3.org/2000/svg&#x27;;let theta=45,running=false,last=0,visible=true,drag=null,cx=180,cy=139,r=90,w=360;let refs={};
+(()=&gt;{const root=document.getElementById(&#x27;complex-wave&#x27;),dial=root.querySelector(&#x27;[data-dial]&#x27;),plot=root.querySelector(&#x27;[data-trace]&#x27;),range=root.querySelector(&#x27;input&#x27;),transport={toggle:null,isPlaying:()=&gt;running},real=root.querySelector(&#x27;[data-real]&#x27;),imag=root.querySelector(&#x27;[data-imag]&#x27;),angle=root.querySelector(&#x27;[data-angle]&#x27;);const NS=&#x27;http://www.w3.org/2000/svg&#x27;;let theta=45,running=false,last=0,visible=true,drag=null,cx=180,cy=139,r=90,w=360;let refs={};
 function add(parent,tag,attrs,text){const n=document.createElementNS(NS,tag);Object.entries(attrs||{}).forEach(([k,v])=&gt;n.setAttribute(k,v));if(text!==undefined)n.textContent=text;parent.append(n);return n;}
 function attr(n,a){Object.entries(a).forEach(([k,v])=&gt;n.setAttribute(k,v));}
 function number(v){return(Math.abs(v)&lt;.0005?0:v).toFixed(2);}
-function update(){const t=theta*Math.PI/180,a=Math.cos(t),b=Math.sin(t),x=cx+r*a,y=cy-r*b;attr(refs.x,{x2:x});attr(refs.y,{y2:y});attr(refs.project,{d:`M${x} ${cy} V${y} H${cx}`});attr(refs.arrow,{x2:x,y2:y});const backX=x-10*a,backY=y+10*b;attr(refs.head,{d:`M${backX-4*b} ${backY-4*a} L${x} ${y} L${backX+4*b} ${backY+4*a}`});attr(refs.tip,{cx:x,cy:y});const px=64+(w-82)*theta/360;attr(refs.guide,{x1:px,x2:px});attr(refs.realPoint,{cx:px,cy:99-48*a});attr(refs.imagPoint,{x:px-4,y:99-48*b-4});real.textContent=number(a);imag.textContent=number(b);angle.textContent=Math.round(theta)+&#x27;°&#x27;;range.value=String(theta);SciControls.play(play,running);root.dataset.phase=theta.toFixed(3);root.dataset.real=a;root.dataset.imag=b;root.dataset.running=running;}
+function update(){const t=theta*Math.PI/180,a=Math.cos(t),b=Math.sin(t),x=cx+r*a,y=cy-r*b;attr(refs.x,{x2:x});attr(refs.y,{y2:y});attr(refs.project,{d:`M${x} ${cy} V${y} H${cx}`});attr(refs.arrow,{x2:x,y2:y});const backX=x-10*a,backY=y+10*b;attr(refs.head,{d:`M${backX-4*b} ${backY-4*a} L${x} ${y} L${backX+4*b} ${backY+4*a}`});attr(refs.tip,{cx:x,cy:y});const px=64+(w-82)*theta/360;attr(refs.guide,{x1:px,x2:px});attr(refs.realPoint,{cx:px,cy:99-48*a});attr(refs.imagPoint,{x:px-4,y:99-48*b-4});real.textContent=number(a);imag.textContent=number(b);angle.textContent=Math.round(theta)+&#x27;°&#x27;;range.value=String(theta);root.dataset.phase=theta.toFixed(3);root.dataset.real=a;root.dataset.imag=b;root.dataset.running=running;;root.sciSync?.();}
 function draw(){w=Math.max(280,root.clientWidth);cx=w/2;cy=139;r=Math.min(94,(w-116)/2);dial.replaceChildren();plot.replaceChildren();dial.setAttribute(&#x27;viewBox&#x27;,`0 0 ${w} 275`);dial.style.height=&#x27;275px&#x27;;plot.setAttribute(&#x27;viewBox&#x27;,`0 0 ${w} 210`);plot.style.height=&#x27;210px&#x27;;
 add(dial,&#x27;circle&#x27;,{cx,cy,r,fill:&#x27;none&#x27;,stroke:&#x27;var(--border)&#x27;,&#x27;stroke-width&#x27;:1});add(dial,&#x27;line&#x27;,{x1:cx-r-18,y1:cy,x2:cx+r+18,y2:cy,stroke:&#x27;var(--border)&#x27;});add(dial,&#x27;line&#x27;,{x1:cx,y1:cy-r-16,x2:cx,y2:cy+r+15,stroke:&#x27;var(--border)&#x27;});
 add(dial,&#x27;text&#x27;,{x:cx,y:18,&#x27;text-anchor&#x27;:&#x27;middle&#x27;},&#x27;虚轴 ↑&#x27;);add(dial,&#x27;text&#x27;,{x:w-8,y:cy-12,&#x27;text-anchor&#x27;:&#x27;end&#x27;},&#x27;实轴 →&#x27;);add(dial,&#x27;text&#x27;,{x:cx-10,y:cy+17,&#x27;text-anchor&#x27;:&#x27;end&#x27;},&#x27;0&#x27;);add(dial,&#x27;text&#x27;,{x:cx-r,y:cy+18,&#x27;text-anchor&#x27;:&#x27;middle&#x27;},&#x27;−1&#x27;);add(dial,&#x27;text&#x27;,{x:cx+r,y:cy+18,&#x27;text-anchor&#x27;:&#x27;middle&#x27;},&#x27;+1&#x27;);add(dial,&#x27;text&#x27;,{x:cx-10,y:cy-r+4,&#x27;text-anchor&#x27;:&#x27;end&#x27;},&#x27;+1&#x27;);add(dial,&#x27;text&#x27;,{x:cx-10,y:cy+r+4,&#x27;text-anchor&#x27;:&#x27;end&#x27;},&#x27;−1&#x27;);
 refs.project=add(dial,&#x27;path&#x27;,{fill:&#x27;none&#x27;,stroke:&#x27;var(--muted-foreground)&#x27;,&#x27;stroke-width&#x27;:1,&#x27;stroke-dasharray&#x27;:&#x27;3 4&#x27;});refs.x=add(dial,&#x27;line&#x27;,{x1:cx,y1:cy,y2:cy,stroke:&#x27;var(--viz-series-1)&#x27;,&#x27;stroke-width&#x27;:5,&#x27;stroke-linecap&#x27;:&#x27;round&#x27;});refs.y=add(dial,&#x27;line&#x27;,{x1:cx,y1:cy,x2:cx,stroke:&#x27;var(--viz-series-2)&#x27;,&#x27;stroke-width&#x27;:5,&#x27;stroke-dasharray&#x27;:&#x27;5 3&#x27;,&#x27;stroke-linecap&#x27;:&#x27;round&#x27;});refs.arrow=add(dial,&#x27;line&#x27;,{x1:cx,y1:cy,stroke:&#x27;var(--foreground)&#x27;,&#x27;stroke-width&#x27;:2});refs.head=add(dial,&#x27;path&#x27;,{fill:&#x27;none&#x27;,stroke:&#x27;var(--foreground)&#x27;,&#x27;stroke-width&#x27;:2});refs.tip=add(dial,&#x27;circle&#x27;,{r:5,fill:&#x27;var(--foreground)&#x27;});
-add(dial,&#x27;text&#x27;,{x:cx,y:267,&#x27;text-anchor&#x27;:&#x27;middle&#x27;},&#x27;拖动箭头看投影&#x27;);const hit=add(dial,&#x27;circle&#x27;,{cx,cy,r:r+18,fill:&#x27;transparent&#x27;,class:&#x27;dial-hit&#x27;});hit.onpointerdown=e=&gt;{if(!e.isPrimary)return;running=false;last=0;drag=e.pointerId;hit.setPointerCapture(e.pointerId);point(e);};hit.onpointermove=e=&gt;{if(drag===e.pointerId)point(e);};const end=()=&gt;{drag=null;};hit.onpointerup=end;hit.onpointercancel=end;hit.onlostpointercapture=end;
+add(dial,&#x27;text&#x27;,{x:cx,y:267,&#x27;text-anchor&#x27;:&#x27;middle&#x27;},&#x27;拖动箭头看投影&#x27;);const hit=add(dial,&#x27;circle&#x27;,{cx,cy,r:r+18,fill:&#x27;transparent&#x27;,class:&#x27;dial-hit&#x27;});
 add(plot,&#x27;text&#x27;,{x:64,y:17},&#x27;分量随相位变化&#x27;);add(plot,&#x27;rect&#x27;,{x:64,y:35,width:w-82,height:128,fill:&#x27;none&#x27;,stroke:&#x27;var(--border)&#x27;});add(plot,&#x27;line&#x27;,{x1:64,y1:99,x2:w-18,y2:99,stroke:&#x27;var(--border)&#x27;});add(plot,&#x27;text&#x27;,{x:56,y:55,&#x27;text-anchor&#x27;:&#x27;end&#x27;},&#x27;+1&#x27;);add(plot,&#x27;text&#x27;,{x:56,y:103,&#x27;text-anchor&#x27;:&#x27;end&#x27;},&#x27;0&#x27;);add(plot,&#x27;text&#x27;,{x:56,y:151,&#x27;text-anchor&#x27;:&#x27;end&#x27;},&#x27;−1&#x27;);
 for(const deg of [0,180,360])add(plot,&#x27;text&#x27;,{x:64+(w-82)*deg/360,y:183,&#x27;text-anchor&#x27;:deg===0?&#x27;start&#x27;:deg===360?&#x27;end&#x27;:&#x27;middle&#x27;},deg+&#x27;°&#x27;);add(plot,&#x27;text&#x27;,{x:w-18,y:205,&#x27;text-anchor&#x27;:&#x27;end&#x27;,class:&#x27;axis-title&#x27;,&#x27;data-axis&#x27;:&#x27;x&#x27;},&#x27;相位 θ（度）&#x27;);add(plot,&#x27;text&#x27;,{x:10,y:32,class:&#x27;axis-title&#x27;,&#x27;data-axis&#x27;:&#x27;y&#x27;},&#x27;分量&#x27;);
 for(const [fn,color,dash] of [[Math.cos,&#x27;var(--viz-series-1)&#x27;,&#x27;&#x27;],[Math.sin,&#x27;var(--viz-series-2)&#x27;,&#x27;6 4&#x27;]]){let d=&#x27;&#x27;;for(let j=0;j&lt;=180;j++){const t=j/180*2*Math.PI;d+=`${j?&#x27;L&#x27;:&#x27;M&#x27;}${64+(w-82)*j/180} ${99-48*fn(t)} `;}add(plot,&#x27;path&#x27;,{d,fill:&#x27;none&#x27;,stroke:color,&#x27;stroke-width&#x27;:2,&#x27;stroke-dasharray&#x27;:dash});}
 refs.guide=add(plot,&#x27;line&#x27;,{y1:35,y2:163,stroke:&#x27;var(--muted-foreground)&#x27;,&#x27;stroke-width&#x27;:1,&#x27;stroke-dasharray&#x27;:&#x27;3 4&#x27;});refs.realPoint=add(plot,&#x27;circle&#x27;,{r:4,fill:&#x27;var(--viz-series-1)&#x27;});refs.imagPoint=add(plot,&#x27;rect&#x27;,{width:8,height:8,fill:&#x27;var(--viz-series-2)&#x27;});update();}
 function point(e){const box=dial.getBoundingClientRect(),x=(e.clientX-box.left)*w/box.width-cx,y=cy-(e.clientY-box.top)*275/box.height;if(Math.hypot(x,y)&lt;15)return;theta=(Math.atan2(y,x)*180/Math.PI+360)%360;update();}
-range.oninput=()=&gt;{running=false;last=0;theta=+range.value;update();};play.onclick=()=&gt;{if(theta&gt;=360)theta=0;running=!running;last=0;update();};new ResizeObserver(draw).observe(root);new IntersectionObserver(es=&gt;{visible=es[0].isIntersecting;last=0;}).observe(root);document.addEventListener(&#x27;visibilitychange&#x27;,()=&gt;last=0);function frame(t){if(!root.isConnected)return;if(running&amp;&amp;visible&amp;&amp;!document.hidden){if(last){theta=Math.min(360,theta+(t-last)*360/8000);if(theta&gt;=360)running=false;update();}last=t;}else last=0;requestAnimationFrame(frame);}draw();requestAnimationFrame(frame);
+dial.onpointerdown=e=&gt;{running=false;last=0;};dial.onpointermove=e=&gt;point(e);
+range.oninput=()=&gt;{running=false;last=0;theta=+range.value;update();};transport.toggle=()=&gt;{if(theta&gt;=360)theta=0;running=!running;last=0;update();};new ResizeObserver(draw).observe(root);new IntersectionObserver(es=&gt;{visible=es[0].isIntersecting;last=0;}).observe(root);document.addEventListener(&#x27;visibilitychange&#x27;,()=&gt;last=0);function frame(t){if(!root.isConnected)return;if(running&amp;&amp;visible&amp;&amp;!document.hidden){if(last){theta=Math.min(360,theta+(t-last)*360/8000);if(theta&gt;=360){theta=0;running=false;}update();}last=t;}else last=0;requestAnimationFrame(frame);}draw();requestAnimationFrame(frame);
 
-SciControls.mount(root,{reset:()=&gt;{running=false;last=0;theta=45;update();},pause:()=&gt;{running=false;last=0;update();},cancelGesture:()=&gt;{drag=null;}});
+SciControls.mount(root,{controls:[{key:&#x27;phase&#x27;,label:&#x27;相位 θ&#x27;,input:root.querySelector(&#x27;input&#x27;),defaultValue:45,kind:&#x27;wheel&#x27;,period:360,stops:[0,90,180,270],unit:&#x27;°&#x27;,transport}],pause:()=&gt;{running=false;last=0;update();},cancelGesture:()=&gt;{drag=null;},transport,graph:root.querySelector(&#x27;svg&#x27;)});
 })();
 &lt;/script&gt;
 &lt;/section&gt;
+
 
 &lt;style&gt;@layer sci-theme{}&lt;/style&gt;&lt;script&gt;
 (()=&gt;{const allowed=[&quot;background&quot;, &quot;foreground&quot;, &quot;card&quot;, &quot;muted&quot;, &quot;muted-foreground&quot;, &quot;border&quot;, &quot;primary&quot;, &quot;primary-foreground&quot;, &quot;secondary&quot;, &quot;ring&quot;, &quot;viz-series-1&quot;, &quot;viz-series-2&quot;, &quot;viz-series-3&quot;, &quot;viz-series-4&quot;, &quot;viz-series-5&quot;, &quot;viz-series-6&quot;];window.addEventListener(&#x27;message&#x27;,e=&gt;{if(e.source!==parent||e.data?.type!==&#x27;sci-theme&#x27;)return;for(const[k,v]of Object.entries(e.data.tokens||{}))if(allowed.includes(k)&amp;&amp;/^#[0-9a-f]{6}$/i.test(v))document.documentElement.style.setProperty(&#x27;--&#x27;+k,v);document.documentElement.style.colorScheme=e.data.name===&#x27;dark&#x27;?&#x27;dark&#x27;:&#x27;light&#x27;});let last=0;const measure=()=&gt;{const h=Math.ceil(document.body.getBoundingClientRect().height);if(h!==last){last=h;parent.postMessage({type:&#x27;sci-height&#x27;,height:h},&#x27;*&#x27;)}};new ResizeObserver(measure).observe(document.body);measure();})();

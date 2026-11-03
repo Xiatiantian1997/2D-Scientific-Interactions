@@ -4,17 +4,24 @@
 .btn{background:var(--secondary);color:var(--foreground);border:1px solid var(--border);border-radius:12px;padding:8px 14px;cursor:pointer}.btn-primary,button[aria-pressed=true],button[aria-selected=true]{background:var(--primary);color:var(--primary-foreground)}.btn-ghost{border-color:transparent;background:transparent}.form-range{accent-color:var(--primary);min-height:44px;max-width:100%}.form-label{display:block}.viz-row,.viz-controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.viz-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:16px}.card{background:var(--card);border-radius:16px;padding:16px}.text-small{font-size:.9rem}.text-muted{color:var(--muted-foreground)}.tabular-nums{font-variant-numeric:tabular-nums}.form-check{display:flex;align-items:center;gap:8px;min-height:44px}.form-check-input{width:22px;height:22px}.cursor-interaction{cursor:pointer}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}.nav{display:flex;gap:8px;flex-wrap:wrap}.nav-link{border:0;border-radius:12px;padding:10px;background:var(--secondary);color:var(--foreground)}.nav-link.active{background:var(--primary);color:var(--primary-foreground)}[hidden]{display:none!important}@media(max-width:360px){body{padding:10px}.btn{padding:8px 10px}}
 
 
-/* All operation panels sit below their linked plots. Geometry is stable. */
-[data-play]{width:48px;min-width:48px;height:48px;padding:0;display:grid;place-items:center;font-size:22px;line-height:1}
-[data-reset-area]{border-radius:16px;touch-action:pan-y;overflow-anchor:none}
-.sci-controls{position:relative;isolation:isolate;padding:16px 12px 28px;margin-top:16px}
-.sci-controls::before{content:"";position:absolute;inset:0;border-radius:inherit;background:var(--foreground);opacity:0;z-index:-1;pointer-events:none;transition:opacity 150ms}
-.sci-controls.flash::before{opacity:.07}
-[data-feedback]{min-height:2.8em;margin:12px 0 0}
-.form-range{width:100%;min-width:0}output{font-variant-numeric:tabular-nums;white-space:nowrap}
-@media(prefers-reduced-motion:reduce){.sci-controls::before{transition:none}}
-
 /* Intrinsic-width disclosure: only arrow + label is the toggle target. */
 summary{box-sizing:border-box;display:list-item;list-style-position:inside;inline-size:fit-content;max-inline-size:100%;min-block-size:44px;padding:8px 12px;border:1px solid var(--border);border-radius:var(--sci-control-radius,12px);background:var(--secondary);color:var(--foreground);touch-action:manipulation;cursor:pointer}
 summary:focus-visible{outline:2px solid var(--ring);outline-offset:3px}
 details[open]>summary{margin-bottom:12px}
+
+
+/* Shared control family. Override these tokens in the host UI, never in model code. */
+.sci-panel{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:12px;align-items:start;margin-top:16px}
+.sci-field{position:relative;display:flex;flex-direction:column;align-items:center;gap:12px;min-width:0;padding:16px 18px 34px;border:1px solid var(--border);border-radius:var(--sci-control-radius,16px);touch-action:pan-y;overflow:hidden}
+.sci-heading{display:flex;align-items:baseline;justify-content:space-between;gap:10px;width:100%;min-height:30px}.sci-label{font-weight:500}.sci-value{font-variant-numeric:tabular-nums;font-size:1rem}
+.sci-button{width:var(--sci-button-width,180px);max-width:100%;height:var(--sci-control-height,48px);border:1px solid var(--border);border-radius:var(--sci-control-radius,16px);background:var(--secondary);color:var(--foreground);padding:8px 12px;white-space:nowrap;font:inherit;cursor:pointer}
+.sci-slider,.sci-wheel{width:100%;height:var(--sci-control-height,48px);position:relative;overflow:hidden;border-radius:var(--sci-control-radius,16px);background:var(--muted);touch-action:pan-y;cursor:ew-resize;user-select:none;border:1px solid var(--border)}
+.sci-wheel{width:var(--sci-wheel-width,260px);max-width:100%;height:56px}
+.sci-fill{position:absolute;inset:0 auto 0 0;width:var(--sci-progress);background:var(--primary);opacity:.65;pointer-events:none}
+.sci-strip{position:absolute;inset:0;pointer-events:none}.sci-tick{position:absolute;width:33.333%;left:33.333%;height:100%;display:grid;place-items:center;font-variant-numeric:tabular-nums}.sci-wheel::after{content:'';position:absolute;inset:5px 31%;border:1px solid var(--border);border-radius:10px;pointer-events:none}
+.sci-slider[data-playing=true],.sci-wheel[data-playing=true]{box-shadow:inset 0 0 0 2px var(--primary)}
+.sci-hint{font-size:.8rem;color:var(--muted-foreground);pointer-events:none;min-height:22px}.sci-readouts{display:flex;flex-wrap:wrap;gap:10px 20px;margin:12px 0}.sci-readouts:empty{display:none}
+.sci-field:focus-visible,.sci-slider:focus-visible,.sci-wheel:focus-visible,.sci-button:focus-visible{outline:2px solid var(--ring);outline-offset:2px}
+.sci-flash{animation:sci-reset .3s ease-out}@keyframes sci-reset{from{background:var(--muted)}to{background:transparent}}
+@media(prefers-reduced-motion:reduce){.sci-flash{animation:none;background:var(--muted)}}
+.sci-panel{display:flex;flex-direction:column;gap:16px}.sci-group{width:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:12px;align-items:start}

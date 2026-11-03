@@ -90,15 +90,21 @@
       "feedback": "同一相位标记与包络中心同步推进，可暂停回退"
     },
     {
-      "id": "lower-blank-reset",
+      "id": "local-reset",
       "kind": "observe",
+      "scopes": [
+        "mode",
+        "time",
+        "k"
+      ],
       "changes": [
-        "time"
+        "selected scope default only"
       ],
       "fixed": [
-        "mode_and_k"
+        "other scopes",
+        "recorded baseline"
       ],
-      "feedback": "下方操作区空白短按或根区域R键复位；时间恢复0，模型与波数保持不变。控件、滚动、拖动、长按、多指和取消均不触发；轻暗反馈。"
+      "feedback": "短按选定控件区域空白，或在该区域按 Escape。"
     }
   ],
   "comparison": {
@@ -114,5 +120,12 @@
     ],
     "placement": "图下操作区情景按钮"
   },
-  "validation": "../docs/validation.md"
+  "validation": "../docs/validation.md",
+  "interaction": {
+    "sop": "../docs/touch-and-controls.md",
+    "host": "../runtime/touch-controls.js",
+    "reset": "仅控件区域空白短按，按 controls.key 恢复声明的默认值，保留相邻状态和基准；Escape 是对应作用域的键盘替代。",
+    "playback": "默认静止；点击时间条或图形播放/暂停；结束回起点停住；失焦或后台暂停。",
+    "layout": "图上控件下，同类成组，普通按钮统一尺寸且居中，滑轮稍大。"
+  }
 }

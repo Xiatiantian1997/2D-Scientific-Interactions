@@ -1,34 +1,31 @@
 <section id="resistor-coupling">
 <style>
-#resistor-coupling{color:var(--foreground);padding:8px 0}#resistor-coupling svg{display:block;width:100%;height:170px;touch-action:pan-y}#resistor-coupling .result-chart{height:80px}#resistor-coupling svg text{font-size:18px;fill:var(--foreground)}#resistor-coupling .label{display:flex;justify-content:space-between;gap:12px;margin:12px 0 8px}#resistor-coupling .note{margin:10px 0;min-height:24px}
-</style>
+#resistor-coupling{color:var(--foreground);padding:8px 0}#resistor-coupling svg{display:block;width:100%;height:170px;touch-action:pan-y}#resistor-coupling .result-chart{height:80px}#resistor-coupling svg text{font-size:18px;fill:var(--foreground)}#resistor-coupling .note{margin:10px 0;min-height:24px}</style>
 <h3>电阻变大，发热一定更多吗？</h3>
 
 <svg role="img" aria-label="拖动上方电阻改变阻值；下方操作区空白恢复3欧姆基准。"></svg>
 <div data-result="current"><svg class="result-chart" aria-hidden="true"></svg></div>
 <div data-result="power"><svg class="result-chart" aria-hidden="true"></svg></div>
 <div class="text-small text-muted">拖动电阻调节 · 虚影固定在 3 Ω</div>
-<div class="sci-controls" data-reset-area>
-<div class="viz-controls"><button type="button" class="btn" data-mode="voltage" aria-pressed="true">恒压 · 6 V</button><button type="button" class="btn" data-mode="current" aria-pressed="false">恒流 · 2 A</button></div><div class="label"><label for="resistance-value">电阻 R</label><output data-r>6.0 Ω</output></div><input id="resistance-value" class="form-range" type="range" min="1.5" max="12" step=".1" value="6">
-<div class="note" data-note aria-live="polite"></div>
-<div class="text-small">浅色虚影：同一供电条件下 R = 3 Ω · 忽略温度反馈</div>
-<p class="text-small text-muted" data-feedback role="status">点操作区空白回到 3 Ω；保留供电方式</p></div>
+<div data-readouts class="sci-readouts"><output data-r>6.0 Ω</output><div class="note" data-note aria-live="polite"></div></div>
+<div data-controls><input id="resistance-value" class="form-range" type="range" min="1.5" max="12" step=".1" value="3"></div>
 <script>
-(()=>{const root=document.getElementById('resistor-coupling'),svg=root.querySelector('svg'),range=root.querySelector('input');const NS='http://www.w3.org/2000/svg';let R=6,mode='voltage',drag=null,frame=0,target=svg;
+(()=>{const root=document.getElementById('resistor-coupling'),svg=root.querySelector('svg'),range=root.querySelector('input');const NS='http://www.w3.org/2000/svg';let R=3,mode='voltage',drag=null,frame=0,target=svg;
 function cancel(){cancelAnimationFrame(frame);frame=0;}
-function reset(){cancel();R=3;draw();}
+
 function model(r){const I=mode==='voltage'?6/r:2,U=mode==='voltage'?6:2*r;return{I,U,P:U*I};}function add(tag,a,text){const e=document.createElementNS(NS,tag);Object.entries(a||{}).forEach(([k,v])=>e.setAttribute(k,v));if(text!==undefined)e.textContent=text;target.append(e);return e;}
 function draw(){const w=Math.max(280,root.clientWidth),s=model(R),base=model(3),left=76,right=w-28,cx=(left+right)/2,len=24+(right-left-40)*(R-1.5)/10.5;target=svg;svg.setAttribute('viewBox',`0 0 ${w} 170`);svg.replaceChildren();add('path',{d:`M40 45 H${cx-len/2} M${cx+len/2} 45 H${right} V125 H40 V97 M40 53 V45`,fill:'none',stroke:'var(--muted-foreground)','stroke-width':1.5});add('circle',{cx:40,cy:75,r:22,fill:'var(--background)',stroke:'var(--muted-foreground)','stroke-width':1.5});add('text',{x:40,y:79,'text-anchor':'middle'},mode==='voltage'?'U':'I');add('rect',{x:cx-len/2,y:31,width:len,height:28,rx:3,fill:'var(--muted)',stroke:'var(--foreground)','stroke-width':1.2});add('text',{x:cx,y:21,'text-anchor':'middle'},'可调电阻');add('text',{x:cx,y:81,'text-anchor':'middle'},`R = ${R.toFixed(1)} Ω`);add('text',{x:20,y:157},`U = ${s.U.toFixed(1)} V`);add('text',{x:right,y:157,'text-anchor':'end'},mode==='voltage'?'电压固定':'电流固定');
 function bar(y,title,value,baseline,max,unit,color){const a=20,b=w-20,span=b-a;add('text',{x:a,y},title);add('text',{x:b,y,'text-anchor':'end'},value.toFixed(2)+' '+unit);add('rect',{x:a,y:y+12,width:span,height:26,rx:3,fill:'var(--muted)'});add('rect',{x:a,y:y+12,width:span*baseline/max,height:26,rx:3,fill:color,opacity:.17});add('rect',{x:a,y:y+18,width:span*value/max,height:14,rx:3,fill:color});add('text',{x:a,y:y+55},'0');add('text',{x:b,y:y+55,'text-anchor':'end'},max+' '+unit);}
-target=root.querySelector('[data-result="current"] svg');target.setAttribute('viewBox',`0 0 ${w} 80`);target.replaceChildren();bar(16,'电流 I',s.I,base.I,4,'A','var(--viz-series-1)');target=root.querySelector('[data-result="power"] svg');target.setAttribute('viewBox',`0 0 ${w} 80`);target.replaceChildren();bar(16,'发热功率 P',s.P,base.P,48,'W','var(--viz-series-2)');range.value=R;root.querySelector('[data-r]').textContent=R.toFixed(1)+' Ω';const ratio=s.P/base.P;root.querySelector('[data-note]').textContent=R===3?'当前与 3 Ω 基准重合。':`相对 3 Ω 基准：电阻 ${R>3?'增大':'减小'}，发热功率${ratio>1?'增加':'减少'} ${Math.abs((ratio-1)*100).toFixed(0)}%。`;root.dataset.mode=mode;root.dataset.resistance=R;root.dataset.current=s.I;root.dataset.voltage=s.U;root.dataset.power=s.P;}
-range.oninput=()=>{cancel();R=+range.value;draw();};root.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{cancel();mode=b.dataset.mode;root.querySelectorAll('[data-mode]').forEach(c=>c.setAttribute('aria-pressed',String(c===b)));draw();});
+target=root.querySelector('[data-result="current"] svg');target.setAttribute('viewBox',`0 0 ${w} 80`);target.replaceChildren();bar(16,'电流 I',s.I,base.I,4,'A','var(--viz-series-1)');target=root.querySelector('[data-result="power"] svg');target.setAttribute('viewBox',`0 0 ${w} 80`);target.replaceChildren();bar(16,'发热功率 P',s.P,base.P,48,'W','var(--viz-series-2)');range.value=R;root.querySelector('[data-r]').textContent=R.toFixed(1)+' Ω';const ratio=s.P/base.P;root.querySelector('[data-note]').textContent=R===3?'当前与 3 Ω 基准重合。':`相对 3 Ω 基准：电阻 ${R>3?'增大':'减小'}，发热功率${ratio>1?'增加':'减少'} ${Math.abs((ratio-1)*100).toFixed(0)}%。`;root.dataset.mode=mode;root.dataset.resistance=R;root.dataset.current=s.I;root.dataset.voltage=s.U;root.dataset.power=s.P;;root.sciSync?.();}
+range.oninput=()=>{cancel();R=+range.value;draw();};
 svg.onpointerdown=e=>{if(!e.isPrimary){drag=null;return;}const rect=svg.getBoundingClientRect(),y=(e.clientY-rect.top)*170/rect.height,x=e.clientX-rect.left;const w=Math.max(280,root.clientWidth),cx=(76+w-28)/2,len=24+(w-28-76-40)*(R-1.5)/10.5;const kind=y>=22&&y<=88&&Math.abs(x-cx)<=len/2+18?'adjust':null;if(!kind)return;cancel();drag={id:e.pointerId,x:e.clientX,y:e.clientY,r:R,kind,moved:false,start:performance.now()};svg.setPointerCapture(e.pointerId);};
 svg.onpointermove=e=>{if(!drag||e.pointerId!==drag.id)return;if(Math.hypot(e.clientX-drag.x,e.clientY-drag.y)>8)drag.moved=true;if(drag.kind==='adjust'){R=Math.max(1.5,Math.min(12,Math.round((drag.r+(e.clientX-drag.x)/svg.getBoundingClientRect().width*10.5)*10)/10));draw();}};
 svg.onpointerup=e=>{const d=drag;drag=null;if(d&&e.pointerId===d.id&&d.kind==='reset'&&!d.moved&&performance.now()-d.start<600)reset();};svg.onpointercancel=()=>drag=null;svg.onlostpointercapture=()=>drag=null;
 new ResizeObserver(draw).observe(root);draw();
 
-SciControls.mount(root,{reset:()=>{reset();},pause:()=>{cancel();},cancelGesture:()=>{drag=null;}});
+SciControls.mount(root,{controls:[{key:'mode',label:'供电方式',kind:'choice',get:()=>mode,set:value=>{cancel();mode=value;draw();},items:[["voltage", "恒压 · 6 V"], ["current", "恒流 · 2 A"]]},{key:'resistance',label:'电阻 R',input:root.querySelector('input'),defaultValue:3}],pause:()=>{cancel();},cancelGesture:()=>{drag=null;}});
 })();
 </script>
 </section>
+
 

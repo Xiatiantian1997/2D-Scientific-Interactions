@@ -80,23 +80,34 @@
         "magnitude",
         "space_position"
       ],
-      "feedback": "播放相位变化，到360度停止，可随时暂停和拖动"
+      "feedback": "点击图形或对应进度控件播放/暂停；到终点回起点停住，保留其他参数。"
     },
     {
-      "id": "lower-blank-reset",
+      "id": "local-reset",
       "kind": "observe",
-      "changes": [
+      "scopes": [
         "phase"
       ],
-      "fixed": [
-        "amplitude"
+      "changes": [
+        "selected scope default only"
       ],
-      "feedback": "下方操作区空白短按或根区域R键复位；相位恢复45°。控件、滚动、拖动、长按、多指和取消均不触发；轻暗反馈。"
+      "fixed": [
+        "other scopes",
+        "recorded baseline"
+      ],
+      "feedback": "短按选定控件区域空白，或在该区域按 Escape。"
     }
   ],
   "comparison": {
     "required": false,
     "reason": "本单元展示同一对象同时存在的两个分量；坐标轴与完整单位圆为固定参考，无正常/异常或基准工况。"
   },
-  "validation": "../docs/validation.md"
+  "validation": "../docs/validation.md",
+  "interaction": {
+    "sop": "../docs/touch-and-controls.md",
+    "host": "../runtime/touch-controls.js",
+    "reset": "仅控件区域空白短按，按 controls.key 恢复声明的默认值，保留相邻状态和基准；Escape 是对应作用域的键盘替代。",
+    "playback": "默认静止；点击时间条或图形播放/暂停；结束回起点停住；失焦或后台暂停。",
+    "layout": "图上控件下，同类成组，普通按钮统一尺寸且居中，滑轮稍大。"
+  }
 }

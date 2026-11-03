@@ -45,28 +45,39 @@
       "feedback": "拖动图中探针或参数点，关联读数更新；下方滑条支持单轴和键盘操作。"
     },
     {
-      "id": "reset",
-      "kind": "compare",
+      "id": "local-reset",
+      "kind": "observe",
+      "scopes": [
+        "x",
+        "y"
+      ],
       "changes": [
-        "probe_position"
+        "selected scope default only"
       ],
       "fixed": [
-        "thickness_field",
-        "color_scale"
+        "other scopes",
+        "recorded baseline"
       ],
-      "feedback": "下方整片空白短按回到中心，轻暗反馈。控件、滚动、多指、取消不触发。R键等价复位。"
+      "feedback": "短按选定控件区域空白，或在该区域按 Escape。"
     }
   ],
   "comparison": {
     "required": true,
     "baseline": "baseline",
     "target": "adjusted",
-    "action": "reset",
+    "action": "local-reset",
     "fixed": [
       "thickness_field",
       "color_scale"
     ],
-    "placement": "原位置观察，中心基准与整片操作区复位"
+    "placement": "原位固定基准；对应控件区域空白局部复位"
   },
-  "validation": "../docs/validation.md"
+  "validation": "../docs/validation.md",
+  "interaction": {
+    "sop": "../docs/touch-and-controls.md",
+    "host": "../runtime/touch-controls.js",
+    "reset": "仅控件区域空白短按，按 controls.key 恢复声明的默认值，保留相邻状态和基准；Escape 是对应作用域的键盘替代。",
+    "playback": "本例无时间播放；图内操作改变参数或观察位置，不附加播放功能。",
+    "layout": "图上控件下，同类成组，普通按钮统一尺寸且居中，滑轮稍大。"
+  }
 }

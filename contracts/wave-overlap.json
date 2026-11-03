@@ -58,7 +58,7 @@
         "view",
         "scale"
       ],
-      "feedback": "原位切换情景，暂停播放，保留进度"
+      "feedback": "单按钮切换情景，保持进度、尺度和播放状态。"
     },
     {
       "id": "scrub",
@@ -70,7 +70,7 @@
         "scenario",
         "view"
       ],
-      "feedback": "图中横拖或进度条回看；拖动暂停"
+      "feedback": "横拖图形或进度条回看；拖动临时暂停，释放恢复拖动前的播放状态。"
     },
     {
       "id": "play",
@@ -82,18 +82,23 @@
         "scenario",
         "view"
       ],
-      "feedback": "连续推进一次，到终点停止"
+      "feedback": "点击图形或对应进度控件播放/暂停；到终点回起点停住，保留其他参数。"
     },
     {
-      "id": "lower-blank-reset",
+      "id": "local-reset",
       "kind": "observe",
+      "scopes": [
+        "mode",
+        "time"
+      ],
       "changes": [
-        "progress"
+        "selected scope default only"
       ],
       "fixed": [
-        "pulse_type"
+        "other scopes",
+        "recorded baseline"
       ],
-      "feedback": "下方操作区空白短按或根区域R键复位；进度恢复0，脉冲类型保持不变。控件、滚动、拖动、长按、多指和取消均不触发；轻暗反馈。"
+      "feedback": "短按选定控件区域空白，或在该区域按 Escape。"
     }
   ],
   "comparison": {
@@ -108,5 +113,12 @@
     ],
     "placement": "图下操作区情景按钮"
   },
-  "validation": "../docs/validation.md"
+  "validation": "../docs/validation.md",
+  "interaction": {
+    "sop": "../docs/touch-and-controls.md",
+    "host": "../runtime/touch-controls.js",
+    "reset": "仅控件区域空白短按，按 controls.key 恢复声明的默认值，保留相邻状态和基准；Escape 是对应作用域的键盘替代。",
+    "playback": "默认静止；点击时间条或图形播放/暂停；结束回起点停住；失焦或后台暂停。",
+    "layout": "图上控件下，同类成组，普通按钮统一尺寸且居中，滑轮稍大。"
+  }
 }

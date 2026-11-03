@@ -1,17 +1,11 @@
 <section class="sci-extra" data-sci-example="sampling-distribution">
 <style>
-.sci-extra{overflow-anchor:none;color:var(--foreground)}.sci-extra svg{display:block;width:100%;overflow:visible}.sci-extra[data-sci-example="sampling-distribution"] svg{height:310px}.sci-extra[data-sci-example="quantum-linked"] svg{height:410px}.sci-extra [data-controls]{position:relative;isolation:isolate;padding:12px 4px 26px;min-height:150px}.sci-extra [data-controls]::before{content:"";position:absolute;inset:0;background:var(--foreground);opacity:0;z-index:-1;pointer-events:none;transition:opacity .16s}.sci-extra [data-controls].flash::before{opacity:.07}.sci-extra .transport{display:flex;gap:12px;align-items:center}.sci-extra .transport input{flex:1;min-width:0}.sci-extra .play-slot{flex:0 0 48px}.sci-extra [data-reading]{min-height:3em;margin:8px 0}.sci-extra [data-latest]{min-height:1.5em}.sci-extra [data-feedback]{margin-top:14px}.sci-extra input{width:100%}.sci-extra .batch-row{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:12px}@media(prefers-reduced-motion:reduce){.sci-extra [data-controls]::before{transition:none}}
-</style>
+.sci-extra{overflow-anchor:none;color:var(--foreground)}.sci-extra svg{display:block;width:100%;overflow:visible}.sci-extra[data-sci-example="sampling-distribution"] svg{height:310px}.sci-extra[data-sci-example="quantum-linked"] svg{height:410px}.sci-extra [data-reading]{min-height:3em;margin:8px 0}.sci-extra [data-latest]{min-height:1.5em}.sci-extra input{width:100%}</style>
 <h3>随机采样 · 一次不确定，多次有分布</h3>
 <div data-latest class="tabular-nums"></div>
 <svg role="img" aria-label="离散误差的经验频率；固定虚线为总体理论频率，浅色底栏标记最新结果所属误差档。"></svg>
 <div class="viz-row text-small"><span>实柱：本批样本</span><span>短虚线：总体规律</span></div>
-<div data-controls>
-<div data-reading class="tabular-nums" aria-live="polite"></div>
-<div>样本量 <output data-value>1</output></div>
-<div class="transport"><span class="play-slot"><button type="button" class="btn" data-play aria-label="开始积累样本" aria-pressed="false">▶</button></span><input type="range" class="form-range" min="1" max="1000" step="1" value="1" aria-label="样本量，拖动回看同一批样本"><button type="button" class="btn" data-step aria-label="增加一次采样">+1</button></div>
-<div class="batch-row"><span class="text-small">固定总体 · 同批回看</span><button type="button" class="btn btn-ghost" data-batch>换一批</button></div>
-<div data-feedback class="text-small" role="status">点操作区空白：回到同批第 1 项</div></div>
+<div data-readouts class="sci-readouts"><div data-reading></div><output data-value></output></div><div data-controls><input type="range" class="form-range" min="1" max="1000" step="1" value="1" aria-label="样本量，拖动回看同一批样本"></div>
 <script>
 /* Local instance runtime: no fixed IDs, no external dependencies. */
 (()=>{
@@ -66,32 +60,22 @@ function draw(){
   $('[data-reading]').textContent=`${value} 个概率峰 · 内部 ${value-1} 个节点 · 能量 ${value*value} E₁`;
   root.dataset.energy=String(value*value);
  }
- range.value=String(value);root.dataset.value=String(value);
+ range.value=String(value);root.dataset.value=String(value);root.sciSync?.();
 }
-function stop(){if(timer!==null)clearInterval(timer);timer=null;const b=$('[data-play]');if(b){b.textContent='▶';b.setAttribute('aria-label','开始积累样本');b.setAttribute('aria-pressed','false')}}
+function stop(){if(timer!==null)clearInterval(timer);timer=null;root.dataset.running='false';root.sciSync?.();}
 function setValue(v){if(!Number.isFinite(Number(v)))throw new TypeError('value must be finite');v=Number(v);value=Math.max(1,Math.min(KIND==='sampling-distribution'?MAX:4,Math.round(v)));draw()}
-function reset(){stop();setValue(1);area.classList.add('flash');feedback.textContent='已复位 ✓';clearTimeout(flashTimer);clearTimeout(feedbackTimer);flashTimer=setTimeout(()=>area.classList.remove('flash'),200);feedbackTimer=setTimeout(()=>feedback.textContent=KIND==='sampling-distribution'?'点操作区空白：回到同批第 1 项':'点操作区空白：恢复 n=1',900)}
 range.oninput=()=>{stop();setValue(+range.value)};
-if(KIND==='sampling-distribution'){
- samples=makeSamples(batch);
- $('[data-batch]').onclick=()=>{stop();batch++;samples=makeSamples(batch);draw()};
- $('[data-step]').onclick=()=>{stop();setValue(value+1)};
- $('[data-play]').onclick=()=>{if(timer!==null){stop();return}if(value===MAX)setValue(1);const b=$('[data-play]');b.textContent='Ⅱ';b.setAttribute('aria-label','暂停积累样本');b.setAttribute('aria-pressed','true');timer=setInterval(()=>{if(!root.isConnected||document.hidden){stop();return}setValue(value+1);if(value===MAX)stop()},50)};
-}
-area.onpointerdown=e=>{if(!e.isPrimary||e.button>0||e.target.closest('button,input,label,select,textarea,a')){candidate=null;return}candidate={id:e.pointerId,x:e.clientX,y:e.clientY,start:performance.now()};};
-area.onpointermove=e=>{if(candidate&&Math.hypot(e.clientX-candidate.x,e.clientY-candidate.y)>8)candidate=null};
-area.onpointerup=e=>{const c=candidate;candidate=null;if(c&&c.id===e.pointerId&&performance.now()-c.start<500&&Math.hypot(e.clientX-c.x,e.clientY-c.y)<=8)reset()};
-area.onpointercancel=area.onlostpointercapture=area.onpointerleave=()=>candidate=null;
-root.onkeydown=e=>{if(e.key.toLowerCase()==='r'&&!e.ctrlKey&&!e.metaKey&&!e.altKey){e.preventDefault();reset()}};
-const onScroll=()=>candidate=null,onHidden=()=>{candidate=null;if(document.hidden)stop()};
-document.addEventListener('scroll',onScroll,true);document.addEventListener('visibilitychange',onHidden);
+const transport={isPlaying:()=>timer!==null,toggle:()=>{if(timer!==null){stop();return}if(value===MAX)setValue(1);root.dataset.running='true';timer=setInterval(()=>{if(!root.isConnected||document.hidden){stop();return}setValue(Math.min(MAX,value+5));if(value===MAX){stop();setValue(1)}},40);root.sciSync?.();}};
+if(KIND==='sampling-distribution')samples=makeSamples(batch);
 const ro=new ResizeObserver(draw);ro.observe(svg);
-root.sciApi={getState:()=>({value,batch}),setValue:v=>{stop();setValue(v)},reset};
-root.sciDestroy=()=>{stop();ro.disconnect();clearTimeout(flashTimer);clearTimeout(feedbackTimer);document.removeEventListener('scroll',onScroll,true);document.removeEventListener('visibilitychange',onHidden);delete root.dataset.mounted;};
+SciControls.mount(root,{controls:[{key:'count',label:'样本量',input:root.querySelector('input'),defaultValue:1,transport},{key:'step',label:'追加样本',kind:'action',text:'+1',act:()=>{stop();setValue(value+1)}},{key:'batch',label:'采样批次',kind:'action',text:'换一批',act:()=>{stop();batch++;samples=makeSamples(batch);draw()}}],pause:stop,transport,graph:svg});
+root.sciApi.setValue=v=>{stop();setValue(v)};
+root.sciDestroy=()=>{root.sciDisposeControls();ro.disconnect();delete root.dataset.mounted;};
 draw();
 }
 })();
 
 </script>
 </section>
+
 

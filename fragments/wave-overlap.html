@@ -1,17 +1,15 @@
 <section id="wave-overlap">
 <style>
-#wave-overlap{color:var(--foreground);padding:8px 0}#wave-overlap .stage{width:100%;display:block;touch-action:pan-y;cursor:ew-resize}#wave-overlap .stage text{fill:var(--foreground);font-size:18px}#wave-overlap .legend{display:flex;flex-wrap:wrap;gap:16px;margin:8px 0 16px}#wave-overlap .key{display:inline-block;width:24px;vertical-align:middle;margin-right:6px;border-top:3px solid var(--viz-series-1)}#wave-overlap .key.one{border-top:2px dashed var(--viz-series-2)}#wave-overlap .key.two{border-top:2px dotted var(--viz-series-3)}#wave-overlap .readout{min-height:28px;margin:10px 0}#wave-overlap .timeline{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;margin-top:12px}#wave-overlap .range-label{display:flex;justify-content:space-between;gap:12px;margin:8px 0}
-</style>
+#wave-overlap{color:var(--foreground);padding:8px 0}#wave-overlap .stage{width:100%;display:block;touch-action:pan-y;cursor:ew-resize}#wave-overlap .stage text{fill:var(--foreground);font-size:18px}#wave-overlap .legend{display:flex;flex-wrap:wrap;gap:16px;margin:8px 0 16px}#wave-overlap .key{display:inline-block;width:24px;vertical-align:middle;margin-right:6px;border-top:3px solid var(--viz-series-1)}#wave-overlap .key.one{border-top:2px dashed var(--viz-series-2)}#wave-overlap .key.two{border-top:2px dotted var(--viz-series-3)}#wave-overlap .readout{min-height:28px;margin:10px 0}#wave-overlap .range-label{display:flex;justify-content:space-between;gap:12px;margin:8px 0}</style>
 <h3>波相遇，会消失吗？</h3>
 
 <svg class="stage" role="img" aria-label="横向拖动回看：两列脉冲相遇，总位移等于两个分量的位移之和。"></svg>
 <div class="legend text-small"><span><i class="key"></i>实际总位移</span><span><i class="key one"></i>右行分量</span><span><i class="key two"></i>左行分量</span></div>
 <div class="readout" aria-live="polite"></div>
-<div class="sci-controls" data-reset-area>
-<div class="viz-controls"><button type="button" class="btn" data-mode="1" aria-pressed="true">两个波峰</button><button type="button" class="btn" data-mode="-1" aria-pressed="false">波峰遇到波谷</button></div><div class="timeline"><button class="btn" type="button" data-play>暂停</button><div><div class="range-label text-small"><label for="wave-time">横拖图形 / 回看过程</label><output data-progress></output></div><input id="wave-time" class="form-range" type="range" min="0" max="1000" value="80" aria-label="波相遇的过程进度"></div></div>
-<p class="text-small text-muted" data-feedback role="status">点操作区空白回到起点；保留相遇类型</p></div>
+<div data-readouts class="sci-readouts"><output data-progress></output></div>
+<div data-controls><input id="wave-time" class="form-range" type="range" min="0" max="1000" value="0" aria-label="波相遇的过程进度"></div>
 <script>
-(()=>{const root=document.getElementById('wave-overlap'),svg=root.querySelector('svg'),range=root.querySelector('input'),play=root.querySelector('[data-play]'),status=root.querySelector('.readout');let progress=.08,sign=1,running=false,visible=false,last=0,w=360,drag=null;const NS='http://www.w3.org/2000/svg';
+(()=>{const root=document.getElementById('wave-overlap'),svg=root.querySelector('svg'),range=root.querySelector('input'),transport={toggle:null,isPlaying:()=>running},status=root.querySelector('.readout');let progress=0,sign=1,running=false,visible=false,last=0,w=360,drag=null;const NS='http://www.w3.org/2000/svg';
 function el(tag,attrs,text){const n=document.createElementNS(NS,tag);Object.entries(attrs||{}).forEach(([k,v])=>n.setAttribute(k,v));if(text)n.textContent=text;svg.append(n);return n;}
 function sample(x,p,s){const a=Math.exp(-(((x-(.16+.68*p))/.074)**2)),b=s*Math.exp(-(((x-(.84-.68*p))/.074)**2));return [a,b,a+b];}
 function draw(){svg.replaceChildren();w=Math.max(280,root.clientWidth);const h=300,L=18,R=w-18,cy=150,amp=52;svg.setAttribute('viewBox',`0 0 ${w} ${h}`);svg.style.height=h+'px';
@@ -20,15 +18,16 @@ const paths=[[],[],[]];for(let i=0;i<=220;i++){const x=i/220,ys=sample(x,progres
 el('path',{d:paths[2].join(' ')+` L${R},${cy} L${L},${cy} Z`,fill:'var(--viz-series-1)',opacity:.1});
 el('path',{d:paths[0].join(' '),fill:'none',stroke:'var(--viz-series-2)','stroke-width':2,'stroke-dasharray':'7 5',opacity:.85});el('path',{d:paths[1].join(' '),fill:'none',stroke:'var(--viz-series-3)','stroke-width':2,'stroke-dasharray':'2 5',opacity:.85});el('path',{d:paths[2].join(' '),fill:'none',stroke:'var(--viz-series-1)','stroke-width':3.5,'stroke-linecap':'round'});
 const close=Math.abs(progress-.5)<.065;const text=close?(sign===1?'重叠处：两个向上位移相加。':'重叠处：向上与向下的位移相抵。'):(progress<.5?'两列脉冲正在靠近。':'相遇后，两列脉冲继续各自传播。');if(status.textContent!==text)status.textContent=text;
-range.value=String(Math.round(progress*1000));root.querySelector('[data-progress]').textContent=Math.round(progress*100)+'%';SciControls.play(play,running);root.dataset.progress=progress.toFixed(4);root.dataset.sign=sign;root.dataset.running=running;}
+range.value=String(Math.round(progress*1000));root.querySelector('[data-progress]').textContent=Math.round(progress*100)+'%';root.dataset.progress=progress.toFixed(4);root.dataset.sign=sign;root.dataset.running=running;;root.sciSync?.();}
 function stop(){running=false;last=0;}
-root.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{stop();sign=Number(b.dataset.mode);root.querySelectorAll('[data-mode]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));draw();});
-range.oninput=()=>{stop();progress=+range.value/1000;draw();};play.onclick=()=>{if(progress>=1)progress=0;running=!running;last=0;draw();};
-svg.onpointerdown=e=>{if(!e.isPrimary)return;drag={id:e.pointerId,x:e.clientX,p:progress};stop();svg.setPointerCapture(e.pointerId);draw();};svg.onpointermove=e=>{if(!drag||drag.id!==e.pointerId)return;progress=Math.max(0,Math.min(1,drag.p+(e.clientX-drag.x)/svg.getBoundingClientRect().width));draw();};const release=()=>{drag=null;};svg.onpointerup=release;svg.onpointercancel=release;svg.onlostpointercapture=release;
-new ResizeObserver(draw).observe(root);new IntersectionObserver(es=>{visible=es[0].isIntersecting;last=0;},{threshold:.15}).observe(root);document.addEventListener('visibilitychange',()=>{last=0;});function frame(t){if(!root.isConnected)return;if(running&&visible&&!document.hidden){if(last){progress=Math.min(1,progress+(t-last)/6000);if(progress>=1)running=false;draw();}last=t;}else last=0;requestAnimationFrame(frame);}draw();requestAnimationFrame(frame);
 
-SciControls.mount(root,{reset:()=>{stop();progress=0;draw();},pause:()=>{stop();draw();},cancelGesture:()=>{drag=null;}});
+range.oninput=()=>{stop();progress=+range.value/1000;draw();};transport.toggle=()=>{if(progress>=1)progress=0;running=!running;last=0;draw();};
+svg.onpointerdown=e=>{if(!e.isPrimary)return;drag={id:e.pointerId,x:e.clientX,p:progress};stop();svg.setPointerCapture(e.pointerId);draw();};svg.onpointermove=e=>{if(!drag||drag.id!==e.pointerId)return;progress=Math.max(0,Math.min(1,drag.p+(e.clientX-drag.x)/svg.getBoundingClientRect().width));draw();};const release=()=>{drag=null;};svg.onpointerup=release;svg.onpointercancel=release;svg.onlostpointercapture=release;
+new ResizeObserver(draw).observe(root);new IntersectionObserver(es=>{visible=es[0].isIntersecting;last=0;},{threshold:.15}).observe(root);document.addEventListener('visibilitychange',()=>{last=0;});function frame(t){if(!root.isConnected)return;if(running&&visible&&!document.hidden){if(last){progress=Math.min(1,progress+(t-last)/6000);if(progress>=1){progress=0;running=false;}draw();}last=t;}else last=0;requestAnimationFrame(frame);}draw();requestAnimationFrame(frame);
+
+SciControls.mount(root,{controls:[{key:'mode',label:'相遇方式',kind:'choice',get:()=>sign,set:value=>{sign=Number(value);draw();},items:[[1, "波峰 · 波峰"], [-1, "波峰 · 波谷"]]},{key:'time',label:'相遇进度',input:root.querySelector('input'),defaultValue:0,transport}],pause:()=>{stop();draw();},cancelGesture:()=>{drag=null;},transport,graph:root.querySelector('svg')});
 })();
 </script>
 </section>
+
 

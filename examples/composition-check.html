@@ -4,70 +4,124 @@
 .btn{background:var(--secondary);color:var(--foreground);border:1px solid var(--border);border-radius:12px;padding:8px 14px;cursor:pointer}.btn-primary,button[aria-pressed=true],button[aria-selected=true]{background:var(--primary);color:var(--primary-foreground)}.btn-ghost{border-color:transparent;background:transparent}.form-range{accent-color:var(--primary);min-height:44px;max-width:100%}.form-label{display:block}.viz-row,.viz-controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.viz-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:16px}.card{background:var(--card);border-radius:16px;padding:16px}.text-small{font-size:.9rem}.text-muted{color:var(--muted-foreground)}.tabular-nums{font-variant-numeric:tabular-nums}.form-check{display:flex;align-items:center;gap:8px;min-height:44px}.form-check-input{width:22px;height:22px}.cursor-interaction{cursor:pointer}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}.nav{display:flex;gap:8px;flex-wrap:wrap}.nav-link{border:0;border-radius:12px;padding:10px;background:var(--secondary);color:var(--foreground)}.nav-link.active{background:var(--primary);color:var(--primary-foreground)}[hidden]{display:none!important}@media(max-width:360px){body{padding:10px}.btn{padding:8px 10px}}
 
 
-/* All operation panels sit below their linked plots. Geometry is stable. */
-[data-play]{width:48px;min-width:48px;height:48px;padding:0;display:grid;place-items:center;font-size:22px;line-height:1}
-[data-reset-area]{border-radius:16px;touch-action:pan-y;overflow-anchor:none}
-.sci-controls{position:relative;isolation:isolate;padding:16px 12px 28px;margin-top:16px}
-.sci-controls::before{content:&quot;&quot;;position:absolute;inset:0;border-radius:inherit;background:var(--foreground);opacity:0;z-index:-1;pointer-events:none;transition:opacity 150ms}
-.sci-controls.flash::before{opacity:.07}
-[data-feedback]{min-height:2.8em;margin:12px 0 0}
-.form-range{width:100%;min-width:0}output{font-variant-numeric:tabular-nums;white-space:nowrap}
-@media(prefers-reduced-motion:reduce){.sci-controls::before{transition:none}}
-
 /* Intrinsic-width disclosure: only arrow + label is the toggle target. */
 summary{box-sizing:border-box;display:list-item;list-style-position:inside;inline-size:fit-content;max-inline-size:100%;min-block-size:44px;padding:8px 12px;border:1px solid var(--border);border-radius:var(--sci-control-radius,12px);background:var(--secondary);color:var(--foreground);touch-action:manipulation;cursor:pointer}
 summary:focus-visible{outline:2px solid var(--ring);outline-offset:3px}
 details[open]&gt;summary{margin-bottom:12px}
-}:root{--background:#faf6e9;--foreground:#293c42;--card:#fffdf5;--muted:#eee9dc;--muted-foreground:#59676b;--border:#c9ccbf;--primary:#346c79;--primary-foreground:#ffffff;--secondary:#eeeee5;--ring:#346c79;--viz-series-1:#407e8a;--viz-series-2:#aa7739;--viz-series-3:#6e70a1;--viz-series-4:#52836c;--viz-series-5:#9b6877;--viz-series-6:#7b7461}&lt;/style&gt;&lt;body&gt;&lt;script&gt;/* Shared lower control-area behavior. Load before legacy fragments. */
+
+
+/* Shared control family. Override these tokens in the host UI, never in model code. */
+.sci-panel{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:12px;align-items:start;margin-top:16px}
+.sci-field{position:relative;display:flex;flex-direction:column;align-items:center;gap:12px;min-width:0;padding:16px 18px 34px;border:1px solid var(--border);border-radius:var(--sci-control-radius,16px);touch-action:pan-y;overflow:hidden}
+.sci-heading{display:flex;align-items:baseline;justify-content:space-between;gap:10px;width:100%;min-height:30px}.sci-label{font-weight:500}.sci-value{font-variant-numeric:tabular-nums;font-size:1rem}
+.sci-button{width:var(--sci-button-width,180px);max-width:100%;height:var(--sci-control-height,48px);border:1px solid var(--border);border-radius:var(--sci-control-radius,16px);background:var(--secondary);color:var(--foreground);padding:8px 12px;white-space:nowrap;font:inherit;cursor:pointer}
+.sci-slider,.sci-wheel{width:100%;height:var(--sci-control-height,48px);position:relative;overflow:hidden;border-radius:var(--sci-control-radius,16px);background:var(--muted);touch-action:pan-y;cursor:ew-resize;user-select:none;border:1px solid var(--border)}
+.sci-wheel{width:var(--sci-wheel-width,260px);max-width:100%;height:56px}
+.sci-fill{position:absolute;inset:0 auto 0 0;width:var(--sci-progress);background:var(--primary);opacity:.65;pointer-events:none}
+.sci-strip{position:absolute;inset:0;pointer-events:none}.sci-tick{position:absolute;width:33.333%;left:33.333%;height:100%;display:grid;place-items:center;font-variant-numeric:tabular-nums}.sci-wheel::after{content:&#x27;&#x27;;position:absolute;inset:5px 31%;border:1px solid var(--border);border-radius:10px;pointer-events:none}
+.sci-slider[data-playing=true],.sci-wheel[data-playing=true]{box-shadow:inset 0 0 0 2px var(--primary)}
+.sci-hint{font-size:.8rem;color:var(--muted-foreground);pointer-events:none;min-height:22px}.sci-readouts{display:flex;flex-wrap:wrap;gap:10px 20px;margin:12px 0}.sci-readouts:empty{display:none}
+.sci-field:focus-visible,.sci-slider:focus-visible,.sci-wheel:focus-visible,.sci-button:focus-visible{outline:2px solid var(--ring);outline-offset:2px}
+.sci-flash{animation:sci-reset .3s ease-out}@keyframes sci-reset{from{background:var(--muted)}to{background:transparent}}
+@media(prefers-reduced-motion:reduce){.sci-flash{animation:none;background:var(--muted)}}
+.sci-panel{display:flex;flex-direction:column;gap:16px}.sci-group{width:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:12px;align-items:start}
+}:root{--background:#faf6e9;--foreground:#293c42;--card:#fffdf5;--muted:#eee9dc;--muted-foreground:#59676b;--border:#c9ccbf;--primary:#346c79;--primary-foreground:#ffffff;--secondary:#eeeee5;--ring:#346c79;--viz-series-1:#407e8a;--viz-series-2:#aa7739;--viz-series-3:#6e70a1;--viz-series-4:#52836c;--viz-series-5:#9b6877;--viz-series-6:#7b7461}&lt;/style&gt;&lt;body&gt;&lt;script&gt;/* Scientific component behavior. Models own state; themes own appearance. */
 (()=&gt;{
 &#x27;use strict&#x27;;
-window.SciControls={
-play(button,running,rest=&#x27;播放&#x27;){
- button.textContent=running?&#x27;Ⅱ&#x27;:&#x27;▶&#x27;;
- button.setAttribute(&#x27;aria-label&#x27;,running?&#x27;暂停&#x27;:rest);
- button.setAttribute(&#x27;aria-pressed&#x27;,String(running));
-},
-mount(root,{reset,pause=()=&gt;{},cancelGesture=()=&gt;{}}){
- const area=root.querySelector(&#x27;[data-reset-area]&#x27;);
- if(!area)throw Error(&#x27;Missing lower control area&#x27;);
- const feedback=area.querySelector(&#x27;[data-feedback]&#x27;);
- const prompt=feedback.textContent,abort=new AbortController(),signal=abort.signal;
- let candidate=null,timer=0,flash=0;const pointers=new Set();
- const ignore=t=&gt;t.closest(&#x27;button,input,select,textarea,a,label,summary,[role=&quot;button&quot;]&#x27;);
- const clear=()=&gt;{candidate=null;};
- const listen=(el,type,fn,options={})=&gt;el.addEventListener(type,fn,{...options,signal});
- const restore=()=&gt;{cancelGesture();reset();clearTimeout(timer);clearTimeout(flash);area.classList.add(&#x27;flash&#x27;);feedback.textContent=&#x27;已复位 ✓&#x27;;flash=setTimeout(()=&gt;area.classList.remove(&#x27;flash&#x27;),180);timer=setTimeout(()=&gt;feedback.textContent=prompt,900);};
- listen(document,&#x27;pointerdown&#x27;,e=&gt;{pointers.add(e.pointerId);if(pointers.size&gt;1){clear();cancelGesture();}},{capture:true});
- listen(area,&#x27;pointerdown&#x27;,e=&gt;{if(e.button&gt;0||!e.isPrimary||pointers.size&gt;1||ignore(e.target)){clear();return;}candidate={id:e.pointerId,x:e.clientX,y:e.clientY,t:performance.now()};});
- listen(document,&#x27;pointermove&#x27;,e=&gt;{if(candidate&amp;&amp;candidate.id===e.pointerId&amp;&amp;Math.hypot(e.clientX-candidate.x,e.clientY-candidate.y)&gt;8)clear();},{capture:true});
- listen(document,&#x27;pointerup&#x27;,e=&gt;{const c=candidate;clear();pointers.delete(e.pointerId);if(c&amp;&amp;c.id===e.pointerId&amp;&amp;area.contains(e.target)&amp;&amp;!ignore(e.target)&amp;&amp;performance.now()-c.t&lt;500&amp;&amp;Math.hypot(e.clientX-c.x,e.clientY-c.y)&lt;=8)restore();},{capture:true});
- listen(document,&#x27;pointercancel&#x27;,e=&gt;{pointers.delete(e.pointerId);clear();cancelGesture();},{capture:true});
- listen(area,&#x27;pointerleave&#x27;,clear);listen(area,&#x27;lostpointercapture&#x27;,clear);
- listen(document,&#x27;scroll&#x27;,clear,{capture:true});
- listen(document,&#x27;visibilitychange&#x27;,()=&gt;{clear();pointers.clear();cancelGesture();if(document.hidden)pause();});
- listen(window,&#x27;blur&#x27;,()=&gt;{clear();pointers.clear();cancelGesture();pause();});
- listen(root,&#x27;keydown&#x27;,e=&gt;{if(e.key.toLowerCase()===&#x27;r&#x27;&amp;&amp;!e.ctrlKey&amp;&amp;!e.metaKey&amp;&amp;!e.altKey&amp;&amp;!e.target.closest(&#x27;input,textarea,select,[contenteditable=&quot;true&quot;]&#x27;)){e.preventDefault();restore();}});
- root.tabIndex=0;
- root.sciApi={reset:restore,pause,getState:()=&gt;({...root.dataset})};
- root.sciDisposeControls=()=&gt;{abort.abort();clearTimeout(timer);clearTimeout(flash);pause();};
- return root.sciApi;
-}
-};
+const clamp=(v,a,b)=&gt;Math.max(a,Math.min(b,v));
+const modulo=(v,p)=&gt;((v%p)+p)%p;
+window.SciControls={mount(root,{controls,pause=()=&gt;{},cancelGesture=()=&gt;{},transport,graph}){
+ const host=root.querySelector(&#x27;[data-controls]&#x27;), abort=new AbortController(), signal=abort.signal;
+ if(!host)throw Error(&#x27;An experiment requires a data-controls host&#x27;);
+ const listen=(node,type,fn,options={})=&gt;node.addEventListener(type,fn,{...options,signal});
+ const make=(tag,cls,text)=&gt;{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
+ const groups=new Map();
+ const refresh=[],resets=new Map(),values=new Map(),pointers=new Set();let syncing=false,gesture=null;
+ const sync=()=&gt;{if(syncing)return;syncing=true;try{refresh.forEach(f=&gt;f());}finally{syncing=false;}};
+ root.sciSync=sync;host.className=&#x27;sci-panel&#x27;;
+ // A pointer must remain a short, single-pointer tap. A vertical swipe belongs to scrolling.
+ function bindGesture(el,{axis=&#x27;x&#x27;,accept=()=&gt;true,start=()=&gt;{},move=()=&gt;{},tap=()=&gt;{},end=()=&gt;{},cancel=()=&gt;{}}){
+  let g=null;
+  const discard=()=&gt;{if(g){g=null;cancel();}if(gesture===discard)gesture=null;};
+  listen(el,&#x27;pointerdown&#x27;,e=&gt;{if(!e.isPrimary||e.button&gt;0||pointers.size&gt;1||!accept(e))return;g={id:e.pointerId,x:e.clientX,y:e.clientY,t:performance.now(),moved:false};gesture=discard;start(e);});
+  listen(document,&#x27;pointermove&#x27;,e=&gt;{if(!g||g.id!==e.pointerId)return;const dx=e.clientX-g.x,dy=e.clientY-g.y;if(axis===&#x27;x&#x27;&amp;&amp;!g.moved&amp;&amp;Math.abs(dy)&gt;8&amp;&amp;Math.abs(dy)&gt;Math.abs(dx)){discard();return;}if(Math.abs(dx)&gt;6||(axis===&#x27;free&#x27;&amp;&amp;Math.abs(dy)&gt;6)||g.moved){g.moved=true;move(e,dx);}}, {capture:true});
+  listen(document,&#x27;pointerup&#x27;,e=&gt;{if(!g||g.id!==e.pointerId)return;const q=g;g=null;gesture=null;if(q.moved)end(e);else if(performance.now()-q.t&lt;500&amp;&amp;Math.hypot(e.clientX-q.x,e.clientY-q.y)&lt;=8)tap(e);else cancel();sync();},{capture:true});
+  listen(document,&#x27;pointercancel&#x27;,discard,{capture:true});
+  return discard;
+ }
+ listen(document,&#x27;pointerdown&#x27;,e=&gt;{pointers.add(e.pointerId);if(pointers.size&gt;1){gesture?.();cancelGesture();}},{capture:true});
+ for(const type of [&#x27;pointerup&#x27;,&#x27;pointercancel&#x27;])listen(document,type,e=&gt;pointers.delete(e.pointerId));
+ const stopAll=()=&gt;{gesture?.();pointers.clear();cancelGesture();pause();sync();};
+ listen(document,&#x27;scroll&#x27;,()=&gt;{gesture?.();cancelGesture();},{capture:true});
+ listen(window,&#x27;blur&#x27;,stopAll);listen(document,&#x27;visibilitychange&#x27;,()=&gt;{if(document.hidden)stopAll();});
+ for(const c of controls){
+  const field=make(&#x27;div&#x27;,&#x27;sci-field&#x27;);field.dataset.scope=c.key;field.tabIndex=0;
+  const heading=make(&#x27;div&#x27;,&#x27;sci-heading&#x27;),label=make(&#x27;span&#x27;,&#x27;sci-label&#x27;,c.label),out=make(&#x27;output&#x27;,&#x27;sci-value&#x27;);heading.append(label,out);field.append(heading);
+  const input=c.input;let get=c.get,set=c.set;
+  if(input){get=()=&gt;Number(input.value);set=v=&gt;{input.value=v;input.dispatchEvent(new Event(&#x27;input&#x27;,{bubbles:true}));};}
+  const read=()=&gt;get?.();values.set(c.key,read);
+  function apply(v){const resume=transport?.isPlaying();set(v);if(resume&amp;&amp;!c.transport&amp;&amp;!transport.isPlaying())transport.toggle();sync();}
+  const defaultValue=c.defaultValue??c.items?.[0]?.[0];
+  if(c.kind===&#x27;action&#x27;){
+   const button=make(&#x27;button&#x27;,&#x27;sci-button&#x27;,c.text);button.type=&#x27;button&#x27;;listen(button,&#x27;click&#x27;,()=&gt;{c.act();sync();});field.append(button);out.hidden=true;
+  }else if(c.kind===&#x27;choice&#x27;){
+   const button=make(&#x27;button&#x27;,&#x27;sci-button&#x27;);button.type=&#x27;button&#x27;;button.setAttribute(&#x27;aria-label&#x27;,c.label+&#x27;：点击切换&#x27;);
+   listen(button,&#x27;click&#x27;,()=&gt;{const i=c.items.findIndex(a=&gt;a[0]===read());apply(c.items[(i+1)%c.items.length][0]);});field.append(button);out.hidden=true;
+   refresh.push(()=&gt;{button.textContent=c.items.find(a=&gt;a[0]===read())?.[1]??String(read());button.dataset.value=read();button.setAttribute(&#x27;aria-label&#x27;,c.label+&#x27;：&#x27;+button.textContent+&#x27;，点击切换&#x27;);});
+  }else{
+   const min=c.min??Number(input.min),max=c.max??Number(input.max),step=c.step??Number(input.step||1);
+   // Existing native inputs are the model&#x27;s adapter; all visible controls share this runtime.
+   if(input){input.hidden=true;input.tabIndex=-1;input.setAttribute(&#x27;aria-hidden&#x27;,&#x27;true&#x27;);field.append(input);}
+   const track=make(&#x27;div&#x27;,c.kind===&#x27;wheel&#x27;?&#x27;sci-wheel&#x27;:&#x27;sci-slider&#x27;);track.tabIndex=0;track.setAttribute(&#x27;role&#x27;,&#x27;slider&#x27;);track.setAttribute(&#x27;aria-label&#x27;,c.label);track.setAttribute(&#x27;aria-valuemin&#x27;,min);track.setAttribute(&#x27;aria-valuemax&#x27;,max);field.append(track);
+   const fill=make(&#x27;span&#x27;,&#x27;sci-fill&#x27;),strip=make(&#x27;span&#x27;,&#x27;sci-strip&#x27;);track.append(fill,strip);
+   let origin=0,wasPlaying=false,didPause=false,raw=0;
+   const normalize=v=&gt;c.period?min+modulo(v-min,c.period):clamp(v,min,max);
+   const update=v=&gt;{raw=v;const n=normalize(v);set(c.discrete?normalize(Math.round(v)):Math.round(n/step)*step);sync();};
+   const isWheel=c.kind===&#x27;wheel&#x27;,stops=c.stops||[];
+   const formatted=v=&gt;(Math.round(v*100)/100)+(c.unit||&#x27;&#x27;);
+   const next=()=&gt;{const current=read(),n=stops.find(v=&gt;v&gt;current+1e-7);apply(n??stops[0]);};
+   const toggle=()=&gt;{c.transport?.toggle();sync();};
+   bindGesture(track,{
+    start:()=&gt;{origin=read();raw=origin;wasPlaying=!!c.transport?.isPlaying();didPause=false;},
+    move:(e,dx)=&gt;{if(!didPause){if(c.transport)pause();didPause=true;}const width=track.getBoundingClientRect().width;update(origin+(isWheel?-dx/Math.max(60,width/3)*(stops[1]-stops[0]||1):dx/width*(max-min)));},
+    tap:e=&gt;{if(isWheel){const b=track.getBoundingClientRect(),part=(e.clientX-b.left)/b.width;if(c.transport&amp;&amp;(part&lt;.3||part&gt;.7))toggle();else next();}else if(c.transport)toggle();else{const b=track.getBoundingClientRect();update(min+(e.clientX-b.left)/b.width*(max-min));}},
+    end:()=&gt;{if(isWheel){const current=normalize(raw),near=(c.period?[...stops,stops[0]+c.period]:stops).reduce((a,v)=&gt;Math.abs(v-current)&lt;Math.abs(a-current)?v:a,stops[0]);const gap=stops[1]-stops[0]||1;if(c.discrete)update(Math.round(raw));else if(Math.abs(near-current)&lt;=gap*.14)update(near);}
+     if(wasPlaying&amp;&amp;!c.transport.isPlaying())c.transport.toggle();},
+    cancel:()=&gt;{if(didPause&amp;&amp;c.transport)pause();}
+   });
+   listen(track,&#x27;keydown&#x27;,e=&gt;{if([&#x27;ArrowLeft&#x27;,&#x27;ArrowRight&#x27;,&#x27;Home&#x27;,&#x27;End&#x27;,&#x27; &#x27;].includes(e.key)){e.preventDefault();if(e.key===&#x27; &#x27;){if(c.transport)toggle();else if(isWheel)next();return;}update(e.key===&#x27;Home&#x27;?min:e.key===&#x27;End&#x27;?max:read()+(e.key===&#x27;ArrowRight&#x27;?1:-1)*(isWheel?(stops[1]-stops[0]||1):step));}});
+   refresh.push(()=&gt;{const v=read();out.textContent=formatted(v);track.setAttribute(&#x27;aria-valuenow&#x27;,v);track.setAttribute(&#x27;aria-valuetext&#x27;,formatted(v));track.dataset.playing=String(!!c.transport?.isPlaying());track.style.setProperty(&#x27;--sci-progress&#x27;,100*clamp((v-min)/(max-min),0,1)+&#x27;%&#x27;);
+    if(isWheel){const gap=stops[1]-stops[0]||1,index=Math.floor((v-min)/gap),fraction=(v-min)/gap-index;strip.replaceChildren();for(let i=-2;i&lt;=2;i++){const item=make(&#x27;span&#x27;,&#x27;sci-tick&#x27;,formatted(normalize(min+(index+i)*gap)));item.style.transform=`translateX(${(i-fraction)*100}%)`;strip.append(item);}fill.hidden=true;}
+   });
+  }
+  if(c.kind!==&#x27;action&#x27;){
+   const hint=make(&#x27;span&#x27;,&#x27;sci-hint&#x27;,&#x27;点本区空白复位&#x27;);field.append(hint);
+   const reset=()=&gt;{cancelGesture();apply(defaultValue);field.classList.remove(&#x27;sci-flash&#x27;);void field.offsetWidth;field.classList.add(&#x27;sci-flash&#x27;);field.setAttribute(&#x27;aria-label&#x27;,c.label+&#x27;，已复位&#x27;);};resets.set(c.key,reset);
+   // Reset only when down and up are on this field&#x27;s actual blank background.
+   let blank=false;bindGesture(field,{accept:e=&gt;e.target===field,start:e=&gt;{blank=true;},tap:e=&gt;{if(blank&amp;&amp;e.target===field)reset();},move:()=&gt;{blank=false;},cancel:()=&gt;{blank=false;}});
+   listen(field,&#x27;keydown&#x27;,e=&gt;{if(e.key===&#x27;Escape&#x27;&amp;&amp;!e.target.closest(&#x27;input,textarea,[contenteditable=true]&#x27;)){e.stopPropagation();reset();}});
+  }
+  const family=[&#x27;action&#x27;,&#x27;choice&#x27;].includes(c.kind)?&#x27;buttons&#x27;:c.kind===&#x27;wheel&#x27;?&#x27;wheels&#x27;:&#x27;sliders&#x27;;if(!groups.has(family)){const group=make(&#x27;div&#x27;,&#x27;sci-group&#x27;);group.dataset.family=family;groups.set(family,group);host.append(group);}groups.get(family).append(field);
+ }
+ // Graph taps pause/play; existing model-specific drags still edit the same state.
+ if(graph&amp;&amp;transport){
+  let before=false,oldDown=graph.onpointerdown,oldMove=graph.onpointermove,oldUp=graph.onpointerup;
+  graph.onpointerdown=graph.onpointermove=graph.onpointerup=null;
+  let event=null,started=false;
+  bindGesture(graph,{axis:root.id===&#x27;complex-wave&#x27;?&#x27;free&#x27;:&#x27;x&#x27;,start:e=&gt;{before=transport.isPlaying();event=e;started=false;},move:e=&gt;{if(!started){started=true;pause();oldDown?.call(graph,event);}oldMove?.call(graph,e);},tap:()=&gt;transport.toggle(),end:e=&gt;{oldUp?.call(graph,e);cancelGesture();if(before&amp;&amp;!transport.isPlaying())transport.toggle();},cancel:()=&gt;cancelGesture()});
+ }
+ root.sciApi={getState:()=&gt;({...root.dataset}),getControl:key=&gt;values.get(key)?.(),reset:key=&gt;{if(!resets.has(key))throw Error(&#x27;A valid local scope is required&#x27;);resets.get(key)();},pause:()=&gt;{pause();sync();},controls:controls.map(c=&gt;({key:c.key,kind:c.kind||&#x27;slider&#x27;,playable:!!c.transport,defaultValue:c.defaultValue??c.items?.[0]?.[0]}))};
+ root.sciDisposeControls=()=&gt;{abort.abort();pause();delete root.sciSync;};sync();return root.sciApi;
+}};
 })();
 &lt;/script&gt;&lt;section class=&quot;sci-extra&quot; data-sci-example=&quot;sampling-distribution&quot;&gt;
 &lt;style&gt;@layer sci-fragments {
-.sci-extra{overflow-anchor:none;color:var(--foreground)}.sci-extra svg{display:block;width:100%;overflow:visible}.sci-extra[data-sci-example=&quot;sampling-distribution&quot;] svg{height:310px}.sci-extra[data-sci-example=&quot;quantum-linked&quot;] svg{height:410px}.sci-extra [data-controls]{position:relative;isolation:isolate;padding:12px 4px 26px;min-height:150px}.sci-extra [data-controls]::before{content:&quot;&quot;;position:absolute;inset:0;background:var(--foreground);opacity:0;z-index:-1;pointer-events:none;transition:opacity .16s}.sci-extra [data-controls].flash::before{opacity:.07}.sci-extra .transport{display:flex;gap:12px;align-items:center}.sci-extra .transport input{flex:1;min-width:0}.sci-extra .play-slot{flex:0 0 48px}.sci-extra [data-reading]{min-height:3em;margin:8px 0}.sci-extra [data-latest]{min-height:1.5em}.sci-extra [data-feedback]{margin-top:14px}.sci-extra input{width:100%}.sci-extra .batch-row{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:12px}@media(prefers-reduced-motion:reduce){.sci-extra [data-controls]::before{transition:none}}
-}&lt;/style&gt;
+.sci-extra{overflow-anchor:none;color:var(--foreground)}.sci-extra svg{display:block;width:100%;overflow:visible}.sci-extra[data-sci-example=&quot;sampling-distribution&quot;] svg{height:310px}.sci-extra[data-sci-example=&quot;quantum-linked&quot;] svg{height:410px}.sci-extra [data-reading]{min-height:3em;margin:8px 0}.sci-extra [data-latest]{min-height:1.5em}.sci-extra input{width:100%}}&lt;/style&gt;
 &lt;h3&gt;随机采样 · 一次不确定，多次有分布&lt;/h3&gt;
 &lt;div data-latest class=&quot;tabular-nums&quot;&gt;&lt;/div&gt;
 &lt;svg role=&quot;img&quot; aria-label=&quot;离散误差的经验频率；固定虚线为总体理论频率，浅色底栏标记最新结果所属误差档。&quot;&gt;&lt;/svg&gt;
 &lt;div class=&quot;viz-row text-small&quot;&gt;&lt;span&gt;实柱：本批样本&lt;/span&gt;&lt;span&gt;短虚线：总体规律&lt;/span&gt;&lt;/div&gt;
-&lt;div data-controls&gt;
-&lt;div data-reading class=&quot;tabular-nums&quot; aria-live=&quot;polite&quot;&gt;&lt;/div&gt;
-&lt;div&gt;样本量 &lt;output data-value&gt;1&lt;/output&gt;&lt;/div&gt;
-&lt;div class=&quot;transport&quot;&gt;&lt;span class=&quot;play-slot&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn&quot; data-play aria-label=&quot;开始积累样本&quot; aria-pressed=&quot;false&quot;&gt;▶&lt;/button&gt;&lt;/span&gt;&lt;input type=&quot;range&quot; class=&quot;form-range&quot; min=&quot;1&quot; max=&quot;1000&quot; step=&quot;1&quot; value=&quot;1&quot; aria-label=&quot;样本量，拖动回看同一批样本&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn&quot; data-step aria-label=&quot;增加一次采样&quot;&gt;+1&lt;/button&gt;&lt;/div&gt;
-&lt;div class=&quot;batch-row&quot;&gt;&lt;span class=&quot;text-small&quot;&gt;固定总体 · 同批回看&lt;/span&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; data-batch&gt;换一批&lt;/button&gt;&lt;/div&gt;
-&lt;div data-feedback class=&quot;text-small&quot; role=&quot;status&quot;&gt;点操作区空白：回到同批第 1 项&lt;/div&gt;&lt;/div&gt;
+&lt;div data-readouts class=&quot;sci-readouts&quot;&gt;&lt;div data-reading&gt;&lt;/div&gt;&lt;output data-value&gt;&lt;/output&gt;&lt;/div&gt;&lt;div data-controls&gt;&lt;input type=&quot;range&quot; class=&quot;form-range&quot; min=&quot;1&quot; max=&quot;1000&quot; step=&quot;1&quot; value=&quot;1&quot; aria-label=&quot;样本量，拖动回看同一批样本&quot;&gt;&lt;/div&gt;
 &lt;script&gt;
 /* Local instance runtime: no fixed IDs, no external dependencies. */
 (()=&gt;{
@@ -122,34 +176,24 @@ function draw(){
   $(&#x27;[data-reading]&#x27;).textContent=`${value} 个概率峰 · 内部 ${value-1} 个节点 · 能量 ${value*value} E₁`;
   root.dataset.energy=String(value*value);
  }
- range.value=String(value);root.dataset.value=String(value);
+ range.value=String(value);root.dataset.value=String(value);root.sciSync?.();
 }
-function stop(){if(timer!==null)clearInterval(timer);timer=null;const b=$(&#x27;[data-play]&#x27;);if(b){b.textContent=&#x27;▶&#x27;;b.setAttribute(&#x27;aria-label&#x27;,&#x27;开始积累样本&#x27;);b.setAttribute(&#x27;aria-pressed&#x27;,&#x27;false&#x27;)}}
+function stop(){if(timer!==null)clearInterval(timer);timer=null;root.dataset.running=&#x27;false&#x27;;root.sciSync?.();}
 function setValue(v){if(!Number.isFinite(Number(v)))throw new TypeError(&#x27;value must be finite&#x27;);v=Number(v);value=Math.max(1,Math.min(KIND===&#x27;sampling-distribution&#x27;?MAX:4,Math.round(v)));draw()}
-function reset(){stop();setValue(1);area.classList.add(&#x27;flash&#x27;);feedback.textContent=&#x27;已复位 ✓&#x27;;clearTimeout(flashTimer);clearTimeout(feedbackTimer);flashTimer=setTimeout(()=&gt;area.classList.remove(&#x27;flash&#x27;),200);feedbackTimer=setTimeout(()=&gt;feedback.textContent=KIND===&#x27;sampling-distribution&#x27;?&#x27;点操作区空白：回到同批第 1 项&#x27;:&#x27;点操作区空白：恢复 n=1&#x27;,900)}
 range.oninput=()=&gt;{stop();setValue(+range.value)};
-if(KIND===&#x27;sampling-distribution&#x27;){
- samples=makeSamples(batch);
- $(&#x27;[data-batch]&#x27;).onclick=()=&gt;{stop();batch++;samples=makeSamples(batch);draw()};
- $(&#x27;[data-step]&#x27;).onclick=()=&gt;{stop();setValue(value+1)};
- $(&#x27;[data-play]&#x27;).onclick=()=&gt;{if(timer!==null){stop();return}if(value===MAX)setValue(1);const b=$(&#x27;[data-play]&#x27;);b.textContent=&#x27;Ⅱ&#x27;;b.setAttribute(&#x27;aria-label&#x27;,&#x27;暂停积累样本&#x27;);b.setAttribute(&#x27;aria-pressed&#x27;,&#x27;true&#x27;);timer=setInterval(()=&gt;{if(!root.isConnected||document.hidden){stop();return}setValue(value+1);if(value===MAX)stop()},50)};
-}
-area.onpointerdown=e=&gt;{if(!e.isPrimary||e.button&gt;0||e.target.closest(&#x27;button,input,label,select,textarea,a&#x27;)){candidate=null;return}candidate={id:e.pointerId,x:e.clientX,y:e.clientY,start:performance.now()};};
-area.onpointermove=e=&gt;{if(candidate&amp;&amp;Math.hypot(e.clientX-candidate.x,e.clientY-candidate.y)&gt;8)candidate=null};
-area.onpointerup=e=&gt;{const c=candidate;candidate=null;if(c&amp;&amp;c.id===e.pointerId&amp;&amp;performance.now()-c.start&lt;500&amp;&amp;Math.hypot(e.clientX-c.x,e.clientY-c.y)&lt;=8)reset()};
-area.onpointercancel=area.onlostpointercapture=area.onpointerleave=()=&gt;candidate=null;
-root.onkeydown=e=&gt;{if(e.key.toLowerCase()===&#x27;r&#x27;&amp;&amp;!e.ctrlKey&amp;&amp;!e.metaKey&amp;&amp;!e.altKey){e.preventDefault();reset()}};
-const onScroll=()=&gt;candidate=null,onHidden=()=&gt;{candidate=null;if(document.hidden)stop()};
-document.addEventListener(&#x27;scroll&#x27;,onScroll,true);document.addEventListener(&#x27;visibilitychange&#x27;,onHidden);
+const transport={isPlaying:()=&gt;timer!==null,toggle:()=&gt;{if(timer!==null){stop();return}if(value===MAX)setValue(1);root.dataset.running=&#x27;true&#x27;;timer=setInterval(()=&gt;{if(!root.isConnected||document.hidden){stop();return}setValue(Math.min(MAX,value+5));if(value===MAX){stop();setValue(1)}},40);root.sciSync?.();}};
+if(KIND===&#x27;sampling-distribution&#x27;)samples=makeSamples(batch);
 const ro=new ResizeObserver(draw);ro.observe(svg);
-root.sciApi={getState:()=&gt;({value,batch}),setValue:v=&gt;{stop();setValue(v)},reset};
-root.sciDestroy=()=&gt;{stop();ro.disconnect();clearTimeout(flashTimer);clearTimeout(feedbackTimer);document.removeEventListener(&#x27;scroll&#x27;,onScroll,true);document.removeEventListener(&#x27;visibilitychange&#x27;,onHidden);delete root.dataset.mounted;};
+SciControls.mount(root,{controls:[{key:&#x27;count&#x27;,label:&#x27;样本量&#x27;,input:root.querySelector(&#x27;input&#x27;),defaultValue:1,transport},{key:&#x27;step&#x27;,label:&#x27;追加样本&#x27;,kind:&#x27;action&#x27;,text:&#x27;+1&#x27;,act:()=&gt;{stop();setValue(value+1)}},{key:&#x27;batch&#x27;,label:&#x27;采样批次&#x27;,kind:&#x27;action&#x27;,text:&#x27;换一批&#x27;,act:()=&gt;{stop();batch++;samples=makeSamples(batch);draw()}}],pause:stop,transport,graph:svg});
+root.sciApi.setValue=v=&gt;{stop();setValue(v)};
+root.sciDestroy=()=&gt;{root.sciDisposeControls();ro.disconnect();delete root.dataset.mounted;};
 draw();
 }
 })();
 
 &lt;/script&gt;
 &lt;/section&gt;
+
 
 &lt;style&gt;@layer sci-theme{}&lt;/style&gt;&lt;script&gt;
 (()=&gt;{const allowed=[&quot;background&quot;, &quot;foreground&quot;, &quot;card&quot;, &quot;muted&quot;, &quot;muted-foreground&quot;, &quot;border&quot;, &quot;primary&quot;, &quot;primary-foreground&quot;, &quot;secondary&quot;, &quot;ring&quot;, &quot;viz-series-1&quot;, &quot;viz-series-2&quot;, &quot;viz-series-3&quot;, &quot;viz-series-4&quot;, &quot;viz-series-5&quot;, &quot;viz-series-6&quot;];window.addEventListener(&#x27;message&#x27;,e=&gt;{if(e.source!==parent||e.data?.type!==&#x27;sci-theme&#x27;)return;for(const[k,v]of Object.entries(e.data.tokens||{}))if(allowed.includes(k)&amp;&amp;/^#[0-9a-f]{6}$/i.test(v))document.documentElement.style.setProperty(&#x27;--&#x27;+k,v);document.documentElement.style.colorScheme=e.data.name===&#x27;dark&#x27;?&#x27;dark&#x27;:&#x27;light&#x27;});let last=0;const measure=()=&gt;{const h=Math.ceil(document.body.getBoundingClientRect().height);if(h!==last){last=h;parent.postMessage({type:&#x27;sci-height&#x27;,height:h},&#x27;*&#x27;)}};new ResizeObserver(measure).observe(document.body);measure();})();
@@ -159,66 +203,122 @@ draw();
 .btn{background:var(--secondary);color:var(--foreground);border:1px solid var(--border);border-radius:12px;padding:8px 14px;cursor:pointer}.btn-primary,button[aria-pressed=true],button[aria-selected=true]{background:var(--primary);color:var(--primary-foreground)}.btn-ghost{border-color:transparent;background:transparent}.form-range{accent-color:var(--primary);min-height:44px;max-width:100%}.form-label{display:block}.viz-row,.viz-controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.viz-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:16px}.card{background:var(--card);border-radius:16px;padding:16px}.text-small{font-size:.9rem}.text-muted{color:var(--muted-foreground)}.tabular-nums{font-variant-numeric:tabular-nums}.form-check{display:flex;align-items:center;gap:8px;min-height:44px}.form-check-input{width:22px;height:22px}.cursor-interaction{cursor:pointer}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}.nav{display:flex;gap:8px;flex-wrap:wrap}.nav-link{border:0;border-radius:12px;padding:10px;background:var(--secondary);color:var(--foreground)}.nav-link.active{background:var(--primary);color:var(--primary-foreground)}[hidden]{display:none!important}@media(max-width:360px){body{padding:10px}.btn{padding:8px 10px}}
 
 
-/* All operation panels sit below their linked plots. Geometry is stable. */
-[data-play]{width:48px;min-width:48px;height:48px;padding:0;display:grid;place-items:center;font-size:22px;line-height:1}
-[data-reset-area]{border-radius:16px;touch-action:pan-y;overflow-anchor:none}
-.sci-controls{position:relative;isolation:isolate;padding:16px 12px 28px;margin-top:16px}
-.sci-controls::before{content:&quot;&quot;;position:absolute;inset:0;border-radius:inherit;background:var(--foreground);opacity:0;z-index:-1;pointer-events:none;transition:opacity 150ms}
-.sci-controls.flash::before{opacity:.07}
-[data-feedback]{min-height:2.8em;margin:12px 0 0}
-.form-range{width:100%;min-width:0}output{font-variant-numeric:tabular-nums;white-space:nowrap}
-@media(prefers-reduced-motion:reduce){.sci-controls::before{transition:none}}
-
 /* Intrinsic-width disclosure: only arrow + label is the toggle target. */
 summary{box-sizing:border-box;display:list-item;list-style-position:inside;inline-size:fit-content;max-inline-size:100%;min-block-size:44px;padding:8px 12px;border:1px solid var(--border);border-radius:var(--sci-control-radius,12px);background:var(--secondary);color:var(--foreground);touch-action:manipulation;cursor:pointer}
 summary:focus-visible{outline:2px solid var(--ring);outline-offset:3px}
 details[open]&gt;summary{margin-bottom:12px}
-}:root{--background:#faf6e9;--foreground:#293c42;--card:#fffdf5;--muted:#eee9dc;--muted-foreground:#59676b;--border:#c9ccbf;--primary:#346c79;--primary-foreground:#ffffff;--secondary:#eeeee5;--ring:#346c79;--viz-series-1:#407e8a;--viz-series-2:#aa7739;--viz-series-3:#6e70a1;--viz-series-4:#52836c;--viz-series-5:#9b6877;--viz-series-6:#7b7461}&lt;/style&gt;&lt;body&gt;&lt;script&gt;/* Shared lower control-area behavior. Load before legacy fragments. */
+
+
+/* Shared control family. Override these tokens in the host UI, never in model code. */
+.sci-panel{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:12px;align-items:start;margin-top:16px}
+.sci-field{position:relative;display:flex;flex-direction:column;align-items:center;gap:12px;min-width:0;padding:16px 18px 34px;border:1px solid var(--border);border-radius:var(--sci-control-radius,16px);touch-action:pan-y;overflow:hidden}
+.sci-heading{display:flex;align-items:baseline;justify-content:space-between;gap:10px;width:100%;min-height:30px}.sci-label{font-weight:500}.sci-value{font-variant-numeric:tabular-nums;font-size:1rem}
+.sci-button{width:var(--sci-button-width,180px);max-width:100%;height:var(--sci-control-height,48px);border:1px solid var(--border);border-radius:var(--sci-control-radius,16px);background:var(--secondary);color:var(--foreground);padding:8px 12px;white-space:nowrap;font:inherit;cursor:pointer}
+.sci-slider,.sci-wheel{width:100%;height:var(--sci-control-height,48px);position:relative;overflow:hidden;border-radius:var(--sci-control-radius,16px);background:var(--muted);touch-action:pan-y;cursor:ew-resize;user-select:none;border:1px solid var(--border)}
+.sci-wheel{width:var(--sci-wheel-width,260px);max-width:100%;height:56px}
+.sci-fill{position:absolute;inset:0 auto 0 0;width:var(--sci-progress);background:var(--primary);opacity:.65;pointer-events:none}
+.sci-strip{position:absolute;inset:0;pointer-events:none}.sci-tick{position:absolute;width:33.333%;left:33.333%;height:100%;display:grid;place-items:center;font-variant-numeric:tabular-nums}.sci-wheel::after{content:&#x27;&#x27;;position:absolute;inset:5px 31%;border:1px solid var(--border);border-radius:10px;pointer-events:none}
+.sci-slider[data-playing=true],.sci-wheel[data-playing=true]{box-shadow:inset 0 0 0 2px var(--primary)}
+.sci-hint{font-size:.8rem;color:var(--muted-foreground);pointer-events:none;min-height:22px}.sci-readouts{display:flex;flex-wrap:wrap;gap:10px 20px;margin:12px 0}.sci-readouts:empty{display:none}
+.sci-field:focus-visible,.sci-slider:focus-visible,.sci-wheel:focus-visible,.sci-button:focus-visible{outline:2px solid var(--ring);outline-offset:2px}
+.sci-flash{animation:sci-reset .3s ease-out}@keyframes sci-reset{from{background:var(--muted)}to{background:transparent}}
+@media(prefers-reduced-motion:reduce){.sci-flash{animation:none;background:var(--muted)}}
+.sci-panel{display:flex;flex-direction:column;gap:16px}.sci-group{width:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:12px;align-items:start}
+}:root{--background:#faf6e9;--foreground:#293c42;--card:#fffdf5;--muted:#eee9dc;--muted-foreground:#59676b;--border:#c9ccbf;--primary:#346c79;--primary-foreground:#ffffff;--secondary:#eeeee5;--ring:#346c79;--viz-series-1:#407e8a;--viz-series-2:#aa7739;--viz-series-3:#6e70a1;--viz-series-4:#52836c;--viz-series-5:#9b6877;--viz-series-6:#7b7461}&lt;/style&gt;&lt;body&gt;&lt;script&gt;/* Scientific component behavior. Models own state; themes own appearance. */
 (()=&gt;{
 &#x27;use strict&#x27;;
-window.SciControls={
-play(button,running,rest=&#x27;播放&#x27;){
- button.textContent=running?&#x27;Ⅱ&#x27;:&#x27;▶&#x27;;
- button.setAttribute(&#x27;aria-label&#x27;,running?&#x27;暂停&#x27;:rest);
- button.setAttribute(&#x27;aria-pressed&#x27;,String(running));
-},
-mount(root,{reset,pause=()=&gt;{},cancelGesture=()=&gt;{}}){
- const area=root.querySelector(&#x27;[data-reset-area]&#x27;);
- if(!area)throw Error(&#x27;Missing lower control area&#x27;);
- const feedback=area.querySelector(&#x27;[data-feedback]&#x27;);
- const prompt=feedback.textContent,abort=new AbortController(),signal=abort.signal;
- let candidate=null,timer=0,flash=0;const pointers=new Set();
- const ignore=t=&gt;t.closest(&#x27;button,input,select,textarea,a,label,summary,[role=&quot;button&quot;]&#x27;);
- const clear=()=&gt;{candidate=null;};
- const listen=(el,type,fn,options={})=&gt;el.addEventListener(type,fn,{...options,signal});
- const restore=()=&gt;{cancelGesture();reset();clearTimeout(timer);clearTimeout(flash);area.classList.add(&#x27;flash&#x27;);feedback.textContent=&#x27;已复位 ✓&#x27;;flash=setTimeout(()=&gt;area.classList.remove(&#x27;flash&#x27;),180);timer=setTimeout(()=&gt;feedback.textContent=prompt,900);};
- listen(document,&#x27;pointerdown&#x27;,e=&gt;{pointers.add(e.pointerId);if(pointers.size&gt;1){clear();cancelGesture();}},{capture:true});
- listen(area,&#x27;pointerdown&#x27;,e=&gt;{if(e.button&gt;0||!e.isPrimary||pointers.size&gt;1||ignore(e.target)){clear();return;}candidate={id:e.pointerId,x:e.clientX,y:e.clientY,t:performance.now()};});
- listen(document,&#x27;pointermove&#x27;,e=&gt;{if(candidate&amp;&amp;candidate.id===e.pointerId&amp;&amp;Math.hypot(e.clientX-candidate.x,e.clientY-candidate.y)&gt;8)clear();},{capture:true});
- listen(document,&#x27;pointerup&#x27;,e=&gt;{const c=candidate;clear();pointers.delete(e.pointerId);if(c&amp;&amp;c.id===e.pointerId&amp;&amp;area.contains(e.target)&amp;&amp;!ignore(e.target)&amp;&amp;performance.now()-c.t&lt;500&amp;&amp;Math.hypot(e.clientX-c.x,e.clientY-c.y)&lt;=8)restore();},{capture:true});
- listen(document,&#x27;pointercancel&#x27;,e=&gt;{pointers.delete(e.pointerId);clear();cancelGesture();},{capture:true});
- listen(area,&#x27;pointerleave&#x27;,clear);listen(area,&#x27;lostpointercapture&#x27;,clear);
- listen(document,&#x27;scroll&#x27;,clear,{capture:true});
- listen(document,&#x27;visibilitychange&#x27;,()=&gt;{clear();pointers.clear();cancelGesture();if(document.hidden)pause();});
- listen(window,&#x27;blur&#x27;,()=&gt;{clear();pointers.clear();cancelGesture();pause();});
- listen(root,&#x27;keydown&#x27;,e=&gt;{if(e.key.toLowerCase()===&#x27;r&#x27;&amp;&amp;!e.ctrlKey&amp;&amp;!e.metaKey&amp;&amp;!e.altKey&amp;&amp;!e.target.closest(&#x27;input,textarea,select,[contenteditable=&quot;true&quot;]&#x27;)){e.preventDefault();restore();}});
- root.tabIndex=0;
- root.sciApi={reset:restore,pause,getState:()=&gt;({...root.dataset})};
- root.sciDisposeControls=()=&gt;{abort.abort();clearTimeout(timer);clearTimeout(flash);pause();};
- return root.sciApi;
-}
-};
+const clamp=(v,a,b)=&gt;Math.max(a,Math.min(b,v));
+const modulo=(v,p)=&gt;((v%p)+p)%p;
+window.SciControls={mount(root,{controls,pause=()=&gt;{},cancelGesture=()=&gt;{},transport,graph}){
+ const host=root.querySelector(&#x27;[data-controls]&#x27;), abort=new AbortController(), signal=abort.signal;
+ if(!host)throw Error(&#x27;An experiment requires a data-controls host&#x27;);
+ const listen=(node,type,fn,options={})=&gt;node.addEventListener(type,fn,{...options,signal});
+ const make=(tag,cls,text)=&gt;{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
+ const groups=new Map();
+ const refresh=[],resets=new Map(),values=new Map(),pointers=new Set();let syncing=false,gesture=null;
+ const sync=()=&gt;{if(syncing)return;syncing=true;try{refresh.forEach(f=&gt;f());}finally{syncing=false;}};
+ root.sciSync=sync;host.className=&#x27;sci-panel&#x27;;
+ // A pointer must remain a short, single-pointer tap. A vertical swipe belongs to scrolling.
+ function bindGesture(el,{axis=&#x27;x&#x27;,accept=()=&gt;true,start=()=&gt;{},move=()=&gt;{},tap=()=&gt;{},end=()=&gt;{},cancel=()=&gt;{}}){
+  let g=null;
+  const discard=()=&gt;{if(g){g=null;cancel();}if(gesture===discard)gesture=null;};
+  listen(el,&#x27;pointerdown&#x27;,e=&gt;{if(!e.isPrimary||e.button&gt;0||pointers.size&gt;1||!accept(e))return;g={id:e.pointerId,x:e.clientX,y:e.clientY,t:performance.now(),moved:false};gesture=discard;start(e);});
+  listen(document,&#x27;pointermove&#x27;,e=&gt;{if(!g||g.id!==e.pointerId)return;const dx=e.clientX-g.x,dy=e.clientY-g.y;if(axis===&#x27;x&#x27;&amp;&amp;!g.moved&amp;&amp;Math.abs(dy)&gt;8&amp;&amp;Math.abs(dy)&gt;Math.abs(dx)){discard();return;}if(Math.abs(dx)&gt;6||(axis===&#x27;free&#x27;&amp;&amp;Math.abs(dy)&gt;6)||g.moved){g.moved=true;move(e,dx);}}, {capture:true});
+  listen(document,&#x27;pointerup&#x27;,e=&gt;{if(!g||g.id!==e.pointerId)return;const q=g;g=null;gesture=null;if(q.moved)end(e);else if(performance.now()-q.t&lt;500&amp;&amp;Math.hypot(e.clientX-q.x,e.clientY-q.y)&lt;=8)tap(e);else cancel();sync();},{capture:true});
+  listen(document,&#x27;pointercancel&#x27;,discard,{capture:true});
+  return discard;
+ }
+ listen(document,&#x27;pointerdown&#x27;,e=&gt;{pointers.add(e.pointerId);if(pointers.size&gt;1){gesture?.();cancelGesture();}},{capture:true});
+ for(const type of [&#x27;pointerup&#x27;,&#x27;pointercancel&#x27;])listen(document,type,e=&gt;pointers.delete(e.pointerId));
+ const stopAll=()=&gt;{gesture?.();pointers.clear();cancelGesture();pause();sync();};
+ listen(document,&#x27;scroll&#x27;,()=&gt;{gesture?.();cancelGesture();},{capture:true});
+ listen(window,&#x27;blur&#x27;,stopAll);listen(document,&#x27;visibilitychange&#x27;,()=&gt;{if(document.hidden)stopAll();});
+ for(const c of controls){
+  const field=make(&#x27;div&#x27;,&#x27;sci-field&#x27;);field.dataset.scope=c.key;field.tabIndex=0;
+  const heading=make(&#x27;div&#x27;,&#x27;sci-heading&#x27;),label=make(&#x27;span&#x27;,&#x27;sci-label&#x27;,c.label),out=make(&#x27;output&#x27;,&#x27;sci-value&#x27;);heading.append(label,out);field.append(heading);
+  const input=c.input;let get=c.get,set=c.set;
+  if(input){get=()=&gt;Number(input.value);set=v=&gt;{input.value=v;input.dispatchEvent(new Event(&#x27;input&#x27;,{bubbles:true}));};}
+  const read=()=&gt;get?.();values.set(c.key,read);
+  function apply(v){const resume=transport?.isPlaying();set(v);if(resume&amp;&amp;!c.transport&amp;&amp;!transport.isPlaying())transport.toggle();sync();}
+  const defaultValue=c.defaultValue??c.items?.[0]?.[0];
+  if(c.kind===&#x27;action&#x27;){
+   const button=make(&#x27;button&#x27;,&#x27;sci-button&#x27;,c.text);button.type=&#x27;button&#x27;;listen(button,&#x27;click&#x27;,()=&gt;{c.act();sync();});field.append(button);out.hidden=true;
+  }else if(c.kind===&#x27;choice&#x27;){
+   const button=make(&#x27;button&#x27;,&#x27;sci-button&#x27;);button.type=&#x27;button&#x27;;button.setAttribute(&#x27;aria-label&#x27;,c.label+&#x27;：点击切换&#x27;);
+   listen(button,&#x27;click&#x27;,()=&gt;{const i=c.items.findIndex(a=&gt;a[0]===read());apply(c.items[(i+1)%c.items.length][0]);});field.append(button);out.hidden=true;
+   refresh.push(()=&gt;{button.textContent=c.items.find(a=&gt;a[0]===read())?.[1]??String(read());button.dataset.value=read();button.setAttribute(&#x27;aria-label&#x27;,c.label+&#x27;：&#x27;+button.textContent+&#x27;，点击切换&#x27;);});
+  }else{
+   const min=c.min??Number(input.min),max=c.max??Number(input.max),step=c.step??Number(input.step||1);
+   // Existing native inputs are the model&#x27;s adapter; all visible controls share this runtime.
+   if(input){input.hidden=true;input.tabIndex=-1;input.setAttribute(&#x27;aria-hidden&#x27;,&#x27;true&#x27;);field.append(input);}
+   const track=make(&#x27;div&#x27;,c.kind===&#x27;wheel&#x27;?&#x27;sci-wheel&#x27;:&#x27;sci-slider&#x27;);track.tabIndex=0;track.setAttribute(&#x27;role&#x27;,&#x27;slider&#x27;);track.setAttribute(&#x27;aria-label&#x27;,c.label);track.setAttribute(&#x27;aria-valuemin&#x27;,min);track.setAttribute(&#x27;aria-valuemax&#x27;,max);field.append(track);
+   const fill=make(&#x27;span&#x27;,&#x27;sci-fill&#x27;),strip=make(&#x27;span&#x27;,&#x27;sci-strip&#x27;);track.append(fill,strip);
+   let origin=0,wasPlaying=false,didPause=false,raw=0;
+   const normalize=v=&gt;c.period?min+modulo(v-min,c.period):clamp(v,min,max);
+   const update=v=&gt;{raw=v;const n=normalize(v);set(c.discrete?normalize(Math.round(v)):Math.round(n/step)*step);sync();};
+   const isWheel=c.kind===&#x27;wheel&#x27;,stops=c.stops||[];
+   const formatted=v=&gt;(Math.round(v*100)/100)+(c.unit||&#x27;&#x27;);
+   const next=()=&gt;{const current=read(),n=stops.find(v=&gt;v&gt;current+1e-7);apply(n??stops[0]);};
+   const toggle=()=&gt;{c.transport?.toggle();sync();};
+   bindGesture(track,{
+    start:()=&gt;{origin=read();raw=origin;wasPlaying=!!c.transport?.isPlaying();didPause=false;},
+    move:(e,dx)=&gt;{if(!didPause){if(c.transport)pause();didPause=true;}const width=track.getBoundingClientRect().width;update(origin+(isWheel?-dx/Math.max(60,width/3)*(stops[1]-stops[0]||1):dx/width*(max-min)));},
+    tap:e=&gt;{if(isWheel){const b=track.getBoundingClientRect(),part=(e.clientX-b.left)/b.width;if(c.transport&amp;&amp;(part&lt;.3||part&gt;.7))toggle();else next();}else if(c.transport)toggle();else{const b=track.getBoundingClientRect();update(min+(e.clientX-b.left)/b.width*(max-min));}},
+    end:()=&gt;{if(isWheel){const current=normalize(raw),near=(c.period?[...stops,stops[0]+c.period]:stops).reduce((a,v)=&gt;Math.abs(v-current)&lt;Math.abs(a-current)?v:a,stops[0]);const gap=stops[1]-stops[0]||1;if(c.discrete)update(Math.round(raw));else if(Math.abs(near-current)&lt;=gap*.14)update(near);}
+     if(wasPlaying&amp;&amp;!c.transport.isPlaying())c.transport.toggle();},
+    cancel:()=&gt;{if(didPause&amp;&amp;c.transport)pause();}
+   });
+   listen(track,&#x27;keydown&#x27;,e=&gt;{if([&#x27;ArrowLeft&#x27;,&#x27;ArrowRight&#x27;,&#x27;Home&#x27;,&#x27;End&#x27;,&#x27; &#x27;].includes(e.key)){e.preventDefault();if(e.key===&#x27; &#x27;){if(c.transport)toggle();else if(isWheel)next();return;}update(e.key===&#x27;Home&#x27;?min:e.key===&#x27;End&#x27;?max:read()+(e.key===&#x27;ArrowRight&#x27;?1:-1)*(isWheel?(stops[1]-stops[0]||1):step));}});
+   refresh.push(()=&gt;{const v=read();out.textContent=formatted(v);track.setAttribute(&#x27;aria-valuenow&#x27;,v);track.setAttribute(&#x27;aria-valuetext&#x27;,formatted(v));track.dataset.playing=String(!!c.transport?.isPlaying());track.style.setProperty(&#x27;--sci-progress&#x27;,100*clamp((v-min)/(max-min),0,1)+&#x27;%&#x27;);
+    if(isWheel){const gap=stops[1]-stops[0]||1,index=Math.floor((v-min)/gap),fraction=(v-min)/gap-index;strip.replaceChildren();for(let i=-2;i&lt;=2;i++){const item=make(&#x27;span&#x27;,&#x27;sci-tick&#x27;,formatted(normalize(min+(index+i)*gap)));item.style.transform=`translateX(${(i-fraction)*100}%)`;strip.append(item);}fill.hidden=true;}
+   });
+  }
+  if(c.kind!==&#x27;action&#x27;){
+   const hint=make(&#x27;span&#x27;,&#x27;sci-hint&#x27;,&#x27;点本区空白复位&#x27;);field.append(hint);
+   const reset=()=&gt;{cancelGesture();apply(defaultValue);field.classList.remove(&#x27;sci-flash&#x27;);void field.offsetWidth;field.classList.add(&#x27;sci-flash&#x27;);field.setAttribute(&#x27;aria-label&#x27;,c.label+&#x27;，已复位&#x27;);};resets.set(c.key,reset);
+   // Reset only when down and up are on this field&#x27;s actual blank background.
+   let blank=false;bindGesture(field,{accept:e=&gt;e.target===field,start:e=&gt;{blank=true;},tap:e=&gt;{if(blank&amp;&amp;e.target===field)reset();},move:()=&gt;{blank=false;},cancel:()=&gt;{blank=false;}});
+   listen(field,&#x27;keydown&#x27;,e=&gt;{if(e.key===&#x27;Escape&#x27;&amp;&amp;!e.target.closest(&#x27;input,textarea,[contenteditable=true]&#x27;)){e.stopPropagation();reset();}});
+  }
+  const family=[&#x27;action&#x27;,&#x27;choice&#x27;].includes(c.kind)?&#x27;buttons&#x27;:c.kind===&#x27;wheel&#x27;?&#x27;wheels&#x27;:&#x27;sliders&#x27;;if(!groups.has(family)){const group=make(&#x27;div&#x27;,&#x27;sci-group&#x27;);group.dataset.family=family;groups.set(family,group);host.append(group);}groups.get(family).append(field);
+ }
+ // Graph taps pause/play; existing model-specific drags still edit the same state.
+ if(graph&amp;&amp;transport){
+  let before=false,oldDown=graph.onpointerdown,oldMove=graph.onpointermove,oldUp=graph.onpointerup;
+  graph.onpointerdown=graph.onpointermove=graph.onpointerup=null;
+  let event=null,started=false;
+  bindGesture(graph,{axis:root.id===&#x27;complex-wave&#x27;?&#x27;free&#x27;:&#x27;x&#x27;,start:e=&gt;{before=transport.isPlaying();event=e;started=false;},move:e=&gt;{if(!started){started=true;pause();oldDown?.call(graph,event);}oldMove?.call(graph,e);},tap:()=&gt;transport.toggle(),end:e=&gt;{oldUp?.call(graph,e);cancelGesture();if(before&amp;&amp;!transport.isPlaying())transport.toggle();},cancel:()=&gt;cancelGesture()});
+ }
+ root.sciApi={getState:()=&gt;({...root.dataset}),getControl:key=&gt;values.get(key)?.(),reset:key=&gt;{if(!resets.has(key))throw Error(&#x27;A valid local scope is required&#x27;);resets.get(key)();},pause:()=&gt;{pause();sync();},controls:controls.map(c=&gt;({key:c.key,kind:c.kind||&#x27;slider&#x27;,playable:!!c.transport,defaultValue:c.defaultValue??c.items?.[0]?.[0]}))};
+ root.sciDisposeControls=()=&gt;{abort.abort();pause();delete root.sciSync;};sync();return root.sciApi;
+}};
 })();
 &lt;/script&gt;&lt;section class=&quot;sci-extra&quot; data-sci-example=&quot;quantum-linked&quot;&gt;
 &lt;style&gt;@layer sci-fragments {
-.sci-extra{overflow-anchor:none;color:var(--foreground)}.sci-extra svg{display:block;width:100%;overflow:visible}.sci-extra[data-sci-example=&quot;sampling-distribution&quot;] svg{height:310px}.sci-extra[data-sci-example=&quot;quantum-linked&quot;] svg{height:410px}.sci-extra [data-controls]{position:relative;isolation:isolate;padding:12px 4px 26px;min-height:150px}.sci-extra [data-controls]::before{content:&quot;&quot;;position:absolute;inset:0;background:var(--foreground);opacity:0;z-index:-1;pointer-events:none;transition:opacity .16s}.sci-extra [data-controls].flash::before{opacity:.07}.sci-extra .transport{display:flex;gap:12px;align-items:center}.sci-extra .transport input{flex:1;min-width:0}.sci-extra .play-slot{flex:0 0 48px}.sci-extra [data-reading]{min-height:3em;margin:8px 0}.sci-extra [data-latest]{min-height:1.5em}.sci-extra [data-feedback]{margin-top:14px}.sci-extra input{width:100%}.sci-extra .batch-row{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:12px}@media(prefers-reduced-motion:reduce){.sci-extra [data-controls]::before{transition:none}}
-}&lt;/style&gt;
+.sci-extra{overflow-anchor:none;color:var(--foreground)}.sci-extra svg{display:block;width:100%;overflow:visible}.sci-extra[data-sci-example=&quot;sampling-distribution&quot;] svg{height:310px}.sci-extra[data-sci-example=&quot;quantum-linked&quot;] svg{height:410px}.sci-extra [data-reading]{min-height:3em;margin:8px 0}.sci-extra [data-latest]{min-height:1.5em}.sci-extra input{width:100%}}&lt;/style&gt;
 &lt;h3&gt;同一量子态 · 概率密度与能级&lt;/h3&gt;
 &lt;svg role=&quot;img&quot; aria-label=&quot;上图是位置概率密度，下图是允许能级；同一所选定态以实线强调。&quot;&gt;&lt;/svg&gt;
-&lt;div data-controls&gt;
-&lt;div data-reading class=&quot;tabular-nums&quot; aria-live=&quot;polite&quot;&gt;&lt;/div&gt;
-&lt;label class=&quot;form-label&quot;&gt;选择定态 n = &lt;output data-value&gt;1&lt;/output&gt;&lt;input type=&quot;range&quot; class=&quot;form-range&quot; min=&quot;1&quot; max=&quot;4&quot; step=&quot;1&quot; value=&quot;1&quot; aria-label=&quot;定态量子数 n&quot;&gt;&lt;/label&gt;
-&lt;div data-feedback class=&quot;text-small&quot; role=&quot;status&quot;&gt;点操作区空白：恢复 n=1&lt;/div&gt;&lt;/div&gt;
+&lt;div data-readouts class=&quot;sci-readouts&quot;&gt;&lt;div data-reading&gt;&lt;/div&gt;&lt;output data-value&gt;&lt;/output&gt;&lt;/div&gt;&lt;div data-controls&gt;&lt;input type=&quot;range&quot; class=&quot;form-range&quot; min=&quot;1&quot; max=&quot;4&quot; step=&quot;1&quot; value=&quot;1&quot; aria-label=&quot;定态量子数 n&quot;&gt;&lt;/div&gt;
 &lt;script&gt;
 /* Local instance runtime: no fixed IDs, no external dependencies. */
 (()=&gt;{
@@ -273,34 +373,24 @@ function draw(){
   $(&#x27;[data-reading]&#x27;).textContent=`${value} 个概率峰 · 内部 ${value-1} 个节点 · 能量 ${value*value} E₁`;
   root.dataset.energy=String(value*value);
  }
- range.value=String(value);root.dataset.value=String(value);
+ range.value=String(value);root.dataset.value=String(value);root.sciSync?.();
 }
-function stop(){if(timer!==null)clearInterval(timer);timer=null;const b=$(&#x27;[data-play]&#x27;);if(b){b.textContent=&#x27;▶&#x27;;b.setAttribute(&#x27;aria-label&#x27;,&#x27;开始积累样本&#x27;);b.setAttribute(&#x27;aria-pressed&#x27;,&#x27;false&#x27;)}}
+function stop(){if(timer!==null)clearInterval(timer);timer=null;root.dataset.running=&#x27;false&#x27;;root.sciSync?.();}
 function setValue(v){if(!Number.isFinite(Number(v)))throw new TypeError(&#x27;value must be finite&#x27;);v=Number(v);value=Math.max(1,Math.min(KIND===&#x27;sampling-distribution&#x27;?MAX:4,Math.round(v)));draw()}
-function reset(){stop();setValue(1);area.classList.add(&#x27;flash&#x27;);feedback.textContent=&#x27;已复位 ✓&#x27;;clearTimeout(flashTimer);clearTimeout(feedbackTimer);flashTimer=setTimeout(()=&gt;area.classList.remove(&#x27;flash&#x27;),200);feedbackTimer=setTimeout(()=&gt;feedback.textContent=KIND===&#x27;sampling-distribution&#x27;?&#x27;点操作区空白：回到同批第 1 项&#x27;:&#x27;点操作区空白：恢复 n=1&#x27;,900)}
 range.oninput=()=&gt;{stop();setValue(+range.value)};
-if(KIND===&#x27;sampling-distribution&#x27;){
- samples=makeSamples(batch);
- $(&#x27;[data-batch]&#x27;).onclick=()=&gt;{stop();batch++;samples=makeSamples(batch);draw()};
- $(&#x27;[data-step]&#x27;).onclick=()=&gt;{stop();setValue(value+1)};
- $(&#x27;[data-play]&#x27;).onclick=()=&gt;{if(timer!==null){stop();return}if(value===MAX)setValue(1);const b=$(&#x27;[data-play]&#x27;);b.textContent=&#x27;Ⅱ&#x27;;b.setAttribute(&#x27;aria-label&#x27;,&#x27;暂停积累样本&#x27;);b.setAttribute(&#x27;aria-pressed&#x27;,&#x27;true&#x27;);timer=setInterval(()=&gt;{if(!root.isConnected||document.hidden){stop();return}setValue(value+1);if(value===MAX)stop()},50)};
-}
-area.onpointerdown=e=&gt;{if(!e.isPrimary||e.button&gt;0||e.target.closest(&#x27;button,input,label,select,textarea,a&#x27;)){candidate=null;return}candidate={id:e.pointerId,x:e.clientX,y:e.clientY,start:performance.now()};};
-area.onpointermove=e=&gt;{if(candidate&amp;&amp;Math.hypot(e.clientX-candidate.x,e.clientY-candidate.y)&gt;8)candidate=null};
-area.onpointerup=e=&gt;{const c=candidate;candidate=null;if(c&amp;&amp;c.id===e.pointerId&amp;&amp;performance.now()-c.start&lt;500&amp;&amp;Math.hypot(e.clientX-c.x,e.clientY-c.y)&lt;=8)reset()};
-area.onpointercancel=area.onlostpointercapture=area.onpointerleave=()=&gt;candidate=null;
-root.onkeydown=e=&gt;{if(e.key.toLowerCase()===&#x27;r&#x27;&amp;&amp;!e.ctrlKey&amp;&amp;!e.metaKey&amp;&amp;!e.altKey){e.preventDefault();reset()}};
-const onScroll=()=&gt;candidate=null,onHidden=()=&gt;{candidate=null;if(document.hidden)stop()};
-document.addEventListener(&#x27;scroll&#x27;,onScroll,true);document.addEventListener(&#x27;visibilitychange&#x27;,onHidden);
+const transport={isPlaying:()=&gt;timer!==null,toggle:()=&gt;{if(timer!==null){stop();return}if(value===MAX)setValue(1);root.dataset.running=&#x27;true&#x27;;timer=setInterval(()=&gt;{if(!root.isConnected||document.hidden){stop();return}setValue(Math.min(MAX,value+5));if(value===MAX){stop();setValue(1)}},40);root.sciSync?.();}};
+if(KIND===&#x27;sampling-distribution&#x27;)samples=makeSamples(batch);
 const ro=new ResizeObserver(draw);ro.observe(svg);
-root.sciApi={getState:()=&gt;({value,batch}),setValue:v=&gt;{stop();setValue(v)},reset};
-root.sciDestroy=()=&gt;{stop();ro.disconnect();clearTimeout(flashTimer);clearTimeout(feedbackTimer);document.removeEventListener(&#x27;scroll&#x27;,onScroll,true);document.removeEventListener(&#x27;visibilitychange&#x27;,onHidden);delete root.dataset.mounted;};
+SciControls.mount(root,{controls:[{key:&#x27;state&#x27;,label:&#x27;量子态 n&#x27;,input:root.querySelector(&#x27;input&#x27;),defaultValue:1,kind:&#x27;wheel&#x27;,discrete:true,stops:[1,2,3,4],period:4,unit:&#x27;&#x27;}],pause:stop});
+root.sciApi.setValue=v=&gt;{stop();setValue(v)};
+root.sciDestroy=()=&gt;{root.sciDisposeControls();ro.disconnect();delete root.dataset.mounted;};
 draw();
 }
 })();
 
 &lt;/script&gt;
 &lt;/section&gt;
+
 
 &lt;style&gt;@layer sci-theme{}&lt;/style&gt;&lt;script&gt;
 (()=&gt;{const allowed=[&quot;background&quot;, &quot;foreground&quot;, &quot;card&quot;, &quot;muted&quot;, &quot;muted-foreground&quot;, &quot;border&quot;, &quot;primary&quot;, &quot;primary-foreground&quot;, &quot;secondary&quot;, &quot;ring&quot;, &quot;viz-series-1&quot;, &quot;viz-series-2&quot;, &quot;viz-series-3&quot;, &quot;viz-series-4&quot;, &quot;viz-series-5&quot;, &quot;viz-series-6&quot;];window.addEventListener(&#x27;message&#x27;,e=&gt;{if(e.source!==parent||e.data?.type!==&#x27;sci-theme&#x27;)return;for(const[k,v]of Object.entries(e.data.tokens||{}))if(allowed.includes(k)&amp;&amp;/^#[0-9a-f]{6}$/i.test(v))document.documentElement.style.setProperty(&#x27;--&#x27;+k,v);document.documentElement.style.colorScheme=e.data.name===&#x27;dark&#x27;?&#x27;dark&#x27;:&#x27;light&#x27;});let last=0;const measure=()=&gt;{const h=Math.ceil(document.body.getBoundingClientRect().height);if(h!==last){last=h;parent.postMessage({type:&#x27;sci-height&#x27;,height:h},&#x27;*&#x27;)}};new ResizeObserver(measure).observe(document.body);measure();})();
@@ -310,70 +400,124 @@ draw();
 .btn{background:var(--secondary);color:var(--foreground);border:1px solid var(--border);border-radius:12px;padding:8px 14px;cursor:pointer}.btn-primary,button[aria-pressed=true],button[aria-selected=true]{background:var(--primary);color:var(--primary-foreground)}.btn-ghost{border-color:transparent;background:transparent}.form-range{accent-color:var(--primary);min-height:44px;max-width:100%}.form-label{display:block}.viz-row,.viz-controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.viz-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:16px}.card{background:var(--card);border-radius:16px;padding:16px}.text-small{font-size:.9rem}.text-muted{color:var(--muted-foreground)}.tabular-nums{font-variant-numeric:tabular-nums}.form-check{display:flex;align-items:center;gap:8px;min-height:44px}.form-check-input{width:22px;height:22px}.cursor-interaction{cursor:pointer}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}.nav{display:flex;gap:8px;flex-wrap:wrap}.nav-link{border:0;border-radius:12px;padding:10px;background:var(--secondary);color:var(--foreground)}.nav-link.active{background:var(--primary);color:var(--primary-foreground)}[hidden]{display:none!important}@media(max-width:360px){body{padding:10px}.btn{padding:8px 10px}}
 
 
-/* All operation panels sit below their linked plots. Geometry is stable. */
-[data-play]{width:48px;min-width:48px;height:48px;padding:0;display:grid;place-items:center;font-size:22px;line-height:1}
-[data-reset-area]{border-radius:16px;touch-action:pan-y;overflow-anchor:none}
-.sci-controls{position:relative;isolation:isolate;padding:16px 12px 28px;margin-top:16px}
-.sci-controls::before{content:&quot;&quot;;position:absolute;inset:0;border-radius:inherit;background:var(--foreground);opacity:0;z-index:-1;pointer-events:none;transition:opacity 150ms}
-.sci-controls.flash::before{opacity:.07}
-[data-feedback]{min-height:2.8em;margin:12px 0 0}
-.form-range{width:100%;min-width:0}output{font-variant-numeric:tabular-nums;white-space:nowrap}
-@media(prefers-reduced-motion:reduce){.sci-controls::before{transition:none}}
-
 /* Intrinsic-width disclosure: only arrow + label is the toggle target. */
 summary{box-sizing:border-box;display:list-item;list-style-position:inside;inline-size:fit-content;max-inline-size:100%;min-block-size:44px;padding:8px 12px;border:1px solid var(--border);border-radius:var(--sci-control-radius,12px);background:var(--secondary);color:var(--foreground);touch-action:manipulation;cursor:pointer}
 summary:focus-visible{outline:2px solid var(--ring);outline-offset:3px}
 details[open]&gt;summary{margin-bottom:12px}
-}:root{--background:#faf6e9;--foreground:#293c42;--card:#fffdf5;--muted:#eee9dc;--muted-foreground:#59676b;--border:#c9ccbf;--primary:#346c79;--primary-foreground:#ffffff;--secondary:#eeeee5;--ring:#346c79;--viz-series-1:#407e8a;--viz-series-2:#aa7739;--viz-series-3:#6e70a1;--viz-series-4:#52836c;--viz-series-5:#9b6877;--viz-series-6:#7b7461}&lt;/style&gt;&lt;body&gt;&lt;script&gt;/* Shared lower control-area behavior. Load before legacy fragments. */
+
+
+/* Shared control family. Override these tokens in the host UI, never in model code. */
+.sci-panel{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:12px;align-items:start;margin-top:16px}
+.sci-field{position:relative;display:flex;flex-direction:column;align-items:center;gap:12px;min-width:0;padding:16px 18px 34px;border:1px solid var(--border);border-radius:var(--sci-control-radius,16px);touch-action:pan-y;overflow:hidden}
+.sci-heading{display:flex;align-items:baseline;justify-content:space-between;gap:10px;width:100%;min-height:30px}.sci-label{font-weight:500}.sci-value{font-variant-numeric:tabular-nums;font-size:1rem}
+.sci-button{width:var(--sci-button-width,180px);max-width:100%;height:var(--sci-control-height,48px);border:1px solid var(--border);border-radius:var(--sci-control-radius,16px);background:var(--secondary);color:var(--foreground);padding:8px 12px;white-space:nowrap;font:inherit;cursor:pointer}
+.sci-slider,.sci-wheel{width:100%;height:var(--sci-control-height,48px);position:relative;overflow:hidden;border-radius:var(--sci-control-radius,16px);background:var(--muted);touch-action:pan-y;cursor:ew-resize;user-select:none;border:1px solid var(--border)}
+.sci-wheel{width:var(--sci-wheel-width,260px);max-width:100%;height:56px}
+.sci-fill{position:absolute;inset:0 auto 0 0;width:var(--sci-progress);background:var(--primary);opacity:.65;pointer-events:none}
+.sci-strip{position:absolute;inset:0;pointer-events:none}.sci-tick{position:absolute;width:33.333%;left:33.333%;height:100%;display:grid;place-items:center;font-variant-numeric:tabular-nums}.sci-wheel::after{content:&#x27;&#x27;;position:absolute;inset:5px 31%;border:1px solid var(--border);border-radius:10px;pointer-events:none}
+.sci-slider[data-playing=true],.sci-wheel[data-playing=true]{box-shadow:inset 0 0 0 2px var(--primary)}
+.sci-hint{font-size:.8rem;color:var(--muted-foreground);pointer-events:none;min-height:22px}.sci-readouts{display:flex;flex-wrap:wrap;gap:10px 20px;margin:12px 0}.sci-readouts:empty{display:none}
+.sci-field:focus-visible,.sci-slider:focus-visible,.sci-wheel:focus-visible,.sci-button:focus-visible{outline:2px solid var(--ring);outline-offset:2px}
+.sci-flash{animation:sci-reset .3s ease-out}@keyframes sci-reset{from{background:var(--muted)}to{background:transparent}}
+@media(prefers-reduced-motion:reduce){.sci-flash{animation:none;background:var(--muted)}}
+.sci-panel{display:flex;flex-direction:column;gap:16px}.sci-group{width:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:12px;align-items:start}
+}:root{--background:#faf6e9;--foreground:#293c42;--card:#fffdf5;--muted:#eee9dc;--muted-foreground:#59676b;--border:#c9ccbf;--primary:#346c79;--primary-foreground:#ffffff;--secondary:#eeeee5;--ring:#346c79;--viz-series-1:#407e8a;--viz-series-2:#aa7739;--viz-series-3:#6e70a1;--viz-series-4:#52836c;--viz-series-5:#9b6877;--viz-series-6:#7b7461}&lt;/style&gt;&lt;body&gt;&lt;script&gt;/* Scientific component behavior. Models own state; themes own appearance. */
 (()=&gt;{
 &#x27;use strict&#x27;;
-window.SciControls={
-play(button,running,rest=&#x27;播放&#x27;){
- button.textContent=running?&#x27;Ⅱ&#x27;:&#x27;▶&#x27;;
- button.setAttribute(&#x27;aria-label&#x27;,running?&#x27;暂停&#x27;:rest);
- button.setAttribute(&#x27;aria-pressed&#x27;,String(running));
-},
-mount(root,{reset,pause=()=&gt;{},cancelGesture=()=&gt;{}}){
- const area=root.querySelector(&#x27;[data-reset-area]&#x27;);
- if(!area)throw Error(&#x27;Missing lower control area&#x27;);
- const feedback=area.querySelector(&#x27;[data-feedback]&#x27;);
- const prompt=feedback.textContent,abort=new AbortController(),signal=abort.signal;
- let candidate=null,timer=0,flash=0;const pointers=new Set();
- const ignore=t=&gt;t.closest(&#x27;button,input,select,textarea,a,label,summary,[role=&quot;button&quot;]&#x27;);
- const clear=()=&gt;{candidate=null;};
- const listen=(el,type,fn,options={})=&gt;el.addEventListener(type,fn,{...options,signal});
- const restore=()=&gt;{cancelGesture();reset();clearTimeout(timer);clearTimeout(flash);area.classList.add(&#x27;flash&#x27;);feedback.textContent=&#x27;已复位 ✓&#x27;;flash=setTimeout(()=&gt;area.classList.remove(&#x27;flash&#x27;),180);timer=setTimeout(()=&gt;feedback.textContent=prompt,900);};
- listen(document,&#x27;pointerdown&#x27;,e=&gt;{pointers.add(e.pointerId);if(pointers.size&gt;1){clear();cancelGesture();}},{capture:true});
- listen(area,&#x27;pointerdown&#x27;,e=&gt;{if(e.button&gt;0||!e.isPrimary||pointers.size&gt;1||ignore(e.target)){clear();return;}candidate={id:e.pointerId,x:e.clientX,y:e.clientY,t:performance.now()};});
- listen(document,&#x27;pointermove&#x27;,e=&gt;{if(candidate&amp;&amp;candidate.id===e.pointerId&amp;&amp;Math.hypot(e.clientX-candidate.x,e.clientY-candidate.y)&gt;8)clear();},{capture:true});
- listen(document,&#x27;pointerup&#x27;,e=&gt;{const c=candidate;clear();pointers.delete(e.pointerId);if(c&amp;&amp;c.id===e.pointerId&amp;&amp;area.contains(e.target)&amp;&amp;!ignore(e.target)&amp;&amp;performance.now()-c.t&lt;500&amp;&amp;Math.hypot(e.clientX-c.x,e.clientY-c.y)&lt;=8)restore();},{capture:true});
- listen(document,&#x27;pointercancel&#x27;,e=&gt;{pointers.delete(e.pointerId);clear();cancelGesture();},{capture:true});
- listen(area,&#x27;pointerleave&#x27;,clear);listen(area,&#x27;lostpointercapture&#x27;,clear);
- listen(document,&#x27;scroll&#x27;,clear,{capture:true});
- listen(document,&#x27;visibilitychange&#x27;,()=&gt;{clear();pointers.clear();cancelGesture();if(document.hidden)pause();});
- listen(window,&#x27;blur&#x27;,()=&gt;{clear();pointers.clear();cancelGesture();pause();});
- listen(root,&#x27;keydown&#x27;,e=&gt;{if(e.key.toLowerCase()===&#x27;r&#x27;&amp;&amp;!e.ctrlKey&amp;&amp;!e.metaKey&amp;&amp;!e.altKey&amp;&amp;!e.target.closest(&#x27;input,textarea,select,[contenteditable=&quot;true&quot;]&#x27;)){e.preventDefault();restore();}});
- root.tabIndex=0;
- root.sciApi={reset:restore,pause,getState:()=&gt;({...root.dataset})};
- root.sciDisposeControls=()=&gt;{abort.abort();clearTimeout(timer);clearTimeout(flash);pause();};
- return root.sciApi;
-}
-};
+const clamp=(v,a,b)=&gt;Math.max(a,Math.min(b,v));
+const modulo=(v,p)=&gt;((v%p)+p)%p;
+window.SciControls={mount(root,{controls,pause=()=&gt;{},cancelGesture=()=&gt;{},transport,graph}){
+ const host=root.querySelector(&#x27;[data-controls]&#x27;), abort=new AbortController(), signal=abort.signal;
+ if(!host)throw Error(&#x27;An experiment requires a data-controls host&#x27;);
+ const listen=(node,type,fn,options={})=&gt;node.addEventListener(type,fn,{...options,signal});
+ const make=(tag,cls,text)=&gt;{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
+ const groups=new Map();
+ const refresh=[],resets=new Map(),values=new Map(),pointers=new Set();let syncing=false,gesture=null;
+ const sync=()=&gt;{if(syncing)return;syncing=true;try{refresh.forEach(f=&gt;f());}finally{syncing=false;}};
+ root.sciSync=sync;host.className=&#x27;sci-panel&#x27;;
+ // A pointer must remain a short, single-pointer tap. A vertical swipe belongs to scrolling.
+ function bindGesture(el,{axis=&#x27;x&#x27;,accept=()=&gt;true,start=()=&gt;{},move=()=&gt;{},tap=()=&gt;{},end=()=&gt;{},cancel=()=&gt;{}}){
+  let g=null;
+  const discard=()=&gt;{if(g){g=null;cancel();}if(gesture===discard)gesture=null;};
+  listen(el,&#x27;pointerdown&#x27;,e=&gt;{if(!e.isPrimary||e.button&gt;0||pointers.size&gt;1||!accept(e))return;g={id:e.pointerId,x:e.clientX,y:e.clientY,t:performance.now(),moved:false};gesture=discard;start(e);});
+  listen(document,&#x27;pointermove&#x27;,e=&gt;{if(!g||g.id!==e.pointerId)return;const dx=e.clientX-g.x,dy=e.clientY-g.y;if(axis===&#x27;x&#x27;&amp;&amp;!g.moved&amp;&amp;Math.abs(dy)&gt;8&amp;&amp;Math.abs(dy)&gt;Math.abs(dx)){discard();return;}if(Math.abs(dx)&gt;6||(axis===&#x27;free&#x27;&amp;&amp;Math.abs(dy)&gt;6)||g.moved){g.moved=true;move(e,dx);}}, {capture:true});
+  listen(document,&#x27;pointerup&#x27;,e=&gt;{if(!g||g.id!==e.pointerId)return;const q=g;g=null;gesture=null;if(q.moved)end(e);else if(performance.now()-q.t&lt;500&amp;&amp;Math.hypot(e.clientX-q.x,e.clientY-q.y)&lt;=8)tap(e);else cancel();sync();},{capture:true});
+  listen(document,&#x27;pointercancel&#x27;,discard,{capture:true});
+  return discard;
+ }
+ listen(document,&#x27;pointerdown&#x27;,e=&gt;{pointers.add(e.pointerId);if(pointers.size&gt;1){gesture?.();cancelGesture();}},{capture:true});
+ for(const type of [&#x27;pointerup&#x27;,&#x27;pointercancel&#x27;])listen(document,type,e=&gt;pointers.delete(e.pointerId));
+ const stopAll=()=&gt;{gesture?.();pointers.clear();cancelGesture();pause();sync();};
+ listen(document,&#x27;scroll&#x27;,()=&gt;{gesture?.();cancelGesture();},{capture:true});
+ listen(window,&#x27;blur&#x27;,stopAll);listen(document,&#x27;visibilitychange&#x27;,()=&gt;{if(document.hidden)stopAll();});
+ for(const c of controls){
+  const field=make(&#x27;div&#x27;,&#x27;sci-field&#x27;);field.dataset.scope=c.key;field.tabIndex=0;
+  const heading=make(&#x27;div&#x27;,&#x27;sci-heading&#x27;),label=make(&#x27;span&#x27;,&#x27;sci-label&#x27;,c.label),out=make(&#x27;output&#x27;,&#x27;sci-value&#x27;);heading.append(label,out);field.append(heading);
+  const input=c.input;let get=c.get,set=c.set;
+  if(input){get=()=&gt;Number(input.value);set=v=&gt;{input.value=v;input.dispatchEvent(new Event(&#x27;input&#x27;,{bubbles:true}));};}
+  const read=()=&gt;get?.();values.set(c.key,read);
+  function apply(v){const resume=transport?.isPlaying();set(v);if(resume&amp;&amp;!c.transport&amp;&amp;!transport.isPlaying())transport.toggle();sync();}
+  const defaultValue=c.defaultValue??c.items?.[0]?.[0];
+  if(c.kind===&#x27;action&#x27;){
+   const button=make(&#x27;button&#x27;,&#x27;sci-button&#x27;,c.text);button.type=&#x27;button&#x27;;listen(button,&#x27;click&#x27;,()=&gt;{c.act();sync();});field.append(button);out.hidden=true;
+  }else if(c.kind===&#x27;choice&#x27;){
+   const button=make(&#x27;button&#x27;,&#x27;sci-button&#x27;);button.type=&#x27;button&#x27;;button.setAttribute(&#x27;aria-label&#x27;,c.label+&#x27;：点击切换&#x27;);
+   listen(button,&#x27;click&#x27;,()=&gt;{const i=c.items.findIndex(a=&gt;a[0]===read());apply(c.items[(i+1)%c.items.length][0]);});field.append(button);out.hidden=true;
+   refresh.push(()=&gt;{button.textContent=c.items.find(a=&gt;a[0]===read())?.[1]??String(read());button.dataset.value=read();button.setAttribute(&#x27;aria-label&#x27;,c.label+&#x27;：&#x27;+button.textContent+&#x27;，点击切换&#x27;);});
+  }else{
+   const min=c.min??Number(input.min),max=c.max??Number(input.max),step=c.step??Number(input.step||1);
+   // Existing native inputs are the model&#x27;s adapter; all visible controls share this runtime.
+   if(input){input.hidden=true;input.tabIndex=-1;input.setAttribute(&#x27;aria-hidden&#x27;,&#x27;true&#x27;);field.append(input);}
+   const track=make(&#x27;div&#x27;,c.kind===&#x27;wheel&#x27;?&#x27;sci-wheel&#x27;:&#x27;sci-slider&#x27;);track.tabIndex=0;track.setAttribute(&#x27;role&#x27;,&#x27;slider&#x27;);track.setAttribute(&#x27;aria-label&#x27;,c.label);track.setAttribute(&#x27;aria-valuemin&#x27;,min);track.setAttribute(&#x27;aria-valuemax&#x27;,max);field.append(track);
+   const fill=make(&#x27;span&#x27;,&#x27;sci-fill&#x27;),strip=make(&#x27;span&#x27;,&#x27;sci-strip&#x27;);track.append(fill,strip);
+   let origin=0,wasPlaying=false,didPause=false,raw=0;
+   const normalize=v=&gt;c.period?min+modulo(v-min,c.period):clamp(v,min,max);
+   const update=v=&gt;{raw=v;const n=normalize(v);set(c.discrete?normalize(Math.round(v)):Math.round(n/step)*step);sync();};
+   const isWheel=c.kind===&#x27;wheel&#x27;,stops=c.stops||[];
+   const formatted=v=&gt;(Math.round(v*100)/100)+(c.unit||&#x27;&#x27;);
+   const next=()=&gt;{const current=read(),n=stops.find(v=&gt;v&gt;current+1e-7);apply(n??stops[0]);};
+   const toggle=()=&gt;{c.transport?.toggle();sync();};
+   bindGesture(track,{
+    start:()=&gt;{origin=read();raw=origin;wasPlaying=!!c.transport?.isPlaying();didPause=false;},
+    move:(e,dx)=&gt;{if(!didPause){if(c.transport)pause();didPause=true;}const width=track.getBoundingClientRect().width;update(origin+(isWheel?-dx/Math.max(60,width/3)*(stops[1]-stops[0]||1):dx/width*(max-min)));},
+    tap:e=&gt;{if(isWheel){const b=track.getBoundingClientRect(),part=(e.clientX-b.left)/b.width;if(c.transport&amp;&amp;(part&lt;.3||part&gt;.7))toggle();else next();}else if(c.transport)toggle();else{const b=track.getBoundingClientRect();update(min+(e.clientX-b.left)/b.width*(max-min));}},
+    end:()=&gt;{if(isWheel){const current=normalize(raw),near=(c.period?[...stops,stops[0]+c.period]:stops).reduce((a,v)=&gt;Math.abs(v-current)&lt;Math.abs(a-current)?v:a,stops[0]);const gap=stops[1]-stops[0]||1;if(c.discrete)update(Math.round(raw));else if(Math.abs(near-current)&lt;=gap*.14)update(near);}
+     if(wasPlaying&amp;&amp;!c.transport.isPlaying())c.transport.toggle();},
+    cancel:()=&gt;{if(didPause&amp;&amp;c.transport)pause();}
+   });
+   listen(track,&#x27;keydown&#x27;,e=&gt;{if([&#x27;ArrowLeft&#x27;,&#x27;ArrowRight&#x27;,&#x27;Home&#x27;,&#x27;End&#x27;,&#x27; &#x27;].includes(e.key)){e.preventDefault();if(e.key===&#x27; &#x27;){if(c.transport)toggle();else if(isWheel)next();return;}update(e.key===&#x27;Home&#x27;?min:e.key===&#x27;End&#x27;?max:read()+(e.key===&#x27;ArrowRight&#x27;?1:-1)*(isWheel?(stops[1]-stops[0]||1):step));}});
+   refresh.push(()=&gt;{const v=read();out.textContent=formatted(v);track.setAttribute(&#x27;aria-valuenow&#x27;,v);track.setAttribute(&#x27;aria-valuetext&#x27;,formatted(v));track.dataset.playing=String(!!c.transport?.isPlaying());track.style.setProperty(&#x27;--sci-progress&#x27;,100*clamp((v-min)/(max-min),0,1)+&#x27;%&#x27;);
+    if(isWheel){const gap=stops[1]-stops[0]||1,index=Math.floor((v-min)/gap),fraction=(v-min)/gap-index;strip.replaceChildren();for(let i=-2;i&lt;=2;i++){const item=make(&#x27;span&#x27;,&#x27;sci-tick&#x27;,formatted(normalize(min+(index+i)*gap)));item.style.transform=`translateX(${(i-fraction)*100}%)`;strip.append(item);}fill.hidden=true;}
+   });
+  }
+  if(c.kind!==&#x27;action&#x27;){
+   const hint=make(&#x27;span&#x27;,&#x27;sci-hint&#x27;,&#x27;点本区空白复位&#x27;);field.append(hint);
+   const reset=()=&gt;{cancelGesture();apply(defaultValue);field.classList.remove(&#x27;sci-flash&#x27;);void field.offsetWidth;field.classList.add(&#x27;sci-flash&#x27;);field.setAttribute(&#x27;aria-label&#x27;,c.label+&#x27;，已复位&#x27;);};resets.set(c.key,reset);
+   // Reset only when down and up are on this field&#x27;s actual blank background.
+   let blank=false;bindGesture(field,{accept:e=&gt;e.target===field,start:e=&gt;{blank=true;},tap:e=&gt;{if(blank&amp;&amp;e.target===field)reset();},move:()=&gt;{blank=false;},cancel:()=&gt;{blank=false;}});
+   listen(field,&#x27;keydown&#x27;,e=&gt;{if(e.key===&#x27;Escape&#x27;&amp;&amp;!e.target.closest(&#x27;input,textarea,[contenteditable=true]&#x27;)){e.stopPropagation();reset();}});
+  }
+  const family=[&#x27;action&#x27;,&#x27;choice&#x27;].includes(c.kind)?&#x27;buttons&#x27;:c.kind===&#x27;wheel&#x27;?&#x27;wheels&#x27;:&#x27;sliders&#x27;;if(!groups.has(family)){const group=make(&#x27;div&#x27;,&#x27;sci-group&#x27;);group.dataset.family=family;groups.set(family,group);host.append(group);}groups.get(family).append(field);
+ }
+ // Graph taps pause/play; existing model-specific drags still edit the same state.
+ if(graph&amp;&amp;transport){
+  let before=false,oldDown=graph.onpointerdown,oldMove=graph.onpointermove,oldUp=graph.onpointerup;
+  graph.onpointerdown=graph.onpointermove=graph.onpointerup=null;
+  let event=null,started=false;
+  bindGesture(graph,{axis:root.id===&#x27;complex-wave&#x27;?&#x27;free&#x27;:&#x27;x&#x27;,start:e=&gt;{before=transport.isPlaying();event=e;started=false;},move:e=&gt;{if(!started){started=true;pause();oldDown?.call(graph,event);}oldMove?.call(graph,e);},tap:()=&gt;transport.toggle(),end:e=&gt;{oldUp?.call(graph,e);cancelGesture();if(before&amp;&amp;!transport.isPlaying())transport.toggle();},cancel:()=&gt;cancelGesture()});
+ }
+ root.sciApi={getState:()=&gt;({...root.dataset}),getControl:key=&gt;values.get(key)?.(),reset:key=&gt;{if(!resets.has(key))throw Error(&#x27;A valid local scope is required&#x27;);resets.get(key)();},pause:()=&gt;{pause();sync();},controls:controls.map(c=&gt;({key:c.key,kind:c.kind||&#x27;slider&#x27;,playable:!!c.transport,defaultValue:c.defaultValue??c.items?.[0]?.[0]}))};
+ root.sciDisposeControls=()=&gt;{abort.abort();pause();delete root.sciSync;};sync();return root.sciApi;
+}};
 })();
 &lt;/script&gt;&lt;section class=&quot;sci-extra&quot; data-sci-example=&quot;sampling-distribution&quot;&gt;
 &lt;style&gt;@layer sci-fragments {
-.sci-extra{overflow-anchor:none;color:var(--foreground)}.sci-extra svg{display:block;width:100%;overflow:visible}.sci-extra[data-sci-example=&quot;sampling-distribution&quot;] svg{height:310px}.sci-extra[data-sci-example=&quot;quantum-linked&quot;] svg{height:410px}.sci-extra [data-controls]{position:relative;isolation:isolate;padding:12px 4px 26px;min-height:150px}.sci-extra [data-controls]::before{content:&quot;&quot;;position:absolute;inset:0;background:var(--foreground);opacity:0;z-index:-1;pointer-events:none;transition:opacity .16s}.sci-extra [data-controls].flash::before{opacity:.07}.sci-extra .transport{display:flex;gap:12px;align-items:center}.sci-extra .transport input{flex:1;min-width:0}.sci-extra .play-slot{flex:0 0 48px}.sci-extra [data-reading]{min-height:3em;margin:8px 0}.sci-extra [data-latest]{min-height:1.5em}.sci-extra [data-feedback]{margin-top:14px}.sci-extra input{width:100%}.sci-extra .batch-row{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:12px}@media(prefers-reduced-motion:reduce){.sci-extra [data-controls]::before{transition:none}}
-}&lt;/style&gt;
+.sci-extra{overflow-anchor:none;color:var(--foreground)}.sci-extra svg{display:block;width:100%;overflow:visible}.sci-extra[data-sci-example=&quot;sampling-distribution&quot;] svg{height:310px}.sci-extra[data-sci-example=&quot;quantum-linked&quot;] svg{height:410px}.sci-extra [data-reading]{min-height:3em;margin:8px 0}.sci-extra [data-latest]{min-height:1.5em}.sci-extra input{width:100%}}&lt;/style&gt;
 &lt;h3&gt;随机采样 · 一次不确定，多次有分布&lt;/h3&gt;
 &lt;div data-latest class=&quot;tabular-nums&quot;&gt;&lt;/div&gt;
 &lt;svg role=&quot;img&quot; aria-label=&quot;离散误差的经验频率；固定虚线为总体理论频率，浅色底栏标记最新结果所属误差档。&quot;&gt;&lt;/svg&gt;
 &lt;div class=&quot;viz-row text-small&quot;&gt;&lt;span&gt;实柱：本批样本&lt;/span&gt;&lt;span&gt;短虚线：总体规律&lt;/span&gt;&lt;/div&gt;
-&lt;div data-controls&gt;
-&lt;div data-reading class=&quot;tabular-nums&quot; aria-live=&quot;polite&quot;&gt;&lt;/div&gt;
-&lt;div&gt;样本量 &lt;output data-value&gt;1&lt;/output&gt;&lt;/div&gt;
-&lt;div class=&quot;transport&quot;&gt;&lt;span class=&quot;play-slot&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn&quot; data-play aria-label=&quot;开始积累样本&quot; aria-pressed=&quot;false&quot;&gt;▶&lt;/button&gt;&lt;/span&gt;&lt;input type=&quot;range&quot; class=&quot;form-range&quot; min=&quot;1&quot; max=&quot;1000&quot; step=&quot;1&quot; value=&quot;1&quot; aria-label=&quot;样本量，拖动回看同一批样本&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn&quot; data-step aria-label=&quot;增加一次采样&quot;&gt;+1&lt;/button&gt;&lt;/div&gt;
-&lt;div class=&quot;batch-row&quot;&gt;&lt;span class=&quot;text-small&quot;&gt;固定总体 · 同批回看&lt;/span&gt;&lt;button type=&quot;button&quot; class=&quot;btn btn-ghost&quot; data-batch&gt;换一批&lt;/button&gt;&lt;/div&gt;
-&lt;div data-feedback class=&quot;text-small&quot; role=&quot;status&quot;&gt;点操作区空白：回到同批第 1 项&lt;/div&gt;&lt;/div&gt;
+&lt;div data-readouts class=&quot;sci-readouts&quot;&gt;&lt;div data-reading&gt;&lt;/div&gt;&lt;output data-value&gt;&lt;/output&gt;&lt;/div&gt;&lt;div data-controls&gt;&lt;input type=&quot;range&quot; class=&quot;form-range&quot; min=&quot;1&quot; max=&quot;1000&quot; step=&quot;1&quot; value=&quot;1&quot; aria-label=&quot;样本量，拖动回看同一批样本&quot;&gt;&lt;/div&gt;
 &lt;script&gt;
 /* Local instance runtime: no fixed IDs, no external dependencies. */
 (()=&gt;{
@@ -428,28 +572,17 @@ function draw(){
   $(&#x27;[data-reading]&#x27;).textContent=`${value} 个概率峰 · 内部 ${value-1} 个节点 · 能量 ${value*value} E₁`;
   root.dataset.energy=String(value*value);
  }
- range.value=String(value);root.dataset.value=String(value);
+ range.value=String(value);root.dataset.value=String(value);root.sciSync?.();
 }
-function stop(){if(timer!==null)clearInterval(timer);timer=null;const b=$(&#x27;[data-play]&#x27;);if(b){b.textContent=&#x27;▶&#x27;;b.setAttribute(&#x27;aria-label&#x27;,&#x27;开始积累样本&#x27;);b.setAttribute(&#x27;aria-pressed&#x27;,&#x27;false&#x27;)}}
+function stop(){if(timer!==null)clearInterval(timer);timer=null;root.dataset.running=&#x27;false&#x27;;root.sciSync?.();}
 function setValue(v){if(!Number.isFinite(Number(v)))throw new TypeError(&#x27;value must be finite&#x27;);v=Number(v);value=Math.max(1,Math.min(KIND===&#x27;sampling-distribution&#x27;?MAX:4,Math.round(v)));draw()}
-function reset(){stop();setValue(1);area.classList.add(&#x27;flash&#x27;);feedback.textContent=&#x27;已复位 ✓&#x27;;clearTimeout(flashTimer);clearTimeout(feedbackTimer);flashTimer=setTimeout(()=&gt;area.classList.remove(&#x27;flash&#x27;),200);feedbackTimer=setTimeout(()=&gt;feedback.textContent=KIND===&#x27;sampling-distribution&#x27;?&#x27;点操作区空白：回到同批第 1 项&#x27;:&#x27;点操作区空白：恢复 n=1&#x27;,900)}
 range.oninput=()=&gt;{stop();setValue(+range.value)};
-if(KIND===&#x27;sampling-distribution&#x27;){
- samples=makeSamples(batch);
- $(&#x27;[data-batch]&#x27;).onclick=()=&gt;{stop();batch++;samples=makeSamples(batch);draw()};
- $(&#x27;[data-step]&#x27;).onclick=()=&gt;{stop();setValue(value+1)};
- $(&#x27;[data-play]&#x27;).onclick=()=&gt;{if(timer!==null){stop();return}if(value===MAX)setValue(1);const b=$(&#x27;[data-play]&#x27;);b.textContent=&#x27;Ⅱ&#x27;;b.setAttribute(&#x27;aria-label&#x27;,&#x27;暂停积累样本&#x27;);b.setAttribute(&#x27;aria-pressed&#x27;,&#x27;true&#x27;);timer=setInterval(()=&gt;{if(!root.isConnected||document.hidden){stop();return}setValue(value+1);if(value===MAX)stop()},50)};
-}
-area.onpointerdown=e=&gt;{if(!e.isPrimary||e.button&gt;0||e.target.closest(&#x27;button,input,label,select,textarea,a&#x27;)){candidate=null;return}candidate={id:e.pointerId,x:e.clientX,y:e.clientY,start:performance.now()};};
-area.onpointermove=e=&gt;{if(candidate&amp;&amp;Math.hypot(e.clientX-candidate.x,e.clientY-candidate.y)&gt;8)candidate=null};
-area.onpointerup=e=&gt;{const c=candidate;candidate=null;if(c&amp;&amp;c.id===e.pointerId&amp;&amp;performance.now()-c.start&lt;500&amp;&amp;Math.hypot(e.clientX-c.x,e.clientY-c.y)&lt;=8)reset()};
-area.onpointercancel=area.onlostpointercapture=area.onpointerleave=()=&gt;candidate=null;
-root.onkeydown=e=&gt;{if(e.key.toLowerCase()===&#x27;r&#x27;&amp;&amp;!e.ctrlKey&amp;&amp;!e.metaKey&amp;&amp;!e.altKey){e.preventDefault();reset()}};
-const onScroll=()=&gt;candidate=null,onHidden=()=&gt;{candidate=null;if(document.hidden)stop()};
-document.addEventListener(&#x27;scroll&#x27;,onScroll,true);document.addEventListener(&#x27;visibilitychange&#x27;,onHidden);
+const transport={isPlaying:()=&gt;timer!==null,toggle:()=&gt;{if(timer!==null){stop();return}if(value===MAX)setValue(1);root.dataset.running=&#x27;true&#x27;;timer=setInterval(()=&gt;{if(!root.isConnected||document.hidden){stop();return}setValue(Math.min(MAX,value+5));if(value===MAX){stop();setValue(1)}},40);root.sciSync?.();}};
+if(KIND===&#x27;sampling-distribution&#x27;)samples=makeSamples(batch);
 const ro=new ResizeObserver(draw);ro.observe(svg);
-root.sciApi={getState:()=&gt;({value,batch}),setValue:v=&gt;{stop();setValue(v)},reset};
-root.sciDestroy=()=&gt;{stop();ro.disconnect();clearTimeout(flashTimer);clearTimeout(feedbackTimer);document.removeEventListener(&#x27;scroll&#x27;,onScroll,true);document.removeEventListener(&#x27;visibilitychange&#x27;,onHidden);delete root.dataset.mounted;};
+SciControls.mount(root,{controls:[{key:&#x27;count&#x27;,label:&#x27;样本量&#x27;,input:root.querySelector(&#x27;input&#x27;),defaultValue:1,transport},{key:&#x27;step&#x27;,label:&#x27;追加样本&#x27;,kind:&#x27;action&#x27;,text:&#x27;+1&#x27;,act:()=&gt;{stop();setValue(value+1)}},{key:&#x27;batch&#x27;,label:&#x27;采样批次&#x27;,kind:&#x27;action&#x27;,text:&#x27;换一批&#x27;,act:()=&gt;{stop();batch++;samples=makeSamples(batch);draw()}}],pause:stop,transport,graph:svg});
+root.sciApi.setValue=v=&gt;{stop();setValue(v)};
+root.sciDestroy=()=&gt;{root.sciDisposeControls();ro.disconnect();delete root.dataset.mounted;};
 draw();
 }
 })();
@@ -457,97 +590,6 @@ draw();
 &lt;/script&gt;
 &lt;/section&gt;
 
-&lt;style&gt;@layer sci-theme{}&lt;/style&gt;&lt;script&gt;
-(()=&gt;{const allowed=[&quot;background&quot;, &quot;foreground&quot;, &quot;card&quot;, &quot;muted&quot;, &quot;muted-foreground&quot;, &quot;border&quot;, &quot;primary&quot;, &quot;primary-foreground&quot;, &quot;secondary&quot;, &quot;ring&quot;, &quot;viz-series-1&quot;, &quot;viz-series-2&quot;, &quot;viz-series-3&quot;, &quot;viz-series-4&quot;, &quot;viz-series-5&quot;, &quot;viz-series-6&quot;];window.addEventListener(&#x27;message&#x27;,e=&gt;{if(e.source!==parent||e.data?.type!==&#x27;sci-theme&#x27;)return;for(const[k,v]of Object.entries(e.data.tokens||{}))if(allowed.includes(k)&amp;&amp;/^#[0-9a-f]{6}$/i.test(v))document.documentElement.style.setProperty(&#x27;--&#x27;+k,v);document.documentElement.style.colorScheme=e.data.name===&#x27;dark&#x27;?&#x27;dark&#x27;:&#x27;light&#x27;});let last=0;const measure=()=&gt;{const h=Math.ceil(document.body.getBoundingClientRect().height);if(h!==last){last=h;parent.postMessage({type:&#x27;sci-height&#x27;,height:h},&#x27;*&#x27;)}};new ResizeObserver(measure).observe(document.body);measure();})();
-&lt;/script&gt;&lt;/body&gt;&lt;/html&gt;"></iframe><iframe title="resistor-coupling" sandbox="allow-scripts" srcdoc="&lt;!doctype html&gt;&lt;html lang=&quot;zh-CN&quot;&gt;&lt;meta charset=&quot;utf-8&quot;&gt;&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1&quot;&gt;&lt;style&gt;@layer sci-base,sci-fragments,sci-theme;@layer sci-base{/* Scoped inside each isolated example document. Themes supply semantics. */
-:root{font-family:system-ui,&quot;Noto Sans SC&quot;,sans-serif;font-size:18px;color:var(--foreground);background:var(--background);color-scheme:light}
-*{box-sizing:border-box}body{margin:0;padding:18px;line-height:1.55}h3{font-size:1.15rem;font-weight:600;margin:0 0 16px}p{margin:10px 0}svg,canvas{max-width:100%}button,input,select{font:inherit}button{min-height:44px;touch-action:manipulation}button:focus-visible,input:focus-visible{outline:2px solid var(--ring);outline-offset:3px}
-.btn{background:var(--secondary);color:var(--foreground);border:1px solid var(--border);border-radius:12px;padding:8px 14px;cursor:pointer}.btn-primary,button[aria-pressed=true],button[aria-selected=true]{background:var(--primary);color:var(--primary-foreground)}.btn-ghost{border-color:transparent;background:transparent}.form-range{accent-color:var(--primary);min-height:44px;max-width:100%}.form-label{display:block}.viz-row,.viz-controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.viz-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:16px}.card{background:var(--card);border-radius:16px;padding:16px}.text-small{font-size:.9rem}.text-muted{color:var(--muted-foreground)}.tabular-nums{font-variant-numeric:tabular-nums}.form-check{display:flex;align-items:center;gap:8px;min-height:44px}.form-check-input{width:22px;height:22px}.cursor-interaction{cursor:pointer}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}.nav{display:flex;gap:8px;flex-wrap:wrap}.nav-link{border:0;border-radius:12px;padding:10px;background:var(--secondary);color:var(--foreground)}.nav-link.active{background:var(--primary);color:var(--primary-foreground)}[hidden]{display:none!important}@media(max-width:360px){body{padding:10px}.btn{padding:8px 10px}}
-
-
-/* All operation panels sit below their linked plots. Geometry is stable. */
-[data-play]{width:48px;min-width:48px;height:48px;padding:0;display:grid;place-items:center;font-size:22px;line-height:1}
-[data-reset-area]{border-radius:16px;touch-action:pan-y;overflow-anchor:none}
-.sci-controls{position:relative;isolation:isolate;padding:16px 12px 28px;margin-top:16px}
-.sci-controls::before{content:&quot;&quot;;position:absolute;inset:0;border-radius:inherit;background:var(--foreground);opacity:0;z-index:-1;pointer-events:none;transition:opacity 150ms}
-.sci-controls.flash::before{opacity:.07}
-[data-feedback]{min-height:2.8em;margin:12px 0 0}
-.form-range{width:100%;min-width:0}output{font-variant-numeric:tabular-nums;white-space:nowrap}
-@media(prefers-reduced-motion:reduce){.sci-controls::before{transition:none}}
-
-/* Intrinsic-width disclosure: only arrow + label is the toggle target. */
-summary{box-sizing:border-box;display:list-item;list-style-position:inside;inline-size:fit-content;max-inline-size:100%;min-block-size:44px;padding:8px 12px;border:1px solid var(--border);border-radius:var(--sci-control-radius,12px);background:var(--secondary);color:var(--foreground);touch-action:manipulation;cursor:pointer}
-summary:focus-visible{outline:2px solid var(--ring);outline-offset:3px}
-details[open]&gt;summary{margin-bottom:12px}
-}:root{--background:#faf6e9;--foreground:#293c42;--card:#fffdf5;--muted:#eee9dc;--muted-foreground:#59676b;--border:#c9ccbf;--primary:#346c79;--primary-foreground:#ffffff;--secondary:#eeeee5;--ring:#346c79;--viz-series-1:#407e8a;--viz-series-2:#aa7739;--viz-series-3:#6e70a1;--viz-series-4:#52836c;--viz-series-5:#9b6877;--viz-series-6:#7b7461}&lt;/style&gt;&lt;body&gt;&lt;script&gt;/* Shared lower control-area behavior. Load before legacy fragments. */
-(()=&gt;{
-&#x27;use strict&#x27;;
-window.SciControls={
-play(button,running,rest=&#x27;播放&#x27;){
- button.textContent=running?&#x27;Ⅱ&#x27;:&#x27;▶&#x27;;
- button.setAttribute(&#x27;aria-label&#x27;,running?&#x27;暂停&#x27;:rest);
- button.setAttribute(&#x27;aria-pressed&#x27;,String(running));
-},
-mount(root,{reset,pause=()=&gt;{},cancelGesture=()=&gt;{}}){
- const area=root.querySelector(&#x27;[data-reset-area]&#x27;);
- if(!area)throw Error(&#x27;Missing lower control area&#x27;);
- const feedback=area.querySelector(&#x27;[data-feedback]&#x27;);
- const prompt=feedback.textContent,abort=new AbortController(),signal=abort.signal;
- let candidate=null,timer=0,flash=0;const pointers=new Set();
- const ignore=t=&gt;t.closest(&#x27;button,input,select,textarea,a,label,summary,[role=&quot;button&quot;]&#x27;);
- const clear=()=&gt;{candidate=null;};
- const listen=(el,type,fn,options={})=&gt;el.addEventListener(type,fn,{...options,signal});
- const restore=()=&gt;{cancelGesture();reset();clearTimeout(timer);clearTimeout(flash);area.classList.add(&#x27;flash&#x27;);feedback.textContent=&#x27;已复位 ✓&#x27;;flash=setTimeout(()=&gt;area.classList.remove(&#x27;flash&#x27;),180);timer=setTimeout(()=&gt;feedback.textContent=prompt,900);};
- listen(document,&#x27;pointerdown&#x27;,e=&gt;{pointers.add(e.pointerId);if(pointers.size&gt;1){clear();cancelGesture();}},{capture:true});
- listen(area,&#x27;pointerdown&#x27;,e=&gt;{if(e.button&gt;0||!e.isPrimary||pointers.size&gt;1||ignore(e.target)){clear();return;}candidate={id:e.pointerId,x:e.clientX,y:e.clientY,t:performance.now()};});
- listen(document,&#x27;pointermove&#x27;,e=&gt;{if(candidate&amp;&amp;candidate.id===e.pointerId&amp;&amp;Math.hypot(e.clientX-candidate.x,e.clientY-candidate.y)&gt;8)clear();},{capture:true});
- listen(document,&#x27;pointerup&#x27;,e=&gt;{const c=candidate;clear();pointers.delete(e.pointerId);if(c&amp;&amp;c.id===e.pointerId&amp;&amp;area.contains(e.target)&amp;&amp;!ignore(e.target)&amp;&amp;performance.now()-c.t&lt;500&amp;&amp;Math.hypot(e.clientX-c.x,e.clientY-c.y)&lt;=8)restore();},{capture:true});
- listen(document,&#x27;pointercancel&#x27;,e=&gt;{pointers.delete(e.pointerId);clear();cancelGesture();},{capture:true});
- listen(area,&#x27;pointerleave&#x27;,clear);listen(area,&#x27;lostpointercapture&#x27;,clear);
- listen(document,&#x27;scroll&#x27;,clear,{capture:true});
- listen(document,&#x27;visibilitychange&#x27;,()=&gt;{clear();pointers.clear();cancelGesture();if(document.hidden)pause();});
- listen(window,&#x27;blur&#x27;,()=&gt;{clear();pointers.clear();cancelGesture();pause();});
- listen(root,&#x27;keydown&#x27;,e=&gt;{if(e.key.toLowerCase()===&#x27;r&#x27;&amp;&amp;!e.ctrlKey&amp;&amp;!e.metaKey&amp;&amp;!e.altKey&amp;&amp;!e.target.closest(&#x27;input,textarea,select,[contenteditable=&quot;true&quot;]&#x27;)){e.preventDefault();restore();}});
- root.tabIndex=0;
- root.sciApi={reset:restore,pause,getState:()=&gt;({...root.dataset})};
- root.sciDisposeControls=()=&gt;{abort.abort();clearTimeout(timer);clearTimeout(flash);pause();};
- return root.sciApi;
-}
-};
-})();
-&lt;/script&gt;&lt;section id=&quot;resistor-coupling&quot;&gt;
-&lt;style&gt;@layer sci-fragments {
-#resistor-coupling{color:var(--foreground);padding:8px 0}#resistor-coupling svg{display:block;width:100%;height:170px;touch-action:pan-y}#resistor-coupling .result-chart{height:80px}#resistor-coupling svg text{font-size:18px;fill:var(--foreground)}#resistor-coupling .label{display:flex;justify-content:space-between;gap:12px;margin:12px 0 8px}#resistor-coupling .note{margin:10px 0;min-height:24px}
-}&lt;/style&gt;
-&lt;h3&gt;电阻变大，发热一定更多吗？&lt;/h3&gt;
-
-&lt;svg role=&quot;img&quot; aria-label=&quot;拖动上方电阻改变阻值；下方操作区空白恢复3欧姆基准。&quot;&gt;&lt;/svg&gt;
-&lt;div data-result=&quot;current&quot;&gt;&lt;svg class=&quot;result-chart&quot; aria-hidden=&quot;true&quot;&gt;&lt;/svg&gt;&lt;/div&gt;
-&lt;div data-result=&quot;power&quot;&gt;&lt;svg class=&quot;result-chart&quot; aria-hidden=&quot;true&quot;&gt;&lt;/svg&gt;&lt;/div&gt;
-&lt;div class=&quot;text-small text-muted&quot;&gt;拖动电阻调节 · 虚影固定在 3 Ω&lt;/div&gt;
-&lt;div class=&quot;sci-controls&quot; data-reset-area&gt;
-&lt;div class=&quot;viz-controls&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn&quot; data-mode=&quot;voltage&quot; aria-pressed=&quot;true&quot;&gt;恒压 · 6 V&lt;/button&gt;&lt;button type=&quot;button&quot; class=&quot;btn&quot; data-mode=&quot;current&quot; aria-pressed=&quot;false&quot;&gt;恒流 · 2 A&lt;/button&gt;&lt;/div&gt;&lt;div class=&quot;label&quot;&gt;&lt;label for=&quot;resistance-value&quot;&gt;电阻 R&lt;/label&gt;&lt;output data-r&gt;6.0 Ω&lt;/output&gt;&lt;/div&gt;&lt;input id=&quot;resistance-value&quot; class=&quot;form-range&quot; type=&quot;range&quot; min=&quot;1.5&quot; max=&quot;12&quot; step=&quot;.1&quot; value=&quot;6&quot;&gt;
-&lt;div class=&quot;note&quot; data-note aria-live=&quot;polite&quot;&gt;&lt;/div&gt;
-&lt;div class=&quot;text-small&quot;&gt;浅色虚影：同一供电条件下 R = 3 Ω · 忽略温度反馈&lt;/div&gt;
-&lt;p class=&quot;text-small text-muted&quot; data-feedback role=&quot;status&quot;&gt;点操作区空白回到 3 Ω；保留供电方式&lt;/p&gt;&lt;/div&gt;
-&lt;script&gt;
-(()=&gt;{const root=document.getElementById(&#x27;resistor-coupling&#x27;),svg=root.querySelector(&#x27;svg&#x27;),range=root.querySelector(&#x27;input&#x27;);const NS=&#x27;http://www.w3.org/2000/svg&#x27;;let R=6,mode=&#x27;voltage&#x27;,drag=null,frame=0,target=svg;
-function cancel(){cancelAnimationFrame(frame);frame=0;}
-function reset(){cancel();R=3;draw();}
-function model(r){const I=mode===&#x27;voltage&#x27;?6/r:2,U=mode===&#x27;voltage&#x27;?6:2*r;return{I,U,P:U*I};}function add(tag,a,text){const e=document.createElementNS(NS,tag);Object.entries(a||{}).forEach(([k,v])=&gt;e.setAttribute(k,v));if(text!==undefined)e.textContent=text;target.append(e);return e;}
-function draw(){const w=Math.max(280,root.clientWidth),s=model(R),base=model(3),left=76,right=w-28,cx=(left+right)/2,len=24+(right-left-40)*(R-1.5)/10.5;target=svg;svg.setAttribute(&#x27;viewBox&#x27;,`0 0 ${w} 170`);svg.replaceChildren();add(&#x27;path&#x27;,{d:`M40 45 H${cx-len/2} M${cx+len/2} 45 H${right} V125 H40 V97 M40 53 V45`,fill:&#x27;none&#x27;,stroke:&#x27;var(--muted-foreground)&#x27;,&#x27;stroke-width&#x27;:1.5});add(&#x27;circle&#x27;,{cx:40,cy:75,r:22,fill:&#x27;var(--background)&#x27;,stroke:&#x27;var(--muted-foreground)&#x27;,&#x27;stroke-width&#x27;:1.5});add(&#x27;text&#x27;,{x:40,y:79,&#x27;text-anchor&#x27;:&#x27;middle&#x27;},mode===&#x27;voltage&#x27;?&#x27;U&#x27;:&#x27;I&#x27;);add(&#x27;rect&#x27;,{x:cx-len/2,y:31,width:len,height:28,rx:3,fill:&#x27;var(--muted)&#x27;,stroke:&#x27;var(--foreground)&#x27;,&#x27;stroke-width&#x27;:1.2});add(&#x27;text&#x27;,{x:cx,y:21,&#x27;text-anchor&#x27;:&#x27;middle&#x27;},&#x27;可调电阻&#x27;);add(&#x27;text&#x27;,{x:cx,y:81,&#x27;text-anchor&#x27;:&#x27;middle&#x27;},`R = ${R.toFixed(1)} Ω`);add(&#x27;text&#x27;,{x:20,y:157},`U = ${s.U.toFixed(1)} V`);add(&#x27;text&#x27;,{x:right,y:157,&#x27;text-anchor&#x27;:&#x27;end&#x27;},mode===&#x27;voltage&#x27;?&#x27;电压固定&#x27;:&#x27;电流固定&#x27;);
-function bar(y,title,value,baseline,max,unit,color){const a=20,b=w-20,span=b-a;add(&#x27;text&#x27;,{x:a,y},title);add(&#x27;text&#x27;,{x:b,y,&#x27;text-anchor&#x27;:&#x27;end&#x27;},value.toFixed(2)+&#x27; &#x27;+unit);add(&#x27;rect&#x27;,{x:a,y:y+12,width:span,height:26,rx:3,fill:&#x27;var(--muted)&#x27;});add(&#x27;rect&#x27;,{x:a,y:y+12,width:span*baseline/max,height:26,rx:3,fill:color,opacity:.17});add(&#x27;rect&#x27;,{x:a,y:y+18,width:span*value/max,height:14,rx:3,fill:color});add(&#x27;text&#x27;,{x:a,y:y+55},&#x27;0&#x27;);add(&#x27;text&#x27;,{x:b,y:y+55,&#x27;text-anchor&#x27;:&#x27;end&#x27;},max+&#x27; &#x27;+unit);}
-target=root.querySelector(&#x27;[data-result=&quot;current&quot;] svg&#x27;);target.setAttribute(&#x27;viewBox&#x27;,`0 0 ${w} 80`);target.replaceChildren();bar(16,&#x27;电流 I&#x27;,s.I,base.I,4,&#x27;A&#x27;,&#x27;var(--viz-series-1)&#x27;);target=root.querySelector(&#x27;[data-result=&quot;power&quot;] svg&#x27;);target.setAttribute(&#x27;viewBox&#x27;,`0 0 ${w} 80`);target.replaceChildren();bar(16,&#x27;发热功率 P&#x27;,s.P,base.P,48,&#x27;W&#x27;,&#x27;var(--viz-series-2)&#x27;);range.value=R;root.querySelector(&#x27;[data-r]&#x27;).textContent=R.toFixed(1)+&#x27; Ω&#x27;;const ratio=s.P/base.P;root.querySelector(&#x27;[data-note]&#x27;).textContent=R===3?&#x27;当前与 3 Ω 基准重合。&#x27;:`相对 3 Ω 基准：电阻 ${R&gt;3?&#x27;增大&#x27;:&#x27;减小&#x27;}，发热功率${ratio&gt;1?&#x27;增加&#x27;:&#x27;减少&#x27;} ${Math.abs((ratio-1)*100).toFixed(0)}%。`;root.dataset.mode=mode;root.dataset.resistance=R;root.dataset.current=s.I;root.dataset.voltage=s.U;root.dataset.power=s.P;}
-range.oninput=()=&gt;{cancel();R=+range.value;draw();};root.querySelectorAll(&#x27;[data-mode]&#x27;).forEach(b=&gt;b.onclick=()=&gt;{cancel();mode=b.dataset.mode;root.querySelectorAll(&#x27;[data-mode]&#x27;).forEach(c=&gt;c.setAttribute(&#x27;aria-pressed&#x27;,String(c===b)));draw();});
-svg.onpointerdown=e=&gt;{if(!e.isPrimary){drag=null;return;}const rect=svg.getBoundingClientRect(),y=(e.clientY-rect.top)*170/rect.height,x=e.clientX-rect.left;const w=Math.max(280,root.clientWidth),cx=(76+w-28)/2,len=24+(w-28-76-40)*(R-1.5)/10.5;const kind=y&gt;=22&amp;&amp;y&lt;=88&amp;&amp;Math.abs(x-cx)&lt;=len/2+18?&#x27;adjust&#x27;:null;if(!kind)return;cancel();drag={id:e.pointerId,x:e.clientX,y:e.clientY,r:R,kind,moved:false,start:performance.now()};svg.setPointerCapture(e.pointerId);};
-svg.onpointermove=e=&gt;{if(!drag||e.pointerId!==drag.id)return;if(Math.hypot(e.clientX-drag.x,e.clientY-drag.y)&gt;8)drag.moved=true;if(drag.kind===&#x27;adjust&#x27;){R=Math.max(1.5,Math.min(12,Math.round((drag.r+(e.clientX-drag.x)/svg.getBoundingClientRect().width*10.5)*10)/10));draw();}};
-svg.onpointerup=e=&gt;{const d=drag;drag=null;if(d&amp;&amp;e.pointerId===d.id&amp;&amp;d.kind===&#x27;reset&#x27;&amp;&amp;!d.moved&amp;&amp;performance.now()-d.start&lt;600)reset();};svg.onpointercancel=()=&gt;drag=null;svg.onlostpointercapture=()=&gt;drag=null;
-new ResizeObserver(draw).observe(root);draw();
-
-SciControls.mount(root,{reset:()=&gt;{reset();},pause:()=&gt;{cancel();},cancelGesture:()=&gt;{drag=null;}});
-})();
-&lt;/script&gt;
-&lt;/section&gt;
 
 &lt;style&gt;@layer sci-theme{}&lt;/style&gt;&lt;script&gt;
 (()=&gt;{const allowed=[&quot;background&quot;, &quot;foreground&quot;, &quot;card&quot;, &quot;muted&quot;, &quot;muted-foreground&quot;, &quot;border&quot;, &quot;primary&quot;, &quot;primary-foreground&quot;, &quot;secondary&quot;, &quot;ring&quot;, &quot;viz-series-1&quot;, &quot;viz-series-2&quot;, &quot;viz-series-3&quot;, &quot;viz-series-4&quot;, &quot;viz-series-5&quot;, &quot;viz-series-6&quot;];window.addEventListener(&#x27;message&#x27;,e=&gt;{if(e.source!==parent||e.data?.type!==&#x27;sci-theme&#x27;)return;for(const[k,v]of Object.entries(e.data.tokens||{}))if(allowed.includes(k)&amp;&amp;/^#[0-9a-f]{6}$/i.test(v))document.documentElement.style.setProperty(&#x27;--&#x27;+k,v);document.documentElement.style.colorScheme=e.data.name===&#x27;dark&#x27;?&#x27;dark&#x27;:&#x27;light&#x27;});let last=0;const measure=()=&gt;{const h=Math.ceil(document.body.getBoundingClientRect().height);if(h!==last){last=h;parent.postMessage({type:&#x27;sci-height&#x27;,height:h},&#x27;*&#x27;)}};new ResizeObserver(measure).observe(document.body);measure();})();
@@ -557,89 +599,295 @@ SciControls.mount(root,{reset:()=&gt;{reset();},pause:()=&gt;{cancel();},cancelG
 .btn{background:var(--secondary);color:var(--foreground);border:1px solid var(--border);border-radius:12px;padding:8px 14px;cursor:pointer}.btn-primary,button[aria-pressed=true],button[aria-selected=true]{background:var(--primary);color:var(--primary-foreground)}.btn-ghost{border-color:transparent;background:transparent}.form-range{accent-color:var(--primary);min-height:44px;max-width:100%}.form-label{display:block}.viz-row,.viz-controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.viz-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:16px}.card{background:var(--card);border-radius:16px;padding:16px}.text-small{font-size:.9rem}.text-muted{color:var(--muted-foreground)}.tabular-nums{font-variant-numeric:tabular-nums}.form-check{display:flex;align-items:center;gap:8px;min-height:44px}.form-check-input{width:22px;height:22px}.cursor-interaction{cursor:pointer}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}.nav{display:flex;gap:8px;flex-wrap:wrap}.nav-link{border:0;border-radius:12px;padding:10px;background:var(--secondary);color:var(--foreground)}.nav-link.active{background:var(--primary);color:var(--primary-foreground)}[hidden]{display:none!important}@media(max-width:360px){body{padding:10px}.btn{padding:8px 10px}}
 
 
-/* All operation panels sit below their linked plots. Geometry is stable. */
-[data-play]{width:48px;min-width:48px;height:48px;padding:0;display:grid;place-items:center;font-size:22px;line-height:1}
-[data-reset-area]{border-radius:16px;touch-action:pan-y;overflow-anchor:none}
-.sci-controls{position:relative;isolation:isolate;padding:16px 12px 28px;margin-top:16px}
-.sci-controls::before{content:&quot;&quot;;position:absolute;inset:0;border-radius:inherit;background:var(--foreground);opacity:0;z-index:-1;pointer-events:none;transition:opacity 150ms}
-.sci-controls.flash::before{opacity:.07}
-[data-feedback]{min-height:2.8em;margin:12px 0 0}
-.form-range{width:100%;min-width:0}output{font-variant-numeric:tabular-nums;white-space:nowrap}
-@media(prefers-reduced-motion:reduce){.sci-controls::before{transition:none}}
-
 /* Intrinsic-width disclosure: only arrow + label is the toggle target. */
 summary{box-sizing:border-box;display:list-item;list-style-position:inside;inline-size:fit-content;max-inline-size:100%;min-block-size:44px;padding:8px 12px;border:1px solid var(--border);border-radius:var(--sci-control-radius,12px);background:var(--secondary);color:var(--foreground);touch-action:manipulation;cursor:pointer}
 summary:focus-visible{outline:2px solid var(--ring);outline-offset:3px}
 details[open]&gt;summary{margin-bottom:12px}
-}:root{--background:#faf6e9;--foreground:#293c42;--card:#fffdf5;--muted:#eee9dc;--muted-foreground:#59676b;--border:#c9ccbf;--primary:#346c79;--primary-foreground:#ffffff;--secondary:#eeeee5;--ring:#346c79;--viz-series-1:#407e8a;--viz-series-2:#aa7739;--viz-series-3:#6e70a1;--viz-series-4:#52836c;--viz-series-5:#9b6877;--viz-series-6:#7b7461}&lt;/style&gt;&lt;body&gt;&lt;script&gt;/* Shared lower control-area behavior. Load before legacy fragments. */
+
+
+/* Shared control family. Override these tokens in the host UI, never in model code. */
+.sci-panel{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:12px;align-items:start;margin-top:16px}
+.sci-field{position:relative;display:flex;flex-direction:column;align-items:center;gap:12px;min-width:0;padding:16px 18px 34px;border:1px solid var(--border);border-radius:var(--sci-control-radius,16px);touch-action:pan-y;overflow:hidden}
+.sci-heading{display:flex;align-items:baseline;justify-content:space-between;gap:10px;width:100%;min-height:30px}.sci-label{font-weight:500}.sci-value{font-variant-numeric:tabular-nums;font-size:1rem}
+.sci-button{width:var(--sci-button-width,180px);max-width:100%;height:var(--sci-control-height,48px);border:1px solid var(--border);border-radius:var(--sci-control-radius,16px);background:var(--secondary);color:var(--foreground);padding:8px 12px;white-space:nowrap;font:inherit;cursor:pointer}
+.sci-slider,.sci-wheel{width:100%;height:var(--sci-control-height,48px);position:relative;overflow:hidden;border-radius:var(--sci-control-radius,16px);background:var(--muted);touch-action:pan-y;cursor:ew-resize;user-select:none;border:1px solid var(--border)}
+.sci-wheel{width:var(--sci-wheel-width,260px);max-width:100%;height:56px}
+.sci-fill{position:absolute;inset:0 auto 0 0;width:var(--sci-progress);background:var(--primary);opacity:.65;pointer-events:none}
+.sci-strip{position:absolute;inset:0;pointer-events:none}.sci-tick{position:absolute;width:33.333%;left:33.333%;height:100%;display:grid;place-items:center;font-variant-numeric:tabular-nums}.sci-wheel::after{content:&#x27;&#x27;;position:absolute;inset:5px 31%;border:1px solid var(--border);border-radius:10px;pointer-events:none}
+.sci-slider[data-playing=true],.sci-wheel[data-playing=true]{box-shadow:inset 0 0 0 2px var(--primary)}
+.sci-hint{font-size:.8rem;color:var(--muted-foreground);pointer-events:none;min-height:22px}.sci-readouts{display:flex;flex-wrap:wrap;gap:10px 20px;margin:12px 0}.sci-readouts:empty{display:none}
+.sci-field:focus-visible,.sci-slider:focus-visible,.sci-wheel:focus-visible,.sci-button:focus-visible{outline:2px solid var(--ring);outline-offset:2px}
+.sci-flash{animation:sci-reset .3s ease-out}@keyframes sci-reset{from{background:var(--muted)}to{background:transparent}}
+@media(prefers-reduced-motion:reduce){.sci-flash{animation:none;background:var(--muted)}}
+.sci-panel{display:flex;flex-direction:column;gap:16px}.sci-group{width:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:12px;align-items:start}
+}:root{--background:#faf6e9;--foreground:#293c42;--card:#fffdf5;--muted:#eee9dc;--muted-foreground:#59676b;--border:#c9ccbf;--primary:#346c79;--primary-foreground:#ffffff;--secondary:#eeeee5;--ring:#346c79;--viz-series-1:#407e8a;--viz-series-2:#aa7739;--viz-series-3:#6e70a1;--viz-series-4:#52836c;--viz-series-5:#9b6877;--viz-series-6:#7b7461}&lt;/style&gt;&lt;body&gt;&lt;script&gt;/* Scientific component behavior. Models own state; themes own appearance. */
 (()=&gt;{
 &#x27;use strict&#x27;;
-window.SciControls={
-play(button,running,rest=&#x27;播放&#x27;){
- button.textContent=running?&#x27;Ⅱ&#x27;:&#x27;▶&#x27;;
- button.setAttribute(&#x27;aria-label&#x27;,running?&#x27;暂停&#x27;:rest);
- button.setAttribute(&#x27;aria-pressed&#x27;,String(running));
-},
-mount(root,{reset,pause=()=&gt;{},cancelGesture=()=&gt;{}}){
- const area=root.querySelector(&#x27;[data-reset-area]&#x27;);
- if(!area)throw Error(&#x27;Missing lower control area&#x27;);
- const feedback=area.querySelector(&#x27;[data-feedback]&#x27;);
- const prompt=feedback.textContent,abort=new AbortController(),signal=abort.signal;
- let candidate=null,timer=0,flash=0;const pointers=new Set();
- const ignore=t=&gt;t.closest(&#x27;button,input,select,textarea,a,label,summary,[role=&quot;button&quot;]&#x27;);
- const clear=()=&gt;{candidate=null;};
- const listen=(el,type,fn,options={})=&gt;el.addEventListener(type,fn,{...options,signal});
- const restore=()=&gt;{cancelGesture();reset();clearTimeout(timer);clearTimeout(flash);area.classList.add(&#x27;flash&#x27;);feedback.textContent=&#x27;已复位 ✓&#x27;;flash=setTimeout(()=&gt;area.classList.remove(&#x27;flash&#x27;),180);timer=setTimeout(()=&gt;feedback.textContent=prompt,900);};
- listen(document,&#x27;pointerdown&#x27;,e=&gt;{pointers.add(e.pointerId);if(pointers.size&gt;1){clear();cancelGesture();}},{capture:true});
- listen(area,&#x27;pointerdown&#x27;,e=&gt;{if(e.button&gt;0||!e.isPrimary||pointers.size&gt;1||ignore(e.target)){clear();return;}candidate={id:e.pointerId,x:e.clientX,y:e.clientY,t:performance.now()};});
- listen(document,&#x27;pointermove&#x27;,e=&gt;{if(candidate&amp;&amp;candidate.id===e.pointerId&amp;&amp;Math.hypot(e.clientX-candidate.x,e.clientY-candidate.y)&gt;8)clear();},{capture:true});
- listen(document,&#x27;pointerup&#x27;,e=&gt;{const c=candidate;clear();pointers.delete(e.pointerId);if(c&amp;&amp;c.id===e.pointerId&amp;&amp;area.contains(e.target)&amp;&amp;!ignore(e.target)&amp;&amp;performance.now()-c.t&lt;500&amp;&amp;Math.hypot(e.clientX-c.x,e.clientY-c.y)&lt;=8)restore();},{capture:true});
- listen(document,&#x27;pointercancel&#x27;,e=&gt;{pointers.delete(e.pointerId);clear();cancelGesture();},{capture:true});
- listen(area,&#x27;pointerleave&#x27;,clear);listen(area,&#x27;lostpointercapture&#x27;,clear);
- listen(document,&#x27;scroll&#x27;,clear,{capture:true});
- listen(document,&#x27;visibilitychange&#x27;,()=&gt;{clear();pointers.clear();cancelGesture();if(document.hidden)pause();});
- listen(window,&#x27;blur&#x27;,()=&gt;{clear();pointers.clear();cancelGesture();pause();});
- listen(root,&#x27;keydown&#x27;,e=&gt;{if(e.key.toLowerCase()===&#x27;r&#x27;&amp;&amp;!e.ctrlKey&amp;&amp;!e.metaKey&amp;&amp;!e.altKey&amp;&amp;!e.target.closest(&#x27;input,textarea,select,[contenteditable=&quot;true&quot;]&#x27;)){e.preventDefault();restore();}});
- root.tabIndex=0;
- root.sciApi={reset:restore,pause,getState:()=&gt;({...root.dataset})};
- root.sciDisposeControls=()=&gt;{abort.abort();clearTimeout(timer);clearTimeout(flash);pause();};
- return root.sciApi;
-}
-};
+const clamp=(v,a,b)=&gt;Math.max(a,Math.min(b,v));
+const modulo=(v,p)=&gt;((v%p)+p)%p;
+window.SciControls={mount(root,{controls,pause=()=&gt;{},cancelGesture=()=&gt;{},transport,graph}){
+ const host=root.querySelector(&#x27;[data-controls]&#x27;), abort=new AbortController(), signal=abort.signal;
+ if(!host)throw Error(&#x27;An experiment requires a data-controls host&#x27;);
+ const listen=(node,type,fn,options={})=&gt;node.addEventListener(type,fn,{...options,signal});
+ const make=(tag,cls,text)=&gt;{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
+ const groups=new Map();
+ const refresh=[],resets=new Map(),values=new Map(),pointers=new Set();let syncing=false,gesture=null;
+ const sync=()=&gt;{if(syncing)return;syncing=true;try{refresh.forEach(f=&gt;f());}finally{syncing=false;}};
+ root.sciSync=sync;host.className=&#x27;sci-panel&#x27;;
+ // A pointer must remain a short, single-pointer tap. A vertical swipe belongs to scrolling.
+ function bindGesture(el,{axis=&#x27;x&#x27;,accept=()=&gt;true,start=()=&gt;{},move=()=&gt;{},tap=()=&gt;{},end=()=&gt;{},cancel=()=&gt;{}}){
+  let g=null;
+  const discard=()=&gt;{if(g){g=null;cancel();}if(gesture===discard)gesture=null;};
+  listen(el,&#x27;pointerdown&#x27;,e=&gt;{if(!e.isPrimary||e.button&gt;0||pointers.size&gt;1||!accept(e))return;g={id:e.pointerId,x:e.clientX,y:e.clientY,t:performance.now(),moved:false};gesture=discard;start(e);});
+  listen(document,&#x27;pointermove&#x27;,e=&gt;{if(!g||g.id!==e.pointerId)return;const dx=e.clientX-g.x,dy=e.clientY-g.y;if(axis===&#x27;x&#x27;&amp;&amp;!g.moved&amp;&amp;Math.abs(dy)&gt;8&amp;&amp;Math.abs(dy)&gt;Math.abs(dx)){discard();return;}if(Math.abs(dx)&gt;6||(axis===&#x27;free&#x27;&amp;&amp;Math.abs(dy)&gt;6)||g.moved){g.moved=true;move(e,dx);}}, {capture:true});
+  listen(document,&#x27;pointerup&#x27;,e=&gt;{if(!g||g.id!==e.pointerId)return;const q=g;g=null;gesture=null;if(q.moved)end(e);else if(performance.now()-q.t&lt;500&amp;&amp;Math.hypot(e.clientX-q.x,e.clientY-q.y)&lt;=8)tap(e);else cancel();sync();},{capture:true});
+  listen(document,&#x27;pointercancel&#x27;,discard,{capture:true});
+  return discard;
+ }
+ listen(document,&#x27;pointerdown&#x27;,e=&gt;{pointers.add(e.pointerId);if(pointers.size&gt;1){gesture?.();cancelGesture();}},{capture:true});
+ for(const type of [&#x27;pointerup&#x27;,&#x27;pointercancel&#x27;])listen(document,type,e=&gt;pointers.delete(e.pointerId));
+ const stopAll=()=&gt;{gesture?.();pointers.clear();cancelGesture();pause();sync();};
+ listen(document,&#x27;scroll&#x27;,()=&gt;{gesture?.();cancelGesture();},{capture:true});
+ listen(window,&#x27;blur&#x27;,stopAll);listen(document,&#x27;visibilitychange&#x27;,()=&gt;{if(document.hidden)stopAll();});
+ for(const c of controls){
+  const field=make(&#x27;div&#x27;,&#x27;sci-field&#x27;);field.dataset.scope=c.key;field.tabIndex=0;
+  const heading=make(&#x27;div&#x27;,&#x27;sci-heading&#x27;),label=make(&#x27;span&#x27;,&#x27;sci-label&#x27;,c.label),out=make(&#x27;output&#x27;,&#x27;sci-value&#x27;);heading.append(label,out);field.append(heading);
+  const input=c.input;let get=c.get,set=c.set;
+  if(input){get=()=&gt;Number(input.value);set=v=&gt;{input.value=v;input.dispatchEvent(new Event(&#x27;input&#x27;,{bubbles:true}));};}
+  const read=()=&gt;get?.();values.set(c.key,read);
+  function apply(v){const resume=transport?.isPlaying();set(v);if(resume&amp;&amp;!c.transport&amp;&amp;!transport.isPlaying())transport.toggle();sync();}
+  const defaultValue=c.defaultValue??c.items?.[0]?.[0];
+  if(c.kind===&#x27;action&#x27;){
+   const button=make(&#x27;button&#x27;,&#x27;sci-button&#x27;,c.text);button.type=&#x27;button&#x27;;listen(button,&#x27;click&#x27;,()=&gt;{c.act();sync();});field.append(button);out.hidden=true;
+  }else if(c.kind===&#x27;choice&#x27;){
+   const button=make(&#x27;button&#x27;,&#x27;sci-button&#x27;);button.type=&#x27;button&#x27;;button.setAttribute(&#x27;aria-label&#x27;,c.label+&#x27;：点击切换&#x27;);
+   listen(button,&#x27;click&#x27;,()=&gt;{const i=c.items.findIndex(a=&gt;a[0]===read());apply(c.items[(i+1)%c.items.length][0]);});field.append(button);out.hidden=true;
+   refresh.push(()=&gt;{button.textContent=c.items.find(a=&gt;a[0]===read())?.[1]??String(read());button.dataset.value=read();button.setAttribute(&#x27;aria-label&#x27;,c.label+&#x27;：&#x27;+button.textContent+&#x27;，点击切换&#x27;);});
+  }else{
+   const min=c.min??Number(input.min),max=c.max??Number(input.max),step=c.step??Number(input.step||1);
+   // Existing native inputs are the model&#x27;s adapter; all visible controls share this runtime.
+   if(input){input.hidden=true;input.tabIndex=-1;input.setAttribute(&#x27;aria-hidden&#x27;,&#x27;true&#x27;);field.append(input);}
+   const track=make(&#x27;div&#x27;,c.kind===&#x27;wheel&#x27;?&#x27;sci-wheel&#x27;:&#x27;sci-slider&#x27;);track.tabIndex=0;track.setAttribute(&#x27;role&#x27;,&#x27;slider&#x27;);track.setAttribute(&#x27;aria-label&#x27;,c.label);track.setAttribute(&#x27;aria-valuemin&#x27;,min);track.setAttribute(&#x27;aria-valuemax&#x27;,max);field.append(track);
+   const fill=make(&#x27;span&#x27;,&#x27;sci-fill&#x27;),strip=make(&#x27;span&#x27;,&#x27;sci-strip&#x27;);track.append(fill,strip);
+   let origin=0,wasPlaying=false,didPause=false,raw=0;
+   const normalize=v=&gt;c.period?min+modulo(v-min,c.period):clamp(v,min,max);
+   const update=v=&gt;{raw=v;const n=normalize(v);set(c.discrete?normalize(Math.round(v)):Math.round(n/step)*step);sync();};
+   const isWheel=c.kind===&#x27;wheel&#x27;,stops=c.stops||[];
+   const formatted=v=&gt;(Math.round(v*100)/100)+(c.unit||&#x27;&#x27;);
+   const next=()=&gt;{const current=read(),n=stops.find(v=&gt;v&gt;current+1e-7);apply(n??stops[0]);};
+   const toggle=()=&gt;{c.transport?.toggle();sync();};
+   bindGesture(track,{
+    start:()=&gt;{origin=read();raw=origin;wasPlaying=!!c.transport?.isPlaying();didPause=false;},
+    move:(e,dx)=&gt;{if(!didPause){if(c.transport)pause();didPause=true;}const width=track.getBoundingClientRect().width;update(origin+(isWheel?-dx/Math.max(60,width/3)*(stops[1]-stops[0]||1):dx/width*(max-min)));},
+    tap:e=&gt;{if(isWheel){const b=track.getBoundingClientRect(),part=(e.clientX-b.left)/b.width;if(c.transport&amp;&amp;(part&lt;.3||part&gt;.7))toggle();else next();}else if(c.transport)toggle();else{const b=track.getBoundingClientRect();update(min+(e.clientX-b.left)/b.width*(max-min));}},
+    end:()=&gt;{if(isWheel){const current=normalize(raw),near=(c.period?[...stops,stops[0]+c.period]:stops).reduce((a,v)=&gt;Math.abs(v-current)&lt;Math.abs(a-current)?v:a,stops[0]);const gap=stops[1]-stops[0]||1;if(c.discrete)update(Math.round(raw));else if(Math.abs(near-current)&lt;=gap*.14)update(near);}
+     if(wasPlaying&amp;&amp;!c.transport.isPlaying())c.transport.toggle();},
+    cancel:()=&gt;{if(didPause&amp;&amp;c.transport)pause();}
+   });
+   listen(track,&#x27;keydown&#x27;,e=&gt;{if([&#x27;ArrowLeft&#x27;,&#x27;ArrowRight&#x27;,&#x27;Home&#x27;,&#x27;End&#x27;,&#x27; &#x27;].includes(e.key)){e.preventDefault();if(e.key===&#x27; &#x27;){if(c.transport)toggle();else if(isWheel)next();return;}update(e.key===&#x27;Home&#x27;?min:e.key===&#x27;End&#x27;?max:read()+(e.key===&#x27;ArrowRight&#x27;?1:-1)*(isWheel?(stops[1]-stops[0]||1):step));}});
+   refresh.push(()=&gt;{const v=read();out.textContent=formatted(v);track.setAttribute(&#x27;aria-valuenow&#x27;,v);track.setAttribute(&#x27;aria-valuetext&#x27;,formatted(v));track.dataset.playing=String(!!c.transport?.isPlaying());track.style.setProperty(&#x27;--sci-progress&#x27;,100*clamp((v-min)/(max-min),0,1)+&#x27;%&#x27;);
+    if(isWheel){const gap=stops[1]-stops[0]||1,index=Math.floor((v-min)/gap),fraction=(v-min)/gap-index;strip.replaceChildren();for(let i=-2;i&lt;=2;i++){const item=make(&#x27;span&#x27;,&#x27;sci-tick&#x27;,formatted(normalize(min+(index+i)*gap)));item.style.transform=`translateX(${(i-fraction)*100}%)`;strip.append(item);}fill.hidden=true;}
+   });
+  }
+  if(c.kind!==&#x27;action&#x27;){
+   const hint=make(&#x27;span&#x27;,&#x27;sci-hint&#x27;,&#x27;点本区空白复位&#x27;);field.append(hint);
+   const reset=()=&gt;{cancelGesture();apply(defaultValue);field.classList.remove(&#x27;sci-flash&#x27;);void field.offsetWidth;field.classList.add(&#x27;sci-flash&#x27;);field.setAttribute(&#x27;aria-label&#x27;,c.label+&#x27;，已复位&#x27;);};resets.set(c.key,reset);
+   // Reset only when down and up are on this field&#x27;s actual blank background.
+   let blank=false;bindGesture(field,{accept:e=&gt;e.target===field,start:e=&gt;{blank=true;},tap:e=&gt;{if(blank&amp;&amp;e.target===field)reset();},move:()=&gt;{blank=false;},cancel:()=&gt;{blank=false;}});
+   listen(field,&#x27;keydown&#x27;,e=&gt;{if(e.key===&#x27;Escape&#x27;&amp;&amp;!e.target.closest(&#x27;input,textarea,[contenteditable=true]&#x27;)){e.stopPropagation();reset();}});
+  }
+  const family=[&#x27;action&#x27;,&#x27;choice&#x27;].includes(c.kind)?&#x27;buttons&#x27;:c.kind===&#x27;wheel&#x27;?&#x27;wheels&#x27;:&#x27;sliders&#x27;;if(!groups.has(family)){const group=make(&#x27;div&#x27;,&#x27;sci-group&#x27;);group.dataset.family=family;groups.set(family,group);host.append(group);}groups.get(family).append(field);
+ }
+ // Graph taps pause/play; existing model-specific drags still edit the same state.
+ if(graph&amp;&amp;transport){
+  let before=false,oldDown=graph.onpointerdown,oldMove=graph.onpointermove,oldUp=graph.onpointerup;
+  graph.onpointerdown=graph.onpointermove=graph.onpointerup=null;
+  let event=null,started=false;
+  bindGesture(graph,{axis:root.id===&#x27;complex-wave&#x27;?&#x27;free&#x27;:&#x27;x&#x27;,start:e=&gt;{before=transport.isPlaying();event=e;started=false;},move:e=&gt;{if(!started){started=true;pause();oldDown?.call(graph,event);}oldMove?.call(graph,e);},tap:()=&gt;transport.toggle(),end:e=&gt;{oldUp?.call(graph,e);cancelGesture();if(before&amp;&amp;!transport.isPlaying())transport.toggle();},cancel:()=&gt;cancelGesture()});
+ }
+ root.sciApi={getState:()=&gt;({...root.dataset}),getControl:key=&gt;values.get(key)?.(),reset:key=&gt;{if(!resets.has(key))throw Error(&#x27;A valid local scope is required&#x27;);resets.get(key)();},pause:()=&gt;{pause();sync();},controls:controls.map(c=&gt;({key:c.key,kind:c.kind||&#x27;slider&#x27;,playable:!!c.transport,defaultValue:c.defaultValue??c.items?.[0]?.[0]}))};
+ root.sciDisposeControls=()=&gt;{abort.abort();pause();delete root.sciSync;};sync();return root.sciApi;
+}};
 })();
 &lt;/script&gt;&lt;section id=&quot;resistor-coupling&quot;&gt;
 &lt;style&gt;@layer sci-fragments {
-#resistor-coupling{color:var(--foreground);padding:8px 0}#resistor-coupling svg{display:block;width:100%;height:170px;touch-action:pan-y}#resistor-coupling .result-chart{height:80px}#resistor-coupling svg text{font-size:18px;fill:var(--foreground)}#resistor-coupling .label{display:flex;justify-content:space-between;gap:12px;margin:12px 0 8px}#resistor-coupling .note{margin:10px 0;min-height:24px}
-}&lt;/style&gt;
+#resistor-coupling{color:var(--foreground);padding:8px 0}#resistor-coupling svg{display:block;width:100%;height:170px;touch-action:pan-y}#resistor-coupling .result-chart{height:80px}#resistor-coupling svg text{font-size:18px;fill:var(--foreground)}#resistor-coupling .note{margin:10px 0;min-height:24px}}&lt;/style&gt;
 &lt;h3&gt;电阻变大，发热一定更多吗？&lt;/h3&gt;
 
 &lt;svg role=&quot;img&quot; aria-label=&quot;拖动上方电阻改变阻值；下方操作区空白恢复3欧姆基准。&quot;&gt;&lt;/svg&gt;
 &lt;div data-result=&quot;current&quot;&gt;&lt;svg class=&quot;result-chart&quot; aria-hidden=&quot;true&quot;&gt;&lt;/svg&gt;&lt;/div&gt;
 &lt;div data-result=&quot;power&quot;&gt;&lt;svg class=&quot;result-chart&quot; aria-hidden=&quot;true&quot;&gt;&lt;/svg&gt;&lt;/div&gt;
 &lt;div class=&quot;text-small text-muted&quot;&gt;拖动电阻调节 · 虚影固定在 3 Ω&lt;/div&gt;
-&lt;div class=&quot;sci-controls&quot; data-reset-area&gt;
-&lt;div class=&quot;viz-controls&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;btn&quot; data-mode=&quot;voltage&quot; aria-pressed=&quot;true&quot;&gt;恒压 · 6 V&lt;/button&gt;&lt;button type=&quot;button&quot; class=&quot;btn&quot; data-mode=&quot;current&quot; aria-pressed=&quot;false&quot;&gt;恒流 · 2 A&lt;/button&gt;&lt;/div&gt;&lt;div class=&quot;label&quot;&gt;&lt;label for=&quot;resistance-value&quot;&gt;电阻 R&lt;/label&gt;&lt;output data-r&gt;6.0 Ω&lt;/output&gt;&lt;/div&gt;&lt;input id=&quot;resistance-value&quot; class=&quot;form-range&quot; type=&quot;range&quot; min=&quot;1.5&quot; max=&quot;12&quot; step=&quot;.1&quot; value=&quot;6&quot;&gt;
-&lt;div class=&quot;note&quot; data-note aria-live=&quot;polite&quot;&gt;&lt;/div&gt;
-&lt;div class=&quot;text-small&quot;&gt;浅色虚影：同一供电条件下 R = 3 Ω · 忽略温度反馈&lt;/div&gt;
-&lt;p class=&quot;text-small text-muted&quot; data-feedback role=&quot;status&quot;&gt;点操作区空白回到 3 Ω；保留供电方式&lt;/p&gt;&lt;/div&gt;
+&lt;div data-readouts class=&quot;sci-readouts&quot;&gt;&lt;output data-r&gt;6.0 Ω&lt;/output&gt;&lt;div class=&quot;note&quot; data-note aria-live=&quot;polite&quot;&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div data-controls&gt;&lt;input id=&quot;resistance-value&quot; class=&quot;form-range&quot; type=&quot;range&quot; min=&quot;1.5&quot; max=&quot;12&quot; step=&quot;.1&quot; value=&quot;3&quot;&gt;&lt;/div&gt;
 &lt;script&gt;
-(()=&gt;{const root=document.getElementById(&#x27;resistor-coupling&#x27;),svg=root.querySelector(&#x27;svg&#x27;),range=root.querySelector(&#x27;input&#x27;);const NS=&#x27;http://www.w3.org/2000/svg&#x27;;let R=6,mode=&#x27;voltage&#x27;,drag=null,frame=0,target=svg;
+(()=&gt;{const root=document.getElementById(&#x27;resistor-coupling&#x27;),svg=root.querySelector(&#x27;svg&#x27;),range=root.querySelector(&#x27;input&#x27;);const NS=&#x27;http://www.w3.org/2000/svg&#x27;;let R=3,mode=&#x27;voltage&#x27;,drag=null,frame=0,target=svg;
 function cancel(){cancelAnimationFrame(frame);frame=0;}
-function reset(){cancel();R=3;draw();}
+
 function model(r){const I=mode===&#x27;voltage&#x27;?6/r:2,U=mode===&#x27;voltage&#x27;?6:2*r;return{I,U,P:U*I};}function add(tag,a,text){const e=document.createElementNS(NS,tag);Object.entries(a||{}).forEach(([k,v])=&gt;e.setAttribute(k,v));if(text!==undefined)e.textContent=text;target.append(e);return e;}
 function draw(){const w=Math.max(280,root.clientWidth),s=model(R),base=model(3),left=76,right=w-28,cx=(left+right)/2,len=24+(right-left-40)*(R-1.5)/10.5;target=svg;svg.setAttribute(&#x27;viewBox&#x27;,`0 0 ${w} 170`);svg.replaceChildren();add(&#x27;path&#x27;,{d:`M40 45 H${cx-len/2} M${cx+len/2} 45 H${right} V125 H40 V97 M40 53 V45`,fill:&#x27;none&#x27;,stroke:&#x27;var(--muted-foreground)&#x27;,&#x27;stroke-width&#x27;:1.5});add(&#x27;circle&#x27;,{cx:40,cy:75,r:22,fill:&#x27;var(--background)&#x27;,stroke:&#x27;var(--muted-foreground)&#x27;,&#x27;stroke-width&#x27;:1.5});add(&#x27;text&#x27;,{x:40,y:79,&#x27;text-anchor&#x27;:&#x27;middle&#x27;},mode===&#x27;voltage&#x27;?&#x27;U&#x27;:&#x27;I&#x27;);add(&#x27;rect&#x27;,{x:cx-len/2,y:31,width:len,height:28,rx:3,fill:&#x27;var(--muted)&#x27;,stroke:&#x27;var(--foreground)&#x27;,&#x27;stroke-width&#x27;:1.2});add(&#x27;text&#x27;,{x:cx,y:21,&#x27;text-anchor&#x27;:&#x27;middle&#x27;},&#x27;可调电阻&#x27;);add(&#x27;text&#x27;,{x:cx,y:81,&#x27;text-anchor&#x27;:&#x27;middle&#x27;},`R = ${R.toFixed(1)} Ω`);add(&#x27;text&#x27;,{x:20,y:157},`U = ${s.U.toFixed(1)} V`);add(&#x27;text&#x27;,{x:right,y:157,&#x27;text-anchor&#x27;:&#x27;end&#x27;},mode===&#x27;voltage&#x27;?&#x27;电压固定&#x27;:&#x27;电流固定&#x27;);
 function bar(y,title,value,baseline,max,unit,color){const a=20,b=w-20,span=b-a;add(&#x27;text&#x27;,{x:a,y},title);add(&#x27;text&#x27;,{x:b,y,&#x27;text-anchor&#x27;:&#x27;end&#x27;},value.toFixed(2)+&#x27; &#x27;+unit);add(&#x27;rect&#x27;,{x:a,y:y+12,width:span,height:26,rx:3,fill:&#x27;var(--muted)&#x27;});add(&#x27;rect&#x27;,{x:a,y:y+12,width:span*baseline/max,height:26,rx:3,fill:color,opacity:.17});add(&#x27;rect&#x27;,{x:a,y:y+18,width:span*value/max,height:14,rx:3,fill:color});add(&#x27;text&#x27;,{x:a,y:y+55},&#x27;0&#x27;);add(&#x27;text&#x27;,{x:b,y:y+55,&#x27;text-anchor&#x27;:&#x27;end&#x27;},max+&#x27; &#x27;+unit);}
-target=root.querySelector(&#x27;[data-result=&quot;current&quot;] svg&#x27;);target.setAttribute(&#x27;viewBox&#x27;,`0 0 ${w} 80`);target.replaceChildren();bar(16,&#x27;电流 I&#x27;,s.I,base.I,4,&#x27;A&#x27;,&#x27;var(--viz-series-1)&#x27;);target=root.querySelector(&#x27;[data-result=&quot;power&quot;] svg&#x27;);target.setAttribute(&#x27;viewBox&#x27;,`0 0 ${w} 80`);target.replaceChildren();bar(16,&#x27;发热功率 P&#x27;,s.P,base.P,48,&#x27;W&#x27;,&#x27;var(--viz-series-2)&#x27;);range.value=R;root.querySelector(&#x27;[data-r]&#x27;).textContent=R.toFixed(1)+&#x27; Ω&#x27;;const ratio=s.P/base.P;root.querySelector(&#x27;[data-note]&#x27;).textContent=R===3?&#x27;当前与 3 Ω 基准重合。&#x27;:`相对 3 Ω 基准：电阻 ${R&gt;3?&#x27;增大&#x27;:&#x27;减小&#x27;}，发热功率${ratio&gt;1?&#x27;增加&#x27;:&#x27;减少&#x27;} ${Math.abs((ratio-1)*100).toFixed(0)}%。`;root.dataset.mode=mode;root.dataset.resistance=R;root.dataset.current=s.I;root.dataset.voltage=s.U;root.dataset.power=s.P;}
-range.oninput=()=&gt;{cancel();R=+range.value;draw();};root.querySelectorAll(&#x27;[data-mode]&#x27;).forEach(b=&gt;b.onclick=()=&gt;{cancel();mode=b.dataset.mode;root.querySelectorAll(&#x27;[data-mode]&#x27;).forEach(c=&gt;c.setAttribute(&#x27;aria-pressed&#x27;,String(c===b)));draw();});
+target=root.querySelector(&#x27;[data-result=&quot;current&quot;] svg&#x27;);target.setAttribute(&#x27;viewBox&#x27;,`0 0 ${w} 80`);target.replaceChildren();bar(16,&#x27;电流 I&#x27;,s.I,base.I,4,&#x27;A&#x27;,&#x27;var(--viz-series-1)&#x27;);target=root.querySelector(&#x27;[data-result=&quot;power&quot;] svg&#x27;);target.setAttribute(&#x27;viewBox&#x27;,`0 0 ${w} 80`);target.replaceChildren();bar(16,&#x27;发热功率 P&#x27;,s.P,base.P,48,&#x27;W&#x27;,&#x27;var(--viz-series-2)&#x27;);range.value=R;root.querySelector(&#x27;[data-r]&#x27;).textContent=R.toFixed(1)+&#x27; Ω&#x27;;const ratio=s.P/base.P;root.querySelector(&#x27;[data-note]&#x27;).textContent=R===3?&#x27;当前与 3 Ω 基准重合。&#x27;:`相对 3 Ω 基准：电阻 ${R&gt;3?&#x27;增大&#x27;:&#x27;减小&#x27;}，发热功率${ratio&gt;1?&#x27;增加&#x27;:&#x27;减少&#x27;} ${Math.abs((ratio-1)*100).toFixed(0)}%。`;root.dataset.mode=mode;root.dataset.resistance=R;root.dataset.current=s.I;root.dataset.voltage=s.U;root.dataset.power=s.P;;root.sciSync?.();}
+range.oninput=()=&gt;{cancel();R=+range.value;draw();};
 svg.onpointerdown=e=&gt;{if(!e.isPrimary){drag=null;return;}const rect=svg.getBoundingClientRect(),y=(e.clientY-rect.top)*170/rect.height,x=e.clientX-rect.left;const w=Math.max(280,root.clientWidth),cx=(76+w-28)/2,len=24+(w-28-76-40)*(R-1.5)/10.5;const kind=y&gt;=22&amp;&amp;y&lt;=88&amp;&amp;Math.abs(x-cx)&lt;=len/2+18?&#x27;adjust&#x27;:null;if(!kind)return;cancel();drag={id:e.pointerId,x:e.clientX,y:e.clientY,r:R,kind,moved:false,start:performance.now()};svg.setPointerCapture(e.pointerId);};
 svg.onpointermove=e=&gt;{if(!drag||e.pointerId!==drag.id)return;if(Math.hypot(e.clientX-drag.x,e.clientY-drag.y)&gt;8)drag.moved=true;if(drag.kind===&#x27;adjust&#x27;){R=Math.max(1.5,Math.min(12,Math.round((drag.r+(e.clientX-drag.x)/svg.getBoundingClientRect().width*10.5)*10)/10));draw();}};
 svg.onpointerup=e=&gt;{const d=drag;drag=null;if(d&amp;&amp;e.pointerId===d.id&amp;&amp;d.kind===&#x27;reset&#x27;&amp;&amp;!d.moved&amp;&amp;performance.now()-d.start&lt;600)reset();};svg.onpointercancel=()=&gt;drag=null;svg.onlostpointercapture=()=&gt;drag=null;
 new ResizeObserver(draw).observe(root);draw();
 
-SciControls.mount(root,{reset:()=&gt;{reset();},pause:()=&gt;{cancel();},cancelGesture:()=&gt;{drag=null;}});
+SciControls.mount(root,{controls:[{key:&#x27;mode&#x27;,label:&#x27;供电方式&#x27;,kind:&#x27;choice&#x27;,get:()=&gt;mode,set:value=&gt;{cancel();mode=value;draw();},items:[[&quot;voltage&quot;, &quot;恒压 · 6 V&quot;], [&quot;current&quot;, &quot;恒流 · 2 A&quot;]]},{key:&#x27;resistance&#x27;,label:&#x27;电阻 R&#x27;,input:root.querySelector(&#x27;input&#x27;),defaultValue:3}],pause:()=&gt;{cancel();},cancelGesture:()=&gt;{drag=null;}});
 })();
 &lt;/script&gt;
 &lt;/section&gt;
+
+
+&lt;style&gt;@layer sci-theme{}&lt;/style&gt;&lt;script&gt;
+(()=&gt;{const allowed=[&quot;background&quot;, &quot;foreground&quot;, &quot;card&quot;, &quot;muted&quot;, &quot;muted-foreground&quot;, &quot;border&quot;, &quot;primary&quot;, &quot;primary-foreground&quot;, &quot;secondary&quot;, &quot;ring&quot;, &quot;viz-series-1&quot;, &quot;viz-series-2&quot;, &quot;viz-series-3&quot;, &quot;viz-series-4&quot;, &quot;viz-series-5&quot;, &quot;viz-series-6&quot;];window.addEventListener(&#x27;message&#x27;,e=&gt;{if(e.source!==parent||e.data?.type!==&#x27;sci-theme&#x27;)return;for(const[k,v]of Object.entries(e.data.tokens||{}))if(allowed.includes(k)&amp;&amp;/^#[0-9a-f]{6}$/i.test(v))document.documentElement.style.setProperty(&#x27;--&#x27;+k,v);document.documentElement.style.colorScheme=e.data.name===&#x27;dark&#x27;?&#x27;dark&#x27;:&#x27;light&#x27;});let last=0;const measure=()=&gt;{const h=Math.ceil(document.body.getBoundingClientRect().height);if(h!==last){last=h;parent.postMessage({type:&#x27;sci-height&#x27;,height:h},&#x27;*&#x27;)}};new ResizeObserver(measure).observe(document.body);measure();})();
+&lt;/script&gt;&lt;/body&gt;&lt;/html&gt;"></iframe><iframe title="resistor-coupling" sandbox="allow-scripts" srcdoc="&lt;!doctype html&gt;&lt;html lang=&quot;zh-CN&quot;&gt;&lt;meta charset=&quot;utf-8&quot;&gt;&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1&quot;&gt;&lt;style&gt;@layer sci-base,sci-fragments,sci-theme;@layer sci-base{/* Scoped inside each isolated example document. Themes supply semantics. */
+:root{font-family:system-ui,&quot;Noto Sans SC&quot;,sans-serif;font-size:18px;color:var(--foreground);background:var(--background);color-scheme:light}
+*{box-sizing:border-box}body{margin:0;padding:18px;line-height:1.55}h3{font-size:1.15rem;font-weight:600;margin:0 0 16px}p{margin:10px 0}svg,canvas{max-width:100%}button,input,select{font:inherit}button{min-height:44px;touch-action:manipulation}button:focus-visible,input:focus-visible{outline:2px solid var(--ring);outline-offset:3px}
+.btn{background:var(--secondary);color:var(--foreground);border:1px solid var(--border);border-radius:12px;padding:8px 14px;cursor:pointer}.btn-primary,button[aria-pressed=true],button[aria-selected=true]{background:var(--primary);color:var(--primary-foreground)}.btn-ghost{border-color:transparent;background:transparent}.form-range{accent-color:var(--primary);min-height:44px;max-width:100%}.form-label{display:block}.viz-row,.viz-controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.viz-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:16px}.card{background:var(--card);border-radius:16px;padding:16px}.text-small{font-size:.9rem}.text-muted{color:var(--muted-foreground)}.tabular-nums{font-variant-numeric:tabular-nums}.form-check{display:flex;align-items:center;gap:8px;min-height:44px}.form-check-input{width:22px;height:22px}.cursor-interaction{cursor:pointer}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}.nav{display:flex;gap:8px;flex-wrap:wrap}.nav-link{border:0;border-radius:12px;padding:10px;background:var(--secondary);color:var(--foreground)}.nav-link.active{background:var(--primary);color:var(--primary-foreground)}[hidden]{display:none!important}@media(max-width:360px){body{padding:10px}.btn{padding:8px 10px}}
+
+
+/* Intrinsic-width disclosure: only arrow + label is the toggle target. */
+summary{box-sizing:border-box;display:list-item;list-style-position:inside;inline-size:fit-content;max-inline-size:100%;min-block-size:44px;padding:8px 12px;border:1px solid var(--border);border-radius:var(--sci-control-radius,12px);background:var(--secondary);color:var(--foreground);touch-action:manipulation;cursor:pointer}
+summary:focus-visible{outline:2px solid var(--ring);outline-offset:3px}
+details[open]&gt;summary{margin-bottom:12px}
+
+
+/* Shared control family. Override these tokens in the host UI, never in model code. */
+.sci-panel{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:12px;align-items:start;margin-top:16px}
+.sci-field{position:relative;display:flex;flex-direction:column;align-items:center;gap:12px;min-width:0;padding:16px 18px 34px;border:1px solid var(--border);border-radius:var(--sci-control-radius,16px);touch-action:pan-y;overflow:hidden}
+.sci-heading{display:flex;align-items:baseline;justify-content:space-between;gap:10px;width:100%;min-height:30px}.sci-label{font-weight:500}.sci-value{font-variant-numeric:tabular-nums;font-size:1rem}
+.sci-button{width:var(--sci-button-width,180px);max-width:100%;height:var(--sci-control-height,48px);border:1px solid var(--border);border-radius:var(--sci-control-radius,16px);background:var(--secondary);color:var(--foreground);padding:8px 12px;white-space:nowrap;font:inherit;cursor:pointer}
+.sci-slider,.sci-wheel{width:100%;height:var(--sci-control-height,48px);position:relative;overflow:hidden;border-radius:var(--sci-control-radius,16px);background:var(--muted);touch-action:pan-y;cursor:ew-resize;user-select:none;border:1px solid var(--border)}
+.sci-wheel{width:var(--sci-wheel-width,260px);max-width:100%;height:56px}
+.sci-fill{position:absolute;inset:0 auto 0 0;width:var(--sci-progress);background:var(--primary);opacity:.65;pointer-events:none}
+.sci-strip{position:absolute;inset:0;pointer-events:none}.sci-tick{position:absolute;width:33.333%;left:33.333%;height:100%;display:grid;place-items:center;font-variant-numeric:tabular-nums}.sci-wheel::after{content:&#x27;&#x27;;position:absolute;inset:5px 31%;border:1px solid var(--border);border-radius:10px;pointer-events:none}
+.sci-slider[data-playing=true],.sci-wheel[data-playing=true]{box-shadow:inset 0 0 0 2px var(--primary)}
+.sci-hint{font-size:.8rem;color:var(--muted-foreground);pointer-events:none;min-height:22px}.sci-readouts{display:flex;flex-wrap:wrap;gap:10px 20px;margin:12px 0}.sci-readouts:empty{display:none}
+.sci-field:focus-visible,.sci-slider:focus-visible,.sci-wheel:focus-visible,.sci-button:focus-visible{outline:2px solid var(--ring);outline-offset:2px}
+.sci-flash{animation:sci-reset .3s ease-out}@keyframes sci-reset{from{background:var(--muted)}to{background:transparent}}
+@media(prefers-reduced-motion:reduce){.sci-flash{animation:none;background:var(--muted)}}
+.sci-panel{display:flex;flex-direction:column;gap:16px}.sci-group{width:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:12px;align-items:start}
+}:root{--background:#faf6e9;--foreground:#293c42;--card:#fffdf5;--muted:#eee9dc;--muted-foreground:#59676b;--border:#c9ccbf;--primary:#346c79;--primary-foreground:#ffffff;--secondary:#eeeee5;--ring:#346c79;--viz-series-1:#407e8a;--viz-series-2:#aa7739;--viz-series-3:#6e70a1;--viz-series-4:#52836c;--viz-series-5:#9b6877;--viz-series-6:#7b7461}&lt;/style&gt;&lt;body&gt;&lt;script&gt;/* Scientific component behavior. Models own state; themes own appearance. */
+(()=&gt;{
+&#x27;use strict&#x27;;
+const clamp=(v,a,b)=&gt;Math.max(a,Math.min(b,v));
+const modulo=(v,p)=&gt;((v%p)+p)%p;
+window.SciControls={mount(root,{controls,pause=()=&gt;{},cancelGesture=()=&gt;{},transport,graph}){
+ const host=root.querySelector(&#x27;[data-controls]&#x27;), abort=new AbortController(), signal=abort.signal;
+ if(!host)throw Error(&#x27;An experiment requires a data-controls host&#x27;);
+ const listen=(node,type,fn,options={})=&gt;node.addEventListener(type,fn,{...options,signal});
+ const make=(tag,cls,text)=&gt;{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
+ const groups=new Map();
+ const refresh=[],resets=new Map(),values=new Map(),pointers=new Set();let syncing=false,gesture=null;
+ const sync=()=&gt;{if(syncing)return;syncing=true;try{refresh.forEach(f=&gt;f());}finally{syncing=false;}};
+ root.sciSync=sync;host.className=&#x27;sci-panel&#x27;;
+ // A pointer must remain a short, single-pointer tap. A vertical swipe belongs to scrolling.
+ function bindGesture(el,{axis=&#x27;x&#x27;,accept=()=&gt;true,start=()=&gt;{},move=()=&gt;{},tap=()=&gt;{},end=()=&gt;{},cancel=()=&gt;{}}){
+  let g=null;
+  const discard=()=&gt;{if(g){g=null;cancel();}if(gesture===discard)gesture=null;};
+  listen(el,&#x27;pointerdown&#x27;,e=&gt;{if(!e.isPrimary||e.button&gt;0||pointers.size&gt;1||!accept(e))return;g={id:e.pointerId,x:e.clientX,y:e.clientY,t:performance.now(),moved:false};gesture=discard;start(e);});
+  listen(document,&#x27;pointermove&#x27;,e=&gt;{if(!g||g.id!==e.pointerId)return;const dx=e.clientX-g.x,dy=e.clientY-g.y;if(axis===&#x27;x&#x27;&amp;&amp;!g.moved&amp;&amp;Math.abs(dy)&gt;8&amp;&amp;Math.abs(dy)&gt;Math.abs(dx)){discard();return;}if(Math.abs(dx)&gt;6||(axis===&#x27;free&#x27;&amp;&amp;Math.abs(dy)&gt;6)||g.moved){g.moved=true;move(e,dx);}}, {capture:true});
+  listen(document,&#x27;pointerup&#x27;,e=&gt;{if(!g||g.id!==e.pointerId)return;const q=g;g=null;gesture=null;if(q.moved)end(e);else if(performance.now()-q.t&lt;500&amp;&amp;Math.hypot(e.clientX-q.x,e.clientY-q.y)&lt;=8)tap(e);else cancel();sync();},{capture:true});
+  listen(document,&#x27;pointercancel&#x27;,discard,{capture:true});
+  return discard;
+ }
+ listen(document,&#x27;pointerdown&#x27;,e=&gt;{pointers.add(e.pointerId);if(pointers.size&gt;1){gesture?.();cancelGesture();}},{capture:true});
+ for(const type of [&#x27;pointerup&#x27;,&#x27;pointercancel&#x27;])listen(document,type,e=&gt;pointers.delete(e.pointerId));
+ const stopAll=()=&gt;{gesture?.();pointers.clear();cancelGesture();pause();sync();};
+ listen(document,&#x27;scroll&#x27;,()=&gt;{gesture?.();cancelGesture();},{capture:true});
+ listen(window,&#x27;blur&#x27;,stopAll);listen(document,&#x27;visibilitychange&#x27;,()=&gt;{if(document.hidden)stopAll();});
+ for(const c of controls){
+  const field=make(&#x27;div&#x27;,&#x27;sci-field&#x27;);field.dataset.scope=c.key;field.tabIndex=0;
+  const heading=make(&#x27;div&#x27;,&#x27;sci-heading&#x27;),label=make(&#x27;span&#x27;,&#x27;sci-label&#x27;,c.label),out=make(&#x27;output&#x27;,&#x27;sci-value&#x27;);heading.append(label,out);field.append(heading);
+  const input=c.input;let get=c.get,set=c.set;
+  if(input){get=()=&gt;Number(input.value);set=v=&gt;{input.value=v;input.dispatchEvent(new Event(&#x27;input&#x27;,{bubbles:true}));};}
+  const read=()=&gt;get?.();values.set(c.key,read);
+  function apply(v){const resume=transport?.isPlaying();set(v);if(resume&amp;&amp;!c.transport&amp;&amp;!transport.isPlaying())transport.toggle();sync();}
+  const defaultValue=c.defaultValue??c.items?.[0]?.[0];
+  if(c.kind===&#x27;action&#x27;){
+   const button=make(&#x27;button&#x27;,&#x27;sci-button&#x27;,c.text);button.type=&#x27;button&#x27;;listen(button,&#x27;click&#x27;,()=&gt;{c.act();sync();});field.append(button);out.hidden=true;
+  }else if(c.kind===&#x27;choice&#x27;){
+   const button=make(&#x27;button&#x27;,&#x27;sci-button&#x27;);button.type=&#x27;button&#x27;;button.setAttribute(&#x27;aria-label&#x27;,c.label+&#x27;：点击切换&#x27;);
+   listen(button,&#x27;click&#x27;,()=&gt;{const i=c.items.findIndex(a=&gt;a[0]===read());apply(c.items[(i+1)%c.items.length][0]);});field.append(button);out.hidden=true;
+   refresh.push(()=&gt;{button.textContent=c.items.find(a=&gt;a[0]===read())?.[1]??String(read());button.dataset.value=read();button.setAttribute(&#x27;aria-label&#x27;,c.label+&#x27;：&#x27;+button.textContent+&#x27;，点击切换&#x27;);});
+  }else{
+   const min=c.min??Number(input.min),max=c.max??Number(input.max),step=c.step??Number(input.step||1);
+   // Existing native inputs are the model&#x27;s adapter; all visible controls share this runtime.
+   if(input){input.hidden=true;input.tabIndex=-1;input.setAttribute(&#x27;aria-hidden&#x27;,&#x27;true&#x27;);field.append(input);}
+   const track=make(&#x27;div&#x27;,c.kind===&#x27;wheel&#x27;?&#x27;sci-wheel&#x27;:&#x27;sci-slider&#x27;);track.tabIndex=0;track.setAttribute(&#x27;role&#x27;,&#x27;slider&#x27;);track.setAttribute(&#x27;aria-label&#x27;,c.label);track.setAttribute(&#x27;aria-valuemin&#x27;,min);track.setAttribute(&#x27;aria-valuemax&#x27;,max);field.append(track);
+   const fill=make(&#x27;span&#x27;,&#x27;sci-fill&#x27;),strip=make(&#x27;span&#x27;,&#x27;sci-strip&#x27;);track.append(fill,strip);
+   let origin=0,wasPlaying=false,didPause=false,raw=0;
+   const normalize=v=&gt;c.period?min+modulo(v-min,c.period):clamp(v,min,max);
+   const update=v=&gt;{raw=v;const n=normalize(v);set(c.discrete?normalize(Math.round(v)):Math.round(n/step)*step);sync();};
+   const isWheel=c.kind===&#x27;wheel&#x27;,stops=c.stops||[];
+   const formatted=v=&gt;(Math.round(v*100)/100)+(c.unit||&#x27;&#x27;);
+   const next=()=&gt;{const current=read(),n=stops.find(v=&gt;v&gt;current+1e-7);apply(n??stops[0]);};
+   const toggle=()=&gt;{c.transport?.toggle();sync();};
+   bindGesture(track,{
+    start:()=&gt;{origin=read();raw=origin;wasPlaying=!!c.transport?.isPlaying();didPause=false;},
+    move:(e,dx)=&gt;{if(!didPause){if(c.transport)pause();didPause=true;}const width=track.getBoundingClientRect().width;update(origin+(isWheel?-dx/Math.max(60,width/3)*(stops[1]-stops[0]||1):dx/width*(max-min)));},
+    tap:e=&gt;{if(isWheel){const b=track.getBoundingClientRect(),part=(e.clientX-b.left)/b.width;if(c.transport&amp;&amp;(part&lt;.3||part&gt;.7))toggle();else next();}else if(c.transport)toggle();else{const b=track.getBoundingClientRect();update(min+(e.clientX-b.left)/b.width*(max-min));}},
+    end:()=&gt;{if(isWheel){const current=normalize(raw),near=(c.period?[...stops,stops[0]+c.period]:stops).reduce((a,v)=&gt;Math.abs(v-current)&lt;Math.abs(a-current)?v:a,stops[0]);const gap=stops[1]-stops[0]||1;if(c.discrete)update(Math.round(raw));else if(Math.abs(near-current)&lt;=gap*.14)update(near);}
+     if(wasPlaying&amp;&amp;!c.transport.isPlaying())c.transport.toggle();},
+    cancel:()=&gt;{if(didPause&amp;&amp;c.transport)pause();}
+   });
+   listen(track,&#x27;keydown&#x27;,e=&gt;{if([&#x27;ArrowLeft&#x27;,&#x27;ArrowRight&#x27;,&#x27;Home&#x27;,&#x27;End&#x27;,&#x27; &#x27;].includes(e.key)){e.preventDefault();if(e.key===&#x27; &#x27;){if(c.transport)toggle();else if(isWheel)next();return;}update(e.key===&#x27;Home&#x27;?min:e.key===&#x27;End&#x27;?max:read()+(e.key===&#x27;ArrowRight&#x27;?1:-1)*(isWheel?(stops[1]-stops[0]||1):step));}});
+   refresh.push(()=&gt;{const v=read();out.textContent=formatted(v);track.setAttribute(&#x27;aria-valuenow&#x27;,v);track.setAttribute(&#x27;aria-valuetext&#x27;,formatted(v));track.dataset.playing=String(!!c.transport?.isPlaying());track.style.setProperty(&#x27;--sci-progress&#x27;,100*clamp((v-min)/(max-min),0,1)+&#x27;%&#x27;);
+    if(isWheel){const gap=stops[1]-stops[0]||1,index=Math.floor((v-min)/gap),fraction=(v-min)/gap-index;strip.replaceChildren();for(let i=-2;i&lt;=2;i++){const item=make(&#x27;span&#x27;,&#x27;sci-tick&#x27;,formatted(normalize(min+(index+i)*gap)));item.style.transform=`translateX(${(i-fraction)*100}%)`;strip.append(item);}fill.hidden=true;}
+   });
+  }
+  if(c.kind!==&#x27;action&#x27;){
+   const hint=make(&#x27;span&#x27;,&#x27;sci-hint&#x27;,&#x27;点本区空白复位&#x27;);field.append(hint);
+   const reset=()=&gt;{cancelGesture();apply(defaultValue);field.classList.remove(&#x27;sci-flash&#x27;);void field.offsetWidth;field.classList.add(&#x27;sci-flash&#x27;);field.setAttribute(&#x27;aria-label&#x27;,c.label+&#x27;，已复位&#x27;);};resets.set(c.key,reset);
+   // Reset only when down and up are on this field&#x27;s actual blank background.
+   let blank=false;bindGesture(field,{accept:e=&gt;e.target===field,start:e=&gt;{blank=true;},tap:e=&gt;{if(blank&amp;&amp;e.target===field)reset();},move:()=&gt;{blank=false;},cancel:()=&gt;{blank=false;}});
+   listen(field,&#x27;keydown&#x27;,e=&gt;{if(e.key===&#x27;Escape&#x27;&amp;&amp;!e.target.closest(&#x27;input,textarea,[contenteditable=true]&#x27;)){e.stopPropagation();reset();}});
+  }
+  const family=[&#x27;action&#x27;,&#x27;choice&#x27;].includes(c.kind)?&#x27;buttons&#x27;:c.kind===&#x27;wheel&#x27;?&#x27;wheels&#x27;:&#x27;sliders&#x27;;if(!groups.has(family)){const group=make(&#x27;div&#x27;,&#x27;sci-group&#x27;);group.dataset.family=family;groups.set(family,group);host.append(group);}groups.get(family).append(field);
+ }
+ // Graph taps pause/play; existing model-specific drags still edit the same state.
+ if(graph&amp;&amp;transport){
+  let before=false,oldDown=graph.onpointerdown,oldMove=graph.onpointermove,oldUp=graph.onpointerup;
+  graph.onpointerdown=graph.onpointermove=graph.onpointerup=null;
+  let event=null,started=false;
+  bindGesture(graph,{axis:root.id===&#x27;complex-wave&#x27;?&#x27;free&#x27;:&#x27;x&#x27;,start:e=&gt;{before=transport.isPlaying();event=e;started=false;},move:e=&gt;{if(!started){started=true;pause();oldDown?.call(graph,event);}oldMove?.call(graph,e);},tap:()=&gt;transport.toggle(),end:e=&gt;{oldUp?.call(graph,e);cancelGesture();if(before&amp;&amp;!transport.isPlaying())transport.toggle();},cancel:()=&gt;cancelGesture()});
+ }
+ root.sciApi={getState:()=&gt;({...root.dataset}),getControl:key=&gt;values.get(key)?.(),reset:key=&gt;{if(!resets.has(key))throw Error(&#x27;A valid local scope is required&#x27;);resets.get(key)();},pause:()=&gt;{pause();sync();},controls:controls.map(c=&gt;({key:c.key,kind:c.kind||&#x27;slider&#x27;,playable:!!c.transport,defaultValue:c.defaultValue??c.items?.[0]?.[0]}))};
+ root.sciDisposeControls=()=&gt;{abort.abort();pause();delete root.sciSync;};sync();return root.sciApi;
+}};
+})();
+&lt;/script&gt;&lt;section id=&quot;resistor-coupling&quot;&gt;
+&lt;style&gt;@layer sci-fragments {
+#resistor-coupling{color:var(--foreground);padding:8px 0}#resistor-coupling svg{display:block;width:100%;height:170px;touch-action:pan-y}#resistor-coupling .result-chart{height:80px}#resistor-coupling svg text{font-size:18px;fill:var(--foreground)}#resistor-coupling .note{margin:10px 0;min-height:24px}}&lt;/style&gt;
+&lt;h3&gt;电阻变大，发热一定更多吗？&lt;/h3&gt;
+
+&lt;svg role=&quot;img&quot; aria-label=&quot;拖动上方电阻改变阻值；下方操作区空白恢复3欧姆基准。&quot;&gt;&lt;/svg&gt;
+&lt;div data-result=&quot;current&quot;&gt;&lt;svg class=&quot;result-chart&quot; aria-hidden=&quot;true&quot;&gt;&lt;/svg&gt;&lt;/div&gt;
+&lt;div data-result=&quot;power&quot;&gt;&lt;svg class=&quot;result-chart&quot; aria-hidden=&quot;true&quot;&gt;&lt;/svg&gt;&lt;/div&gt;
+&lt;div class=&quot;text-small text-muted&quot;&gt;拖动电阻调节 · 虚影固定在 3 Ω&lt;/div&gt;
+&lt;div data-readouts class=&quot;sci-readouts&quot;&gt;&lt;output data-r&gt;6.0 Ω&lt;/output&gt;&lt;div class=&quot;note&quot; data-note aria-live=&quot;polite&quot;&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div data-controls&gt;&lt;input id=&quot;resistance-value&quot; class=&quot;form-range&quot; type=&quot;range&quot; min=&quot;1.5&quot; max=&quot;12&quot; step=&quot;.1&quot; value=&quot;3&quot;&gt;&lt;/div&gt;
+&lt;script&gt;
+(()=&gt;{const root=document.getElementById(&#x27;resistor-coupling&#x27;),svg=root.querySelector(&#x27;svg&#x27;),range=root.querySelector(&#x27;input&#x27;);const NS=&#x27;http://www.w3.org/2000/svg&#x27;;let R=3,mode=&#x27;voltage&#x27;,drag=null,frame=0,target=svg;
+function cancel(){cancelAnimationFrame(frame);frame=0;}
+
+function model(r){const I=mode===&#x27;voltage&#x27;?6/r:2,U=mode===&#x27;voltage&#x27;?6:2*r;return{I,U,P:U*I};}function add(tag,a,text){const e=document.createElementNS(NS,tag);Object.entries(a||{}).forEach(([k,v])=&gt;e.setAttribute(k,v));if(text!==undefined)e.textContent=text;target.append(e);return e;}
+function draw(){const w=Math.max(280,root.clientWidth),s=model(R),base=model(3),left=76,right=w-28,cx=(left+right)/2,len=24+(right-left-40)*(R-1.5)/10.5;target=svg;svg.setAttribute(&#x27;viewBox&#x27;,`0 0 ${w} 170`);svg.replaceChildren();add(&#x27;path&#x27;,{d:`M40 45 H${cx-len/2} M${cx+len/2} 45 H${right} V125 H40 V97 M40 53 V45`,fill:&#x27;none&#x27;,stroke:&#x27;var(--muted-foreground)&#x27;,&#x27;stroke-width&#x27;:1.5});add(&#x27;circle&#x27;,{cx:40,cy:75,r:22,fill:&#x27;var(--background)&#x27;,stroke:&#x27;var(--muted-foreground)&#x27;,&#x27;stroke-width&#x27;:1.5});add(&#x27;text&#x27;,{x:40,y:79,&#x27;text-anchor&#x27;:&#x27;middle&#x27;},mode===&#x27;voltage&#x27;?&#x27;U&#x27;:&#x27;I&#x27;);add(&#x27;rect&#x27;,{x:cx-len/2,y:31,width:len,height:28,rx:3,fill:&#x27;var(--muted)&#x27;,stroke:&#x27;var(--foreground)&#x27;,&#x27;stroke-width&#x27;:1.2});add(&#x27;text&#x27;,{x:cx,y:21,&#x27;text-anchor&#x27;:&#x27;middle&#x27;},&#x27;可调电阻&#x27;);add(&#x27;text&#x27;,{x:cx,y:81,&#x27;text-anchor&#x27;:&#x27;middle&#x27;},`R = ${R.toFixed(1)} Ω`);add(&#x27;text&#x27;,{x:20,y:157},`U = ${s.U.toFixed(1)} V`);add(&#x27;text&#x27;,{x:right,y:157,&#x27;text-anchor&#x27;:&#x27;end&#x27;},mode===&#x27;voltage&#x27;?&#x27;电压固定&#x27;:&#x27;电流固定&#x27;);
+function bar(y,title,value,baseline,max,unit,color){const a=20,b=w-20,span=b-a;add(&#x27;text&#x27;,{x:a,y},title);add(&#x27;text&#x27;,{x:b,y,&#x27;text-anchor&#x27;:&#x27;end&#x27;},value.toFixed(2)+&#x27; &#x27;+unit);add(&#x27;rect&#x27;,{x:a,y:y+12,width:span,height:26,rx:3,fill:&#x27;var(--muted)&#x27;});add(&#x27;rect&#x27;,{x:a,y:y+12,width:span*baseline/max,height:26,rx:3,fill:color,opacity:.17});add(&#x27;rect&#x27;,{x:a,y:y+18,width:span*value/max,height:14,rx:3,fill:color});add(&#x27;text&#x27;,{x:a,y:y+55},&#x27;0&#x27;);add(&#x27;text&#x27;,{x:b,y:y+55,&#x27;text-anchor&#x27;:&#x27;end&#x27;},max+&#x27; &#x27;+unit);}
+target=root.querySelector(&#x27;[data-result=&quot;current&quot;] svg&#x27;);target.setAttribute(&#x27;viewBox&#x27;,`0 0 ${w} 80`);target.replaceChildren();bar(16,&#x27;电流 I&#x27;,s.I,base.I,4,&#x27;A&#x27;,&#x27;var(--viz-series-1)&#x27;);target=root.querySelector(&#x27;[data-result=&quot;power&quot;] svg&#x27;);target.setAttribute(&#x27;viewBox&#x27;,`0 0 ${w} 80`);target.replaceChildren();bar(16,&#x27;发热功率 P&#x27;,s.P,base.P,48,&#x27;W&#x27;,&#x27;var(--viz-series-2)&#x27;);range.value=R;root.querySelector(&#x27;[data-r]&#x27;).textContent=R.toFixed(1)+&#x27; Ω&#x27;;const ratio=s.P/base.P;root.querySelector(&#x27;[data-note]&#x27;).textContent=R===3?&#x27;当前与 3 Ω 基准重合。&#x27;:`相对 3 Ω 基准：电阻 ${R&gt;3?&#x27;增大&#x27;:&#x27;减小&#x27;}，发热功率${ratio&gt;1?&#x27;增加&#x27;:&#x27;减少&#x27;} ${Math.abs((ratio-1)*100).toFixed(0)}%。`;root.dataset.mode=mode;root.dataset.resistance=R;root.dataset.current=s.I;root.dataset.voltage=s.U;root.dataset.power=s.P;;root.sciSync?.();}
+range.oninput=()=&gt;{cancel();R=+range.value;draw();};
+svg.onpointerdown=e=&gt;{if(!e.isPrimary){drag=null;return;}const rect=svg.getBoundingClientRect(),y=(e.clientY-rect.top)*170/rect.height,x=e.clientX-rect.left;const w=Math.max(280,root.clientWidth),cx=(76+w-28)/2,len=24+(w-28-76-40)*(R-1.5)/10.5;const kind=y&gt;=22&amp;&amp;y&lt;=88&amp;&amp;Math.abs(x-cx)&lt;=len/2+18?&#x27;adjust&#x27;:null;if(!kind)return;cancel();drag={id:e.pointerId,x:e.clientX,y:e.clientY,r:R,kind,moved:false,start:performance.now()};svg.setPointerCapture(e.pointerId);};
+svg.onpointermove=e=&gt;{if(!drag||e.pointerId!==drag.id)return;if(Math.hypot(e.clientX-drag.x,e.clientY-drag.y)&gt;8)drag.moved=true;if(drag.kind===&#x27;adjust&#x27;){R=Math.max(1.5,Math.min(12,Math.round((drag.r+(e.clientX-drag.x)/svg.getBoundingClientRect().width*10.5)*10)/10));draw();}};
+svg.onpointerup=e=&gt;{const d=drag;drag=null;if(d&amp;&amp;e.pointerId===d.id&amp;&amp;d.kind===&#x27;reset&#x27;&amp;&amp;!d.moved&amp;&amp;performance.now()-d.start&lt;600)reset();};svg.onpointercancel=()=&gt;drag=null;svg.onlostpointercapture=()=&gt;drag=null;
+new ResizeObserver(draw).observe(root);draw();
+
+SciControls.mount(root,{controls:[{key:&#x27;mode&#x27;,label:&#x27;供电方式&#x27;,kind:&#x27;choice&#x27;,get:()=&gt;mode,set:value=&gt;{cancel();mode=value;draw();},items:[[&quot;voltage&quot;, &quot;恒压 · 6 V&quot;], [&quot;current&quot;, &quot;恒流 · 2 A&quot;]]},{key:&#x27;resistance&#x27;,label:&#x27;电阻 R&#x27;,input:root.querySelector(&#x27;input&#x27;),defaultValue:3}],pause:()=&gt;{cancel();},cancelGesture:()=&gt;{drag=null;}});
+})();
+&lt;/script&gt;
+&lt;/section&gt;
+
 
 &lt;style&gt;@layer sci-theme{}&lt;/style&gt;&lt;script&gt;
 (()=&gt;{const allowed=[&quot;background&quot;, &quot;foreground&quot;, &quot;card&quot;, &quot;muted&quot;, &quot;muted-foreground&quot;, &quot;border&quot;, &quot;primary&quot;, &quot;primary-foreground&quot;, &quot;secondary&quot;, &quot;ring&quot;, &quot;viz-series-1&quot;, &quot;viz-series-2&quot;, &quot;viz-series-3&quot;, &quot;viz-series-4&quot;, &quot;viz-series-5&quot;, &quot;viz-series-6&quot;];window.addEventListener(&#x27;message&#x27;,e=&gt;{if(e.source!==parent||e.data?.type!==&#x27;sci-theme&#x27;)return;for(const[k,v]of Object.entries(e.data.tokens||{}))if(allowed.includes(k)&amp;&amp;/^#[0-9a-f]{6}$/i.test(v))document.documentElement.style.setProperty(&#x27;--&#x27;+k,v);document.documentElement.style.colorScheme=e.data.name===&#x27;dark&#x27;?&#x27;dark&#x27;:&#x27;light&#x27;});let last=0;const measure=()=&gt;{const h=Math.ceil(document.body.getBoundingClientRect().height);if(h!==last){last=h;parent.postMessage({type:&#x27;sci-height&#x27;,height:h},&#x27;*&#x27;)}};new ResizeObserver(measure).observe(document.body);measure();})();

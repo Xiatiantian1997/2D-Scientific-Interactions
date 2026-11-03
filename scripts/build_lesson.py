@@ -28,3 +28,4 @@ const themes='''+json.dumps(THEMES)+''';let selected='''+json.dumps(theme)+''';c
 if __name__=='__main__':
  a=argparse.ArgumentParser(description=__doc__);a.add_argument('fragments',nargs='+');a.add_argument('-o','--output',required=True);a.add_argument('--theme',choices=THEMES,default='warm');a.add_argument('--title',default='科学交互讲义');a.add_argument('--ui-css',help='Trusted local presentation stylesheet injected into every isolated example');v=a.parse_args();out=Path(v.output);out.parent.mkdir(parents=True,exist_ok=True);out.write_text(build(v.fragments,v.theme,v.title,Path(v.ui_css).read_text() if v.ui_css else ''));print(str(out))
 
+

@@ -1,19 +1,15 @@
 <section id="trench-closure">
 <style>
-#trench-closure{color:var(--foreground);padding:8px 0}#trench-closure .stage{display:block;width:100%;touch-action:pan-y;cursor:ew-resize}#trench-closure .stage text{fill:var(--foreground);font-size:18px}#trench-closure .row-label{display:flex;justify-content:space-between;gap:10px;margin:12px 0 6px}#trench-closure .timeline{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center}#trench-closure .legend{display:flex;flex-wrap:wrap;gap:16px;margin:8px 0}#trench-closure .swatch{display:inline-block;width:18px;height:10px;margin-right:6px;background:var(--viz-series-1)}#trench-closure .swatch.base{background:var(--muted-foreground);opacity:.25}#trench-closure .swatch.outline{height:0;background:none;border-top:1px dashed var(--muted-foreground)}#trench-closure .readout{min-height:44px;margin:12px 0}
-</style>
+#trench-closure{color:var(--foreground);padding:8px 0}#trench-closure .stage{display:block;width:100%;touch-action:pan-y;cursor:ew-resize}#trench-closure .stage text{fill:var(--foreground);font-size:18px}#trench-closure .legend{display:flex;flex-wrap:wrap;gap:16px;margin:8px 0}#trench-closure .swatch{display:inline-block;width:18px;height:10px;margin-right:6px;background:var(--viz-series-1)}#trench-closure .swatch.base{background:var(--muted-foreground);opacity:.25}#trench-closure .swatch.outline{height:0;background:none;border-top:1px dashed var(--muted-foreground)}#trench-closure .readout{min-height:44px;margin:12px 0}</style>
 <h3>口部封住，里面却还空着</h3>
 
 <svg class="stage" role="img" aria-label="沟槽截面，新增薄膜从表面向内生长。横拖可回看封口过程。"></svg>
 <div class="legend text-small"><span><i class="swatch"></i>新增薄膜</span><span><i class="swatch base"></i>原有基底</span><span><i class="swatch outline"></i>沉积前界面</span></div>
 <div class="readout" aria-live="polite"></div>
-<div class="sci-controls" data-reset-area>
-<div class="viz-controls"><button class="btn" type="button" data-mode="depleted" aria-pressed="true">口部优先生长</button><button class="btn" type="button" data-mode="uniform" aria-pressed="false">近似等厚覆盖</button></div><div class="row-label"><label for="trench-aspect">初始深宽比</label><output data-aspect>3 : 1</output></div><input id="trench-aspect" class="form-range" type="range" min="2" max="5" step=".1" value="3">
-<div class="timeline"><button type="button" class="btn" data-play>暂停</button><div><div class="row-label text-small"><label for="trench-time">顶部厚度 / 初始口宽</label><output data-thickness></output></div><input id="trench-time" class="form-range" type="range" min="0" max="1000" value="100" aria-label="沉积构造进度，非真实时间"></div></div>
-<div class="text-small" style="margin-top:12px">形貌示意 · 相同顶部厚度比较 · 非工艺预测</div>
-<p class="text-small text-muted" data-feedback role="status">点操作区空白回到沉积前；保留覆盖模式与深宽比</p></div>
+<div data-readouts class="sci-readouts"><output data-aspect>3 : 1</output><output data-thickness></output></div>
+<div data-controls><input id="trench-aspect" class="form-range" type="range" min="2" max="5" step=".1" value="3"><input id="trench-time" class="form-range" type="range" min="0" max="1000" value="0" aria-label="沉积构造进度，非真实时间"></div>
 <script>
-(()=>{const root=document.getElementById('trench-closure'),svg=root.querySelector('svg'),range=root.querySelector('#trench-time'),aspect=root.querySelector('#trench-aspect'),play=root.querySelector('[data-play]'),status=root.querySelector('.readout');let p=.1,ar=3,mode='depleted',running=false,visible=false,last=0,drag=null;const NS='http://www.w3.org/2000/svg';
+(()=>{const root=document.getElementById('trench-closure'),svg=root.querySelector('svg'),range=root.querySelector('#trench-time'),aspect=root.querySelector('#trench-aspect'),transport={toggle:null,isPlaying:()=>running},status=root.querySelector('.readout');let p=0,ar=3,mode='depleted',running=false,visible=false,last=0,drag=null;const NS='http://www.w3.org/2000/svg';
 function el(tag,attrs,text){const n=document.createElementNS(NS,tag);Object.entries(attrs||{}).forEach(([k,v])=>n.setAttribute(k,v));if(text)n.textContent=text;svg.append(n);return n;}
 function shape(p,ar,mode){const top=.65*p,k=mode==='uniform'?0:.65,inside=Math.min(top,.5),bottom=inside*Math.exp(-k*ar);return{top,k,inside,bottom,closed:top>=.5};}
 function draw(){svg.replaceChildren();const w=Math.max(280,root.clientWidth),h=360,D=220,W=D/ar,L=(w-W)/2,R=L+W,T=91,B=T+D,M=22,s=shape(p,ar,mode),t=s.top*W,b=s.bottom*W;svg.setAttribute('viewBox',`0 0 ${w} ${h}`);svg.style.height=h+'px';
@@ -28,14 +24,15 @@ const gap=Math.max(0,W-2*s.inside*W);if(!s.closed){el('line',{x1:w/2,y1:36,x2:w/
 const voidWidth=W-2*s.inside*W*Math.exp(-s.k*(D*.65)/W);if(s.closed&&mode==='depleted'){el('text',{x:w/2,y:T+D*.65,'text-anchor':'middle'},'空腔');}else if(s.closed){el('text',{x:w/2,y:T+D*.53,'text-anchor':'middle'},'会合');}
 el('text',{x:M,y:352},'沟槽截面');el('text',{x:w-M,y:352,'text-anchor':'end'},`深 / 宽 = ${ar.toFixed(1)}`);
 const message=s.closed?(mode==='depleted'?'口部先合上，内部仍有空隙；后续沉积留在外侧。':'理想等厚层在中线会合；实际仍可能形成接缝。'):(mode==='depleted'?'上部越来越厚，深处长得少，入口逐渐收窄。':'沿壁厚度近似一致，内部空隙一起收窄。');if(status.textContent!==message)status.textContent=message;
-range.value=String(Math.round(p*1000));root.querySelector('[data-thickness]').textContent=s.top.toFixed(2);root.querySelector('[data-aspect]').textContent=ar.toFixed(1)+' : 1';SciControls.play(play,running);root.dataset.progress=p.toFixed(4);root.dataset.mode=mode;root.dataset.closed=s.closed;root.dataset.running=running;root.dataset.bottom=s.bottom.toFixed(6);}
+range.value=String(Math.round(p*1000));root.querySelector('[data-thickness]').textContent=s.top.toFixed(2);root.querySelector('[data-aspect]').textContent=ar.toFixed(1)+' : 1';root.dataset.progress=p.toFixed(4);root.dataset.mode=mode;root.dataset.closed=s.closed;root.dataset.running=running;;root.sciSync?.();root.dataset.bottom=s.bottom.toFixed(6);}
 function stop(){running=false;last=0;}
-root.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{stop();mode=b.dataset.mode;root.querySelectorAll('[data-mode]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));draw();});range.oninput=()=>{stop();p=+range.value/1000;draw();};aspect.oninput=()=>{stop();ar=+aspect.value;draw();};play.onclick=()=>{if(p>=1)p=0;running=!running;last=0;draw();};
+range.oninput=()=>{stop();p=+range.value/1000;draw();};aspect.oninput=()=>{stop();ar=+aspect.value;draw();};transport.toggle=()=>{if(p>=1)p=0;running=!running;last=0;draw();};
 svg.onpointerdown=e=>{if(!e.isPrimary)return;stop();drag={id:e.pointerId,x:e.clientX,p};svg.setPointerCapture(e.pointerId);draw();};svg.onpointermove=e=>{if(!drag||drag.id!==e.pointerId)return;p=Math.max(0,Math.min(1,drag.p+(e.clientX-drag.x)/svg.getBoundingClientRect().width));draw();};const release=()=>{drag=null;};svg.onpointerup=release;svg.onpointercancel=release;svg.onlostpointercapture=release;
-new ResizeObserver(draw).observe(root);new IntersectionObserver(es=>{visible=es[0].isIntersecting;last=0;},{threshold:.15}).observe(root);document.addEventListener('visibilitychange',()=>{last=0;});function frame(t){if(!root.isConnected)return;if(running&&visible&&!document.hidden){if(last){p=Math.min(1,p+(t-last)/8000);if(p>=1)running=false;draw();}last=t;}else last=0;requestAnimationFrame(frame);}draw();requestAnimationFrame(frame);
+new ResizeObserver(draw).observe(root);new IntersectionObserver(es=>{visible=es[0].isIntersecting;last=0;},{threshold:.15}).observe(root);document.addEventListener('visibilitychange',()=>{last=0;});function frame(t){if(!root.isConnected)return;if(running&&visible&&!document.hidden){if(last){p=Math.min(1,p+(t-last)/8000);if(p>=1){p=0;running=false;}draw();}last=t;}else last=0;requestAnimationFrame(frame);}draw();requestAnimationFrame(frame);
 
-SciControls.mount(root,{reset:()=>{stop();p=0;draw();},pause:()=>{stop();draw();},cancelGesture:()=>{drag=null;}});
+SciControls.mount(root,{controls:[{key:'mode',label:'覆盖模型',kind:'choice',get:()=>mode,set:value=>{mode=value;draw();},items:[["depleted", "入口消耗"], ["uniform", "均匀覆盖"]]},{key:'time',label:'沉积进度',input:root.querySelector('#trench-time'),defaultValue:0,transport},{key:'aspect',label:'深宽比',input:root.querySelector('#trench-aspect'),defaultValue:3}],pause:()=>{stop();draw();},cancelGesture:()=>{drag=null;},transport,graph:root.querySelector('svg')});
 })();
 </script>
 </section>
+
 

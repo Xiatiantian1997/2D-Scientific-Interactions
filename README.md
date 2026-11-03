@@ -12,9 +12,9 @@
 
 配套：[触摸与控件](docs/touch-and-controls.md) · [创作简表](templates/authoring-brief.md) · [验证说明](docs/validation.md)
 
-## 当前基线
+## 统一操作
 
-2D 方法与交互行为约定已确定，控件遵循 [当前组件规范](https://github.com/Xiatiantian1997/UI-design/blob/main/docs/controls.md)。现有 13 个参考实现仍包含旧控件，不代表已全部迁移；科学模型可复用，旧整区复位、独立播放按钮等需在接入时替换。UI 与主题可继续调整，无需重做科学模型。
+全部 13 个示例通过同一组件入口运行。按 [交互 SOP](docs/touch-and-controls.md) 定义控件、局部复位和播放行为；基础 UI 与主题统一覆盖外观，科学模型保持独立。
 
 ## 快速使用
 
@@ -37,3 +37,4 @@ python3 scripts/build_lesson.py fragments/sampling-distribution.html -o lesson.h
 | `scripts/`、`tests/` | 打包与验证 |
 
 修改范例时以 `fragments/` 为源，再运行 `python3 scripts/build_catalog.py` 更新独立页面。GitHub 文件预览不执行 HTML，使用方式见接入说明。
+

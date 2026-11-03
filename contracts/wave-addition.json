@@ -58,7 +58,7 @@
         "wavelength",
         "observation_time"
       ],
-      "feedback": "拖动第二列波改变相位；点击滑条上方相位读数恢复同相；原波虚线提供基准。"
+      "feedback": "拖动第二列波或滑轮改变相位，中央点击下一主档；原波虚线提供固定基准。"
     },
     {
       "id": "compare",
@@ -70,7 +70,22 @@
         "scale",
         "layout"
       ],
-      "feedback": "下方整个操作区的空白、说明文字、读数均可短按复位，整片轻暗反馈；滑条、播放等独立控件除外。超过8px移动、500ms长按、多指、取消、页面滚动不复位。"
+      "feedback": "短按对应控件区域实际空白恢复默认值；文字、读数、拖动、滚动、取消和多指不触发。"
+    },
+    {
+      "id": "local-reset",
+      "kind": "observe",
+      "scopes": [
+        "phase"
+      ],
+      "changes": [
+        "selected scope default only"
+      ],
+      "fixed": [
+        "other scopes",
+        "recorded baseline"
+      ],
+      "feedback": "短按选定控件区域空白，或在该区域按 Escape。"
     }
   ],
   "comparison": {
@@ -82,7 +97,14 @@
       "scale",
       "layout"
     ],
-    "placement": "图下整片操作区空白与读数；无需精确瞄准文字"
+    "placement": "原位固定基准；对应控件区域空白局部复位"
   },
-  "validation": "../docs/validation.md"
+  "validation": "../docs/validation.md",
+  "interaction": {
+    "sop": "../docs/touch-and-controls.md",
+    "host": "../runtime/touch-controls.js",
+    "reset": "仅控件区域空白短按，按 controls.key 恢复声明的默认值，保留相邻状态和基准；Escape 是对应作用域的键盘替代。",
+    "playback": "本例无时间播放；图内操作改变参数或观察位置，不附加播放功能。",
+    "layout": "图上控件下，同类成组，普通按钮统一尺寸且居中，滑轮稍大。"
+  }
 }

@@ -70,7 +70,7 @@
         "stiffness",
         "mass"
       ],
-      "feedback": "释放后沿直线做谐振动，一个周期后停止，可中断"
+      "feedback": "点击图形或对应进度控件播放/暂停；到终点回起点停住，保留其他参数。"
     },
     {
       "id": "pause",
@@ -86,20 +86,32 @@
       "feedback": "暂停保持当前状态，继续从当前时刻恢复"
     },
     {
-      "id": "lower-blank-reset",
-      "kind": "model",
+      "id": "local-reset",
+      "kind": "observe",
+      "scopes": [
+        "position",
+        "time"
+      ],
       "changes": [
-        "position_and_velocity"
+        "selected scope default only"
       ],
       "fixed": [
-        "mass_and_stiffness"
+        "other scopes",
+        "recorded baseline"
       ],
-      "feedback": "下方操作区空白短按或根区域R键复位；恢复x=2 m、v=0。控件、滚动、拖动、长按、多指和取消均不触发；轻暗反馈。"
+      "feedback": "短按选定控件区域空白，或在该区域按 Escape。"
     }
   ],
   "comparison": {
     "required": false,
     "reason": "同一位置的势能、力和直线运动同时联动；不是正常/异常状态比较。"
   },
-  "validation": "../docs/validation.md"
+  "validation": "../docs/validation.md",
+  "interaction": {
+    "sop": "../docs/touch-and-controls.md",
+    "host": "../runtime/touch-controls.js",
+    "reset": "仅控件区域空白短按，按 controls.key 恢复声明的默认值，保留相邻状态和基准；Escape 是对应作用域的键盘替代。",
+    "playback": "默认静止；点击时间条或图形播放/暂停；结束回起点停住；失焦或后台暂停。",
+    "layout": "图上控件下，同类成组，普通按钮统一尺寸且居中，滑轮稍大。"
+  }
 }
